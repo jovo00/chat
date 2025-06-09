@@ -8,6 +8,6 @@ export const delete_account = deleteMutation({
     const user = await getUser(ctx);
     if (!user) throw new ConvexError("Not authorized");
 
-    return { user };
+    await ctx.db.delete(user._id);
   },
 });

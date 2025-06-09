@@ -16,7 +16,7 @@ export async function preloadQuery<Query extends FunctionReference<"query">>(
 export async function preloadPaginatedQuery<Query extends FunctionReference<"query">>(
   query: Query,
   args: PaginatedQueryArgs<Query> | "skip",
-  options: { initialNumItems: number },
+  options: { initialNumItems: number }
 ): Promise<Preloaded<Query>> {
   return preloadQueryConvex(
     query,
@@ -24,6 +24,6 @@ export async function preloadPaginatedQuery<Query extends FunctionReference<"que
       ...(typeof args == "object" ? args : {}),
       paginationOpts: { cursor: null, numItems: options.initialNumItems },
     } as any,
-    { token: await convexAuthNextjsToken() },
+    { token: await convexAuthNextjsToken() }
   );
 }

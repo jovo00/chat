@@ -1,7 +1,8 @@
-import { convexAuthNextjsToken } from "@convex-dev/auth/nextjs/server";
-import { api } from "../../../convex/_generated/api";
-import { preloadQuery } from "../convex/preload";
+import { api } from "@gen/api";
+import { preloadQuery } from "@/lib/convex/preload";
 
 export async function preloadUser() {
-  return await preloadQuery(api.users.user.current, {}, { token: await convexAuthNextjsToken() });
+  return await preloadQuery(api.users.user.current);
 }
+
+export type PreloadedUser = Awaited<ReturnType<typeof preloadUser>>;

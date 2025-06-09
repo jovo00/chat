@@ -10,10 +10,6 @@ export async function getUser(ctx: QueryCtx | MutationCtx) {
     user = await ctx.db.get(userId);
   }
 
-  if (!user?.emailVerificationTime) {
-    return undefined;
-  }
-
   return user ?? undefined;
 }
 

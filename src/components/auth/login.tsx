@@ -8,7 +8,6 @@ import aiBackdrop from "@/assets/images/ai-logo.jpg";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
 import Logo from "@/components/icons/logos/logo";
-import { Button } from "@/components/ui/button";
 import { SignInWithGoogle } from "./oauth/google";
 import { SignInWithGithub } from "./oauth/github";
 

@@ -12,6 +12,12 @@ const triggers = new Triggers<DataModel>();
 triggers.register("users", async (ctx, change) => {
   if (change.operation !== "delete") return;
 
+  await asyncMap(await getManyFrom(ctx.db, "authAccounts", "userIdAndProvider", change.id, "userId"), (account) =>
+    ctx.db.delete(account._id)
+  );
+  await asyncMap(await getManyFrom(ctx.db, "authSessions", "userId", change.id, "userId"), (session) =>
+    ctx.db.delete(session._id)
+  );
   await asyncMap(await getManyFrom(ctx.db, "tokens", "by_user_and_provider", change.id, "user"), (token) =>
     ctx.db.delete(token._id)
   );

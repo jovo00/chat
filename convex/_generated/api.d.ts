@@ -20,6 +20,7 @@ import type * as tokens_get_tokens from "../tokens/get_tokens.js";
 import type * as tokens_modify_tokens from "../tokens/modify_tokens.js";
 import type * as users_delete from "../users/delete.js";
 import type * as users_delete_triggers from "../users/delete_triggers.js";
+import type * as users_update from "../users/update.js";
 import type * as users_user from "../users/user.js";
 
 /**
@@ -38,6 +39,7 @@ declare const fullApi: ApiFromModules<{
   "tokens/modify_tokens": typeof tokens_modify_tokens;
   "users/delete": typeof users_delete;
   "users/delete_triggers": typeof users_delete_triggers;
+  "users/update": typeof users_update;
   "users/user": typeof users_user;
 }>;
 export declare const api: FilterApi<

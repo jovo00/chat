@@ -6,6 +6,8 @@ import { ThemeProvider } from "next-themes";
 
 import "@/styles/fonts/techna-sans.css";
 import "@/styles/globals.css";
+import { Toaster } from "@/components/ui/sonner";
+import { ErrorBoundary } from "react-error-boundary";
 
 const fontSans = Plus_Jakarta_Sans({
   subsets: ["latin"],
@@ -42,10 +44,16 @@ export default function RootLayout({
           <meta name="robots" content="INDEX,FOLLOW" />
           <link rel="manifest" href="/manifest.json" />
         </head>
-
-        <body className={`${fontSans.variable} ${fontMono.variable} antialiased`}>
+        <body
+          className={`h-dvh min-h-full w-full overflow-x-hidden ${fontSans.variable} ${fontMono.variable} antialiased`}
+        >
           <ThemeProvider attribute="class" defaultTheme="dark" disableTransitionOnChange>
-            <ConvexClientProvider>{children}</ConvexClientProvider>
+            <ErrorBoundary fallback={"Something went wrong"}>
+              <ConvexClientProvider>
+                {children}
+                <Toaster richColors position="top-center" />
+              </ConvexClientProvider>
+            </ErrorBoundary>
           </ThemeProvider>
         </body>
       </html>
