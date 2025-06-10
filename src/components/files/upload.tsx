@@ -9,17 +9,23 @@ import { FormEvent, useRef, useState } from "react";
 export default function UploadTest() {
   const [progress, setProgress] = useState("");
 
-  const authToken = useAuthToken();
   const fileInput = useRef<HTMLInputElement>(null);
+  const authToken = useAuthToken();
 
   async function fileUploadHandler(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    if (!authToken) return;
     if (!fileInput.current?.files) return;
     if (!fileInput.current.files[0]) return;
 
+    const file = fileInput.current.files[0];
+
+    const sendImageUrl = new URL(`${process.env.NEXT_PUBLIC_CONVEX_ACTIONS_URL}/upload-file`);
+    sendImageUrl.searchParams.set("name", file.name);
+
     const xhr = new XMLHttpRequest();
-    xhr.open("POST", `${process.env.NEXT_PUBLIC_FILE_SERVER}/api/files`, true);
+    xhr.open("POST", sendImageUrl, true);
+    xhr.setRequestHeader("Content-Type", file.type);
+    xhr.setRequestHeader("Authorization", `Bearer ${authToken}`);
 
     xhr.upload.addEventListener("progress", (e) => {
       setProgress(`${Math.round((e.loaded / e.total) * 100)}%`);
@@ -32,12 +38,9 @@ export default function UploadTest() {
       }
     };
 
-    xhr.setRequestHeader("authorization", authToken);
+    xhr.send(file);
 
-    const formdata = new FormData();
-    formdata.append("file", fileInput.current.files[0]);
-
-    xhr.send(formdata);
+    fileInput.current.value = "";
   }
 
   const files = usePaginatedQuery(api.files.get_file.many, {}, { initialNumItems: 50 });
@@ -63,8 +66,7 @@ export default function UploadTest() {
               e.preventDefault();
             }}
             onDoubleClick={async () => {
-              if (!authToken) return;
-              await open(file, authToken);
+              // await open(file, authToken);
             }}
           >
             {file.name}
@@ -89,33 +91,4 @@ export default function UploadTest() {
       </div>
     </>
   );
-}
-
-async function presign(file: Id<"files">, authToken: string | null) {
-  const url = `${process.env.NEXT_PUBLIC_FILE_SERVER}/api/files/presign`;
-  const body = {
-    file,
-  };
-
-  const res = await fetch(url, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      authorization: authToken ?? "",
-    },
-    body: JSON.stringify(body),
-  });
-
-  if (!res.ok) {
-    throw Error(await res.text());
-  }
-
-  const data = await res.json();
-
-  return data;
-}
-
-async function open(file: Doc<"files">, authToken: string) {
-  const presigned = await presign(file._id, authToken);
-  window.open(`${process.env.NEXT_PUBLIC_FILE_SERVER}/files/${file._id}/stream?token=${presigned?.token}`, "_blank");
 }

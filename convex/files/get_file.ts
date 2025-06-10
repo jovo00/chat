@@ -15,28 +15,7 @@ export const one = query({
 
     if (file.user !== user?._id) throw new ConvexError("Not authorized");
 
-    return { file };
-  },
-});
-
-export const download = query({
-  args: {
-    file: v.id("files"),
-    token: v.string(),
-  },
-  handler: async (ctx, args) => {
-    if (!process.env.FILE_SERVER_TOKEN || process.env.FILE_SERVER_TOKEN === "") {
-      throw new ConvexError("Internal Error");
-    }
-
-    if (args.token !== process.env.FILE_SERVER_TOKEN) {
-      throw new ConvexError("Access denied");
-    }
-
-    const file = await ctx.db.get(args.file);
-    if (!file) throw new ConvexError("Not found");
-
-    return { file };
+    return { file, url: await ctx.storage.getUrl(file.storage) };
   },
 });
 
@@ -52,6 +31,8 @@ export const many = query({
       .query("files")
       .withIndex("by_user", (q) => q.eq("user", user?._id))
       .paginate(args.paginationOpts);
+
+    const urls = await Promise.all(files.page.map((file) => {}));
 
     return files;
   },
