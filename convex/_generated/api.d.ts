@@ -15,6 +15,10 @@ import type {
 } from "convex/server";
 import type * as auth from "../auth.js";
 import type * as errors from "../errors.js";
+import type * as files_create_file from "../files/create_file.js";
+import type * as files_delete_files from "../files/delete_files.js";
+import type * as files_delete_triggers from "../files/delete_triggers.js";
+import type * as files_get_file from "../files/get_file.js";
 import type * as http from "../http.js";
 import type * as tokens_get_tokens from "../tokens/get_tokens.js";
 import type * as tokens_modify_tokens from "../tokens/modify_tokens.js";
@@ -34,6 +38,10 @@ import type * as users_user from "../users/user.js";
 declare const fullApi: ApiFromModules<{
   auth: typeof auth;
   errors: typeof errors;
+  "files/create_file": typeof files_create_file;
+  "files/delete_files": typeof files_delete_files;
+  "files/delete_triggers": typeof files_delete_triggers;
+  "files/get_file": typeof files_get_file;
   http: typeof http;
   "tokens/get_tokens": typeof tokens_get_tokens;
   "tokens/modify_tokens": typeof tokens_modify_tokens;

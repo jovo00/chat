@@ -86,8 +86,11 @@ export default defineSchema({
   }).index("by_user", ["user"]),
 
   files: defineTable({
+    path: v.string(),
+    extension: v.string(),
+    mime: v.string(),
+    size: v.int64(),
+    name: v.string(),
     user: v.id("users"),
-    file: v.string(),
-    size: v.number(),
   }).index("by_user", ["user"]),
 });
