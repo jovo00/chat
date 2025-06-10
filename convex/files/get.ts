@@ -1,6 +1,6 @@
 import { query } from "../_generated/server";
 import { ConvexError, v } from "convex/values";
-import { getUser } from "../users/user";
+import { getUser } from "../users/get";
 import { paginationOptsValidator } from "convex/server";
 
 export const one = query({
@@ -16,6 +16,22 @@ export const one = query({
     if (file.user !== user?._id) throw new ConvexError("Not authorized");
 
     return { file, url: await ctx.storage.getUrl(file.storage) };
+  },
+});
+
+export const url = query({
+  args: {
+    file: v.id("files"),
+  },
+  handler: async (ctx, args) => {
+    const user = await getUser(ctx);
+
+    const file = await ctx.db.get(args.file);
+    if (!file) throw new ConvexError("Not found");
+
+    if (file.user !== user?._id) throw new ConvexError("Not authorized");
+
+    return { url: await ctx.storage.getUrl(file.storage) };
   },
 });
 

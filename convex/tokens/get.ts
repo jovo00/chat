@@ -1,6 +1,6 @@
 import { query } from "../_generated/server";
 import { ConvexError } from "convex/values";
-import { getUser } from "../users/user";
+import { getUser } from "../users/get";
 
 export const many = query({
   args: {},

@@ -1,5 +1,5 @@
 import { ConvexError, v } from "convex/values";
-import { getUser } from "./user";
+import { getUser } from "./get";
 import { mutation } from "../_generated/server";
 
 export const one = mutation({

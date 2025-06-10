@@ -6,7 +6,7 @@ export const uploadAction = httpAction(async (ctx, request) => {
   const storageId = await ctx.storage.store(blob);
 
   const name = new URL(request.url).searchParams.get("name");
-  const file = await ctx.runMutation(internal.files.create_files.one, { storage: storageId, name: name ?? "" });
+  const file = await ctx.runMutation(internal.files.create.one, { storage: storageId, name: name ?? "" });
 
   return new Response(JSON.stringify(file), {
     status: 200,

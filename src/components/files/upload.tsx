@@ -43,8 +43,8 @@ export default function UploadTest() {
     fileInput.current.value = "";
   }
 
-  const files = usePaginatedQuery(api.files.get_file.many, {}, { initialNumItems: 50 });
-  const deleteMutation = useMutation(api.files.delete_files.one);
+  const files = usePaginatedQuery(api.files.get.many, {}, { initialNumItems: 50 });
+  const deleteMutation = useMutation(api.files.delete.one);
 
   return (
     <>

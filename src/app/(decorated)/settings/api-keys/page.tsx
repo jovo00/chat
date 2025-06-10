@@ -5,7 +5,7 @@ import { api } from "@gen/api";
 
 export default async function ApiKeySettings() {
   const preloaded = await preloadUser();
-  const preloadedTokens = await preloadQuery(api.tokens.get_tokens.many);
+  const preloadedTokens = await preloadQuery(api.tokens.get.many);
 
   return <ApiKeys preloadedUser={preloaded} preloadedTokens={preloadedTokens} />;
 }

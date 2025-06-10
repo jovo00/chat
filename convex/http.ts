@@ -3,7 +3,7 @@ import { auth } from "./auth";
 import { httpAction } from "./_generated/server";
 import { api, internal } from "./_generated/api";
 import { Id } from "./_generated/dataModel";
-import { getUser } from "./users/user";
+import { getUser } from "./users/get";
 import { uploadAction, uploadPreflight } from "./files/upload_action";
 
 const http = httpRouter();

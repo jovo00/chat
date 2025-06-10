@@ -1,6 +1,6 @@
 import { ConvexError, v } from "convex/values";
 import { deleteMutation } from "./delete_triggers";
-import { getUser } from "../users/user";
+import { getUser } from "../users/get";
 
 export const one = deleteMutation({
   args: {
@@ -37,7 +37,7 @@ export const many = deleteMutation({
         if (file.user !== user._id) throw new ConvexError("Not allowed");
 
         return ctx.db.delete(f);
-      })
+      }),
     );
 
     return { deleted: true };

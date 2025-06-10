@@ -42,8 +42,8 @@ function KeyInput({
   const [keyValue, setKeyValue] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const setToken = useMutation(api.tokens.modify_tokens.set);
-  const unsetToken = useMutation(api.tokens.modify_tokens.unset);
+  const setToken = useMutation(api.tokens.update.set);
+  const unsetToken = useMutation(api.tokens.update.unset);
 
   const apiKey = tokens.find((key) => key.provider === provider);
 
@@ -95,7 +95,7 @@ function KeyInput({
         <CardTitle>{label}</CardTitle>
         <CardDescription>
           Add your {label} API Key. You can get your API key{" "}
-          <Link className="underline text-foreground/80" href={url} target="_blank">
+          <Link className="text-foreground/80 underline" href={url} target="_blank">
             here
           </Link>
         </CardDescription>
@@ -104,7 +104,7 @@ function KeyInput({
         <form onSubmit={onSubmit}>
           {providers?.includes(provider) && !override ? (
             <div className="flex items-center gap-2 pb-4">
-              <CircleCheck className="w-5 h-5 text-green-500 shrink-0" /> API Key is set
+              <CircleCheck className="h-5 w-5 shrink-0 text-green-500" /> API Key is set
               <Button
                 className="ml-auto"
                 type="button"
@@ -158,9 +158,9 @@ function KeyInput({
         </form>
       </CardContent>
       {(!providers?.includes(provider) || override) && (
-        <CardFooter className="border-none px-6 py-4 gap-2">
+        <CardFooter className="gap-2 border-none px-6 py-4">
           <Button type="submit" onClick={onSubmit} disabled={loading || keyValue?.trim()?.length === 0}>
-            {loading ? <LoaderCircle className="w-5 h-5 animate-spin" /> : "Save"}
+            {loading ? <LoaderCircle className="h-5 w-5 animate-spin" /> : "Save"}
           </Button>
           {providers?.includes(provider) && override && (
             <>
@@ -186,7 +186,7 @@ export default function ApiKeys({
   preloadedTokens,
 }: {
   preloadedUser: PreloadedUser;
-  preloadedTokens: Preloaded<typeof api.tokens.get_tokens.many>;
+  preloadedTokens: Preloaded<typeof api.tokens.get.many>;
 }) {
   const { user } = usePreloadedQuery(preloadedUser);
   const tokens = usePreloadedQuery(preloadedTokens);

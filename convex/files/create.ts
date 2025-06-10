@@ -1,6 +1,6 @@
 import { ConvexError, v } from "convex/values";
 import { internalMutation, mutation } from "../_generated/server";
-import { getUser } from "../users/user";
+import { getUser } from "../users/get";
 
 export const one = internalMutation({
   args: {
