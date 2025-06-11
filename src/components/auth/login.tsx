@@ -15,25 +15,25 @@ export default function Login() {
   const [imageLoaded, setImageLoaded] = useState<boolean>(false);
 
   return (
-    <div className="flex absolute left-0 top-0 w-full h-full">
-      <div className="relative flex-1 h-full w-full select-none pointer-events-none hidden xl:block bg-secondary/50">
+    <div className="absolute top-0 left-0 flex h-full w-full">
+      <div className="bg-secondary/50 pointer-events-none relative hidden h-full w-full flex-1 select-none xl:block">
         <Image
           src={aiBackdrop}
           alt=""
           objectFit="cover"
           fill
-          className={cn("transition-opacity", imageLoaded ? "opacity-100" : "opacity-0")}
+          className={cn("hue-rotate-[92deg] transition-opacity", imageLoaded ? "opacity-100" : "opacity-0")}
           onLoad={() => setImageLoaded(true)}
         />
       </div>
-      <main className="flex h-screen w-full items-center justify-center bg-background dark:bg-black min-h-96 flex-1">
+      <main className="bg-background flex h-screen min-h-96 w-full flex-1 items-center justify-center dark:bg-black">
         <div className="flex w-100 flex-col gap-2 overflow-hidden rounded-md">
           <div className="p-4">
-            <Logo className="mx-auto h-9 w-9 fill-primary-foreground " />
+            <Logo className="fill-primary-foreground mx-auto h-9 w-9" />
           </div>
           <div className="mb-4">
-            <h1 className="font-special my-1 text-center text-2xl font-bold">Login</h1>
-            <p className="text-center text-sm font-medium text-foreground/50">Login to start chatting!</p>
+            <h1 className="font-special my-1 text-center text-2xl font-bold">Welcome</h1>
+            <p className="text-foreground/50 text-center text-sm font-medium">Login to start chatting!</p>
           </div>
 
           <SignInWithGoogle />

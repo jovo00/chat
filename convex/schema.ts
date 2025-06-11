@@ -1,22 +1,15 @@
 import { defineSchema, defineTable } from "convex/server";
-import { authTables } from "@convex-dev/auth/server";
+import { authTables as allAuthTables } from "@convex-dev/auth/server";
 import { v } from "convex/values";
 
 export const tokenProviders = v.union(v.literal("openrouter"), v.literal("replicate"));
 export const apiProviders = v.union(v.literal("openrouter"), v.literal("replicate"));
-export const modelProviders = v.union(
-  v.literal("openai"),
-  v.literal("google"),
-  v.literal("replicate"),
-  v.literal("xai"),
-  v.literal("deepseek"),
-  v.literal("anthropic"),
-  v.literal("meta"),
-  v.literal("mistral")
-);
+
+const { users, ...authTables } = allAuthTables;
 
 export default defineSchema({
   ...authTables,
+
   users: defineTable({
     name: v.optional(v.string()),
     image: v.optional(v.string()),
@@ -25,6 +18,8 @@ export default defineSchema({
     phone: v.optional(v.string()),
     phoneVerificationTime: v.optional(v.number()),
     isAnonymous: v.optional(v.boolean()),
+
+    role: v.optional(v.union(v.literal("admin"))),
   })
     .index("email", ["email"])
     .index("phone", ["phone"]),
@@ -39,7 +34,6 @@ export default defineSchema({
     api: apiProviders,
     api_id: v.string(),
     title: v.string(),
-    provider: modelProviders,
     text_capabilities: v.optional(
       v.object({
         max_input_tokens: v.number(),
@@ -58,7 +52,7 @@ export default defineSchema({
           tools_input: v.boolean(),
           reasoning_output: v.boolean(),
         }),
-      })
+      }),
     ),
   })
     .index("by_api_id", ["api_id"])

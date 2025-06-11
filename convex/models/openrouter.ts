@@ -1,7 +1,8 @@
 import { ConvexError } from "convex/values";
-import { action, internalAction } from "../_generated/server";
+import { action, internalAction, query } from "../_generated/server";
 import { ActionCache } from "@convex-dev/action-cache";
 import { components, internal } from "../_generated/api";
+import { getUser } from "../users/get";
 
 export type OpenRouterModel = {
   id: string;
@@ -45,7 +46,7 @@ export const fetchOpenRouterModels = internalAction(async () => {
 
   const allModels: OpenRouterModel[] = (await res.json()).data;
 
-  return allModels;
+  return allModels?.sort((a, b) => a.name.localeCompare(b.name));
 });
 
 const openRouterCache = new ActionCache(components.actionCache, {
@@ -55,7 +56,7 @@ const openRouterCache = new ActionCache(components.actionCache, {
 });
 
 export const getModels = action({
-  handler: async (ctx, args): Promise<OpenRouterModel[]> => {
+  handler: async (ctx): Promise<OpenRouterModel[]> => {
     const result = await openRouterCache.fetch(ctx, {});
 
     return result;

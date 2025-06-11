@@ -1,6 +1,6 @@
 import { ConvexError } from "convex/values";
 import { getUser } from "./get";
-import { deleteMutation } from "./delete_triggers";
+import { deleteMutation } from "../delete_triggers";
 
 export const delete_account = deleteMutation({
   args: {},

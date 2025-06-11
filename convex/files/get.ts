@@ -9,6 +9,7 @@ export const one = query({
   },
   handler: async (ctx, args) => {
     const user = await getUser(ctx);
+    if (!user) throw new ConvexError("Not authorized");
 
     const file = await ctx.db.get(args.file);
     if (!file) throw new ConvexError("Not found");
@@ -25,6 +26,7 @@ export const url = query({
   },
   handler: async (ctx, args) => {
     const user = await getUser(ctx);
+    if (!user) throw new ConvexError("Not authorized");
 
     const file = await ctx.db.get(args.file);
     if (!file) throw new ConvexError("Not found");

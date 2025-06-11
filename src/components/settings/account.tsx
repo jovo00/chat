@@ -87,18 +87,18 @@ export default function Account({ preloadedUser }: { preloadedUser: PreloadedUse
     <>
       <Card className="pb-2">
         <CardHeader className="border-b">
-          <div className="w-full flex gap-4 items-center">
+          <div className="flex w-full items-center gap-4">
             <Avatar className="ml-auto size-12 cursor-pointer">
               <AvatarImage src={user?.image} className="transition-opacity" />
-              <AvatarFallback className="text-foreground/60 bg-accent font-medium select-none">
+              <AvatarFallback className="text-foreground/60 bg-accent text-xl font-medium select-none">
                 {getInitials(user?.name, user?.email)}
               </AvatarFallback>
             </Avatar>
-            <div className="flex flex-col w-full leading-none">
-              <h5 className="font-special text-2xl whitespace-nowrap max-w-40 overflow-hidden text-ellipsis">
+            <div className="flex w-full flex-col leading-none">
+              <h5 className="font-special max-w-40 overflow-hidden text-2xl text-ellipsis whitespace-nowrap">
                 {user?.name ?? user?.email?.split("@")[0]}
               </h5>
-              <p className="font-medium text-sm text-foreground/50 whitespace-nowrap max-w-40 overflow-hidden text-ellipsis">
+              <p className="text-foreground/50 max-w-40 overflow-hidden text-sm font-medium text-ellipsis whitespace-nowrap">
                 {user?.email}
               </p>
             </div>
@@ -118,7 +118,7 @@ export default function Account({ preloadedUser }: { preloadedUser: PreloadedUse
                       <Input
                         id="name"
                         placeholder="Name"
-                        className="border-none placeholder:text-foreground/30 rounded-[0.5rem] px-4"
+                        className="placeholder:text-foreground/30 rounded-[0.5rem] border-none px-4"
                         autoCapitalize="none"
                         autoCorrect="off"
                         autoComplete="off"
@@ -163,7 +163,7 @@ export default function Account({ preloadedUser }: { preloadedUser: PreloadedUse
                 </DialogClose>
 
                 <Button variant={"destructive"} disabled={deleting} className="w-28" onClick={onDelete}>
-                  {deleting ? <LoaderCircle className="animate-spin repeat-infinite" /> : "Delete"}
+                  {deleting ? <LoaderCircle className="repeat-infinite animate-spin" /> : "Delete"}
                 </Button>
               </DialogFooter>
             </DialogContent>

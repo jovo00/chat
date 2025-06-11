@@ -3,14 +3,19 @@ import { MutationCtx, query, QueryCtx } from "../_generated/server";
 import { Id } from "../_generated/dataModel";
 import { ConvexError } from "convex/values";
 
-export async function getUser(ctx: QueryCtx | MutationCtx) {
+export async function getUser(ctx: QueryCtx | MutationCtx): Promise<
+  | (Doc<"users"> & {
+      role?: "admin" | undefined;
+    })
+  | null
+> {
   const userId = await getAuthUserId(ctx);
   let user: Doc<"users"> | undefined | null = undefined;
   if (userId) {
     user = await ctx.db.get(userId);
   }
 
-  return user ?? undefined;
+  return user ?? null;
 }
 
 export const current = query({

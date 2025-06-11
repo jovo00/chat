@@ -1,5 +1,5 @@
 import { ConvexError, v } from "convex/values";
-import { deleteMutation } from "./delete_triggers";
+import { deleteMutation } from "../delete_triggers";
 import { getUser } from "../users/get";
 
 export const one = deleteMutation({

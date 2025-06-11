@@ -1,10 +1,13 @@
 "use client";
 
+import { PreloadedUser } from "@/lib/auth/server";
 import { cn } from "@/lib/utils";
+import { usePreloadedQuery } from "convex/react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
-export default function SettingsNav() {
+export default function SettingsNav({ preloadedUser }: { preloadedUser: PreloadedUser }) {
+  const { user } = usePreloadedQuery(preloadedUser);
   const pathname = usePathname();
 
   function isActive(href: string) {
@@ -12,16 +15,24 @@ export default function SettingsNav() {
   }
 
   return (
-    <nav className="grid gap-4 text-sm text-muted-foreground mb-4">
-      <Link href="/settings/account" className={cn(isActive("/settings/account") && "font-semibold text-primary")}>
+    <nav className="text-muted-foreground mb-4 grid gap-4 text-sm">
+      <Link href="/settings/account" className={cn(isActive("/settings/account") && "text-primary font-semibold")}>
         Account
       </Link>
-      <Link href="/settings/api-keys" className={cn(isActive("/settings/api-keys") && "font-semibold text-primary")}>
+      <Link href="/settings/api-keys" className={cn(isActive("/settings/api-keys") && "text-primary font-semibold")}>
         API Keys
       </Link>
-      <Link href="/settings/files" className={cn(isActive("/settings/files") && "font-semibold text-primary")}>
-        File Uploads
+      <Link
+        href="/settings/attachments"
+        className={cn(isActive("/settings/attachments") && "text-primary font-semibold")}
+      >
+        Attachments
       </Link>
+      {user?.role === "admin" && (
+        <Link href="/settings/admin" className={cn(isActive("/settings/admin") && "text-primary font-semibold")}>
+          Admin
+        </Link>
+      )}
     </nav>
   );
 }

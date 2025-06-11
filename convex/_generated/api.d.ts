@@ -10,18 +10,20 @@
 
 import type * as auth from "../auth.js";
 import type * as crons from "../crons.js";
+import type * as delete_triggers from "../delete_triggers.js";
 import type * as errors from "../errors.js";
 import type * as files_create from "../files/create.js";
 import type * as files_delete from "../files/delete.js";
-import type * as files_delete_triggers from "../files/delete_triggers.js";
 import type * as files_get from "../files/get.js";
 import type * as files_upload_action from "../files/upload_action.js";
 import type * as http from "../http.js";
+import type * as models_create from "../models/create.js";
+import type * as models_delete from "../models/delete.js";
+import type * as models_get from "../models/get.js";
 import type * as models_openrouter from "../models/openrouter.js";
 import type * as tokens_get from "../tokens/get.js";
 import type * as tokens_update from "../tokens/update.js";
 import type * as users_delete from "../users/delete.js";
-import type * as users_delete_triggers from "../users/delete_triggers.js";
 import type * as users_get from "../users/get.js";
 import type * as users_update from "../users/update.js";
 
@@ -42,18 +44,20 @@ import type {
 declare const fullApi: ApiFromModules<{
   auth: typeof auth;
   crons: typeof crons;
+  delete_triggers: typeof delete_triggers;
   errors: typeof errors;
   "files/create": typeof files_create;
   "files/delete": typeof files_delete;
-  "files/delete_triggers": typeof files_delete_triggers;
   "files/get": typeof files_get;
   "files/upload_action": typeof files_upload_action;
   http: typeof http;
+  "models/create": typeof models_create;
+  "models/delete": typeof models_delete;
+  "models/get": typeof models_get;
   "models/openrouter": typeof models_openrouter;
   "tokens/get": typeof tokens_get;
   "tokens/update": typeof tokens_update;
   "users/delete": typeof users_delete;
-  "users/delete_triggers": typeof users_delete_triggers;
   "users/get": typeof users_get;
   "users/update": typeof users_update;
 }>;

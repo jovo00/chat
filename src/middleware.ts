@@ -20,7 +20,7 @@ export default convexAuthNextjsMiddleware(
       return nextjsMiddlewareRedirect(request, "/auth");
     }
   },
-  { cookieConfig: { maxAge: 60 * 60 * 24 * 30 } } // 30 days
+  { cookieConfig: { maxAge: 60 * 60 * 24 * 30 } }, // 30 days
 );
 
 export const config = {

@@ -1,7 +1,9 @@
+import { cn } from "@/lib/utils";
+
 export default function Logo({ className }: { className?: string }) {
   return (
     <svg
-      className={className}
+      className={cn("hue-rotate-[92deg]", className)}
       xmlns="http://www.w3.org/2000/svg"
       width="40.028"
       height="40.028"

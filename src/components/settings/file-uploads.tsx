@@ -66,7 +66,7 @@ export default function FileUploads({ preloadedFiles }: { preloadedFiles: Preloa
       <div className="grid gap-6">
         <Card>
           <CardHeader>
-            <CardTitle>Files</CardTitle>
+            <CardTitle>Attachments</CardTitle>
             <CardDescription>Here you can manage the files you uploaded.</CardDescription>
           </CardHeader>
           <CardContent className="pb-9">
@@ -99,7 +99,7 @@ export default function FileUploads({ preloadedFiles }: { preloadedFiles: Preloa
                         </Button>
                       </a>
                       <Dialog>
-                        <DialogTrigger>
+                        <DialogTrigger asChild>
                           <Button variant={"ghost"} size={"icon"} className="text-foreground/50">
                             <Trash2 className="size-4" />
                           </Button>
