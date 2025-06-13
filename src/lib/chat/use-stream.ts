@@ -1,0 +1,98 @@
+// adapted from https://github.com/get-convex/persistent-text-streaming/blob/main/src/react/index.ts
+
+"use client";
+
+import { useQuery } from "convex/react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { FunctionReference } from "convex/server";
+import { Id } from "@gen/dataModel";
+import { useAuthToken } from "@convex-dev/auth/react";
+import { api } from "@gen/api";
+
+export type StreamStatus = "pending" | "done" | "error" | "streaming";
+
+export function useStream(messageId: Id<"messages">, driven: boolean) {
+  const authToken = useAuthToken();
+  const [streamEnded, setStreamEnded] = useState(null as boolean | null);
+  const streamStarted = useRef(false);
+
+  const [streamBody, setStreamBody] = useState<string>("");
+
+  useEffect(() => {
+    if (driven && messageId && !streamStarted.current) {
+      void (async () => {
+        const success = await startStreaming(
+          messageId,
+          (text) => {
+            setStreamBody((prev) => prev + text);
+          },
+          {
+            Authorization: `Bearer ${authToken}`,
+          },
+        );
+        setStreamEnded(success);
+      })();
+
+      return () => {
+        streamStarted.current = true;
+      };
+    }
+  }, [driven, messageId, setStreamEnded, streamStarted]);
+
+  const body = useMemo(() => {
+    let status: StreamStatus;
+    if (streamEnded === null) {
+      status = streamBody.length > 0 ? "streaming" : "pending";
+    } else {
+      status = streamEnded ? "done" : "error";
+    }
+    return {
+      text: streamBody,
+      status: status as StreamStatus,
+    };
+  }, [streamBody, streamEnded]);
+
+  return body;
+}
+
+async function startStreaming(
+  messageId: Id<"messages">,
+  onUpdate: (text: string) => void,
+  headers: Record<string, string>,
+) {
+  const url = new URL(`${process.env.NEXT_PUBLIC_CONVEX_ACTIONS_URL}/chat`);
+  const response = await fetch(url, {
+    method: "POST",
+    body: JSON.stringify({
+      messageId,
+    }),
+    headers: { "Content-Type": "application/json", ...headers },
+  });
+  // Adapted from https://developer.mozilla.org/en-US/docs/Web/API/Streams_API/Using_readable_streams
+  if (response.status === 205) {
+    console.error("Stream already finished", response);
+    return false;
+  }
+  if (!response.ok) {
+    console.error("Failed to reach streaming endpoint", response);
+    return false;
+  }
+  if (!response.body) {
+    console.error("No body in response", response);
+    return false;
+  }
+  const reader = response.body.getReader();
+  while (true) {
+    try {
+      const { done, value } = await reader.read();
+      if (done) {
+        onUpdate(new TextDecoder().decode(value));
+        return true;
+      }
+      onUpdate(new TextDecoder().decode(value));
+    } catch (e) {
+      console.error("Error reading stream", e);
+      return false;
+    }
+  }
+}

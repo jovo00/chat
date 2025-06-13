@@ -101,10 +101,16 @@ function ModelButton({ small, setOpen }: { small?: boolean; setOpen: Dispatch<Se
               <ProviderLogo title={selectedModel.title} className="size-full" />
             </div>
 
-            <div className="flex flex-1 flex-col items-start justify-center">
-              <h5 className={cn("text-sm font-semibold md:text-base", small && "text-sm md:text-sm")}>
+            <div className="flex min-w-0 flex-1 flex-col items-start justify-center">
+              <h5
+                className={cn(
+                  "max-w-full overflow-hidden text-sm font-semibold text-ellipsis whitespace-nowrap md:text-base",
+                  small && "text-sm md:text-sm",
+                )}
+              >
                 {selectedModel.title}
               </h5>
+
               {!small && (
                 <div className="flex h-5 items-center gap-2">
                   <p

@@ -4,6 +4,12 @@ import { v } from "convex/values";
 
 export const tokenProviders = v.union(v.literal("openrouter"), v.literal("replicate"));
 export const apiProviders = v.union(v.literal("openrouter"), v.literal("replicate"));
+export const messageStatus = v.union(
+  v.literal("done"),
+  v.literal("error"),
+  v.literal("pending"),
+  v.literal("generating"),
+);
 
 const { users, ...authTables } = allAuthTables;
 
@@ -60,7 +66,7 @@ export default defineSchema({
 
   chats: defineTable({
     user: v.id("users"),
-    title: v.string(),
+    title: v.optional(v.string()),
     prompt_short: v.string(),
     last_modified: v.number(),
   }).index("by_user", ["user"]),
@@ -68,8 +74,10 @@ export default defineSchema({
   messages: defineTable({
     user: v.id("users"),
     chat: v.id("chats"),
-    status: v.union(v.literal("success"), v.literal("error"), v.literal("generating"), v.literal("cancelled")),
+    prompt: v.string(),
+    status: messageStatus,
     status_message: v.optional(v.string()),
+    cancelled: v.boolean(),
     model: v.id("models"),
     role: v.union(v.literal("user"), v.literal("assistant")),
     hide: v.boolean(),
@@ -77,7 +85,9 @@ export default defineSchema({
     content: v.optional(v.string()),
     reasoning: v.optional(v.string()),
     annotations: v.optional(v.array(v.any())),
-  }).index("by_user", ["user"]),
+  })
+    .index("by_user_and_chat", ["user", "chat"])
+    .index("by_chat", ["chat"]),
 
   files: defineTable({
     storage: v.id("_storage"),

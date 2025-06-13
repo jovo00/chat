@@ -9,6 +9,11 @@
  */
 
 import type * as auth from "../auth.js";
+import type * as chat_create from "../chat/create.js";
+import type * as chat_delete from "../chat/delete.js";
+import type * as chat_generate from "../chat/generate.js";
+import type * as chat_get from "../chat/get.js";
+import type * as chat_update from "../chat/update.js";
 import type * as crons from "../crons.js";
 import type * as delete_triggers from "../delete_triggers.js";
 import type * as errors from "../errors.js";
@@ -21,6 +26,7 @@ import type * as models_create from "../models/create.js";
 import type * as models_delete from "../models/delete.js";
 import type * as models_get from "../models/get.js";
 import type * as models_openrouter from "../models/openrouter.js";
+import type * as preflight from "../preflight.js";
 import type * as tokens_get from "../tokens/get.js";
 import type * as tokens_update from "../tokens/update.js";
 import type * as users_delete from "../users/delete.js";
@@ -43,6 +49,11 @@ import type {
  */
 declare const fullApi: ApiFromModules<{
   auth: typeof auth;
+  "chat/create": typeof chat_create;
+  "chat/delete": typeof chat_delete;
+  "chat/generate": typeof chat_generate;
+  "chat/get": typeof chat_get;
+  "chat/update": typeof chat_update;
   crons: typeof crons;
   delete_triggers: typeof delete_triggers;
   errors: typeof errors;
@@ -55,6 +66,7 @@ declare const fullApi: ApiFromModules<{
   "models/delete": typeof models_delete;
   "models/get": typeof models_get;
   "models/openrouter": typeof models_openrouter;
+  preflight: typeof preflight;
   "tokens/get": typeof tokens_get;
   "tokens/update": typeof tokens_update;
   "users/delete": typeof users_delete;

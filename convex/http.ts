@@ -4,7 +4,9 @@ import { httpAction } from "./_generated/server";
 import { api, internal } from "./_generated/api";
 import { Id } from "./_generated/dataModel";
 import { getUser } from "./users/get";
-import { uploadAction, uploadPreflight } from "./files/upload_action";
+import { uploadAction } from "./files/upload_action";
+import { completeChat } from "./chat/generate";
+import { postPreflight } from "./preflight";
 
 const http = httpRouter();
 
@@ -32,11 +34,22 @@ http.route({
 //   }),
 // });
 
-// Pre-flight request for /sendImage
 http.route({
   path: "/upload-file",
   method: "OPTIONS",
-  handler: uploadPreflight,
+  handler: postPreflight,
+});
+
+http.route({
+  path: "/chat",
+  method: "POST",
+  handler: completeChat,
+});
+
+http.route({
+  path: "/chat",
+  method: "OPTIONS",
+  handler: postPreflight,
 });
 
 export default http;

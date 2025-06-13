@@ -20,10 +20,18 @@ triggers.register("users", async (ctx, change) => {
     ctx.db.delete(token._id),
   );
   await asyncMap(await getManyFrom(ctx.db, "chats", "by_user", change.id, "user"), (chat) => ctx.db.delete(chat._id));
-  await asyncMap(await getManyFrom(ctx.db, "messages", "by_user", change.id, "user"), (message) =>
+  await asyncMap(await getManyFrom(ctx.db, "messages", "by_user_and_chat", change.id, "user"), (message) =>
     ctx.db.delete(message._id),
   );
   await asyncMap(await getManyFrom(ctx.db, "files", "by_user", change.id, "user"), (message) =>
+    ctx.db.delete(message._id),
+  );
+});
+
+triggers.register("chats", async (ctx, change) => {
+  if (change.operation !== "delete") return;
+
+  await asyncMap(await getManyFrom(ctx.db, "messages", "by_chat", change.id, "chat"), (message) =>
     ctx.db.delete(message._id),
   );
 });

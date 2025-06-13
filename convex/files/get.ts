@@ -50,8 +50,6 @@ export const many = query({
       .withIndex("by_user", (q) => q.eq("user", user?._id))
       .paginate(args.paginationOpts);
 
-    const urls = await Promise.all(files.page.map((file) => {}));
-
     return files;
   },
 });
