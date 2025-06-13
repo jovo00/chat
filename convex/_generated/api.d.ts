@@ -16,6 +16,7 @@ import type * as chat_get from "../chat/get.js";
 import type * as chat_update from "../chat/update.js";
 import type * as crons from "../crons.js";
 import type * as delete_triggers from "../delete_triggers.js";
+import type * as encryption from "../encryption.js";
 import type * as errors from "../errors.js";
 import type * as files_create from "../files/create.js";
 import type * as files_delete from "../files/delete.js";
@@ -56,6 +57,7 @@ declare const fullApi: ApiFromModules<{
   "chat/update": typeof chat_update;
   crons: typeof crons;
   delete_triggers: typeof delete_triggers;
+  encryption: typeof encryption;
   errors: typeof errors;
   "files/create": typeof files_create;
   "files/delete": typeof files_delete;

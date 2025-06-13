@@ -111,7 +111,7 @@ export default function AdminModels({ preloadedModels }: { preloadedModels: Prel
                         </DialogTrigger>
                         <DialogContent className="max-w-100">
                           <DialogHeader>
-                            <DialogTitle>Delete File</DialogTitle>
+                            <DialogTitle>Delete Model</DialogTitle>
                             <DialogDescription className="leading-relaxed">
                               Are you sure you want to delete{" "}
                               <span className="rounded-full bg-white/10 px-2 py-[0.15rem] text-xs font-semibold break-all text-white/80">
@@ -147,7 +147,7 @@ export default function AdminModels({ preloadedModels }: { preloadedModels: Prel
               )}
             </div>
 
-            <h3 className="mt-4 text-base font-bold">Available Models</h3>
+            <h3 className="mt-4 text-base font-bold">Available Models (OpenRouter)</h3>
             <div className="bg-background flex h-[30rem] max-h-[30rem] w-full flex-col gap-2 overflow-y-auto rounded-xl p-2">
               {openrouterModels.isLoading && (
                 <div className="flex h-full w-full items-center justify-center gap-2 py-2 opacity-50">

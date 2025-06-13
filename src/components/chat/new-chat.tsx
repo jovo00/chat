@@ -3,9 +3,11 @@ import Logo from "../icons/logos/logo";
 import ChatInput from "./input/input";
 import ModelSelect from "./input/model-select";
 import { api } from "@gen/api";
+import { getLastModelState } from "@/lib/state/cookies";
 
 export default async function NewChat() {
   const preloadedModels = await preloadPaginatedQuery(api.models.get.many, {}, { initialNumItems: 50 });
+  const lastModelState = await getLastModelState();
 
   return (
     <>
@@ -15,11 +17,11 @@ export default async function NewChat() {
             <Logo className="mb-1 size-5 md:size-6" /> <h1 className="font-special text-xl md:text-2xl">Chat AI</h1>
           </div>
           <div className="mt-4 w-60 md:w-72">
-            <ModelSelect preloadedModels={preloadedModels} />
+            <ModelSelect preloadedModels={preloadedModels} lastModelState={lastModelState} />
           </div>
         </div>
       </div>
-      <ChatInput preloadedModels={preloadedModels} />
+      <ChatInput preloadedModels={preloadedModels} lastModelState={lastModelState} />
     </>
   );
 }

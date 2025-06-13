@@ -8,7 +8,7 @@ import { Doc } from "@gen/dataModel";
 import { useMemo, useEffect } from "react";
 import Markdown from "react-markdown";
 
-export function ServerMessage({
+export function Assistant({
   message,
   isDriven,
   stopStreaming,
@@ -32,7 +32,7 @@ export function ServerMessage({
 
   const content = (message?.content?.length ?? 0 > text.length) ? message?.content : text;
 
-  const smoothText = useSmoothText(content ?? "", { charsPerSec: 512 });
+  const smoothText = useSmoothText(content ?? "", { charsPerSec: 2048 });
 
   return (
     <div className="md-answer">

@@ -9,15 +9,17 @@ import ModelSelect from "./model-select";
 import { Preloaded } from "convex/react";
 import { api } from "@gen/api";
 import useSendMessage from "@/lib/chat/use-send-message";
-import { Id } from "@gen/dataModel";
+import { Doc, Id } from "@gen/dataModel";
 import useChatState from "@/lib/state/chat";
 
 export default function ChatInput({
   preloadedModels,
   chatId,
+  lastModelState,
 }: {
   preloadedModels: Preloaded<typeof api.models.get.many>;
   chatId?: Id<"chats">;
+  lastModelState?: Doc<"models">;
 }) {
   const textInput = useRef<HTMLTextAreaElement>(null);
   const streaming = useChatState((state) => state.streaming);
@@ -62,7 +64,7 @@ export default function ChatInput({
 
         <div className="flex w-full items-center justify-between">
           <div>
-            <ModelSelect small preloadedModels={preloadedModels} />
+            <ModelSelect small preloadedModels={preloadedModels} lastModelState={lastModelState} />
           </div>
           <Button type="submit" size="icon" variant="secondary" className="size-10 rounded-full">
             {streaming ? <Square className="h-4 w-4" /> : <ArrowUp className="h-5 w-5" />}

@@ -3,6 +3,7 @@ import { api, internal } from "../_generated/api";
 // import { OpenAI } from "openai";
 import { ConvexError } from "convex/values";
 import { Id } from "../_generated/dataModel";
+import { createOpenRouter } from "@openrouter/ai-sdk-provider";
 
 // const openai = new OpenAI();
 
@@ -25,12 +26,18 @@ export const completeChat = httpAction(async (ctx, request) => {
   let user = await ctx.runQuery(api.users.get.current);
   if (!user) throw new ConvexError("Not authorized");
 
+  //     const openrouter = createOpenRouter({
+  //   apiKey: 'YOUR_OPENROUTER_API_KEY',
+  // });
+
   const body = (await request.json()) as {
     messageId?: Id<"messages">;
   };
 
   if (body?.messageId) {
-    const message = await ctx.runQuery(internal.chat.get.message, { message: body.messageId });
+    const message = await ctx.runQuery(internal.chat.get.message, {
+      message: body.messageId,
+    });
 
     if (!message || message?.user !== user.user._id) {
       throw new ConvexError("Not allowed to access this chat");
@@ -45,61 +52,78 @@ export const completeChat = httpAction(async (ctx, request) => {
     }
   }
 
-  const message = body?.messageId!;
+  const messageId = body?.messageId!;
 
-  let { context } = await ctx.runMutation(internal.chat.create.assistantMessage, { messageId: message });
+  const { context } = await ctx.runMutation(internal.chat.create.assistantMessage, {
+    messageId: messageId,
+  });
 
-  const { readable, writable } = new TransformStream();
-  const writer = writable.getWriter();
   const encoder = new TextEncoder();
+  const readableStream = new ReadableStream({
+    async start(controller) {
+      let fullText = "";
+      const updateDbMinChars = 200;
+      const updateDbMaxDelay = 5000;
+      let backgroundUpdatePromise: Promise<void | null> = Promise.resolve();
+      let lastUpdateTime = Date.now();
+      let charsSinceLastUpdate = 0;
 
-  let fullText = "";
-  let updates = [];
+      try {
+        for (const chunk of chunks) {
+          const formattedChunk = chunk + "\n";
+          fullText += formattedChunk;
+          charsSinceLastUpdate += formattedChunk.length;
 
-  const sendChunks = async () => {
-    const updateDbEvery = 100;
-    let wait = updateDbEvery;
-    try {
-      for (const chunk of chunks) {
-        const formattedChunk = chunk + "\n";
-        fullText += formattedChunk;
-        wait -= formattedChunk.length;
+          controller.enqueue(encoder.encode(formattedChunk));
 
-        if (wait < 0) {
-          // TODO: Fix this. We should only update if no other mutation is pending. Also we should have a specific delay between updates not only character count
-          updates.push(ctx.runMutation(internal.chat.update.updateContent, { messageId: message, content: fullText }));
-          wait += updateDbEvery;
+          const now = Date.now();
+          const timeSinceLastUpdate = now - lastUpdateTime;
+
+          if (charsSinceLastUpdate >= updateDbMinChars && timeSinceLastUpdate >= updateDbMaxDelay) {
+            const textToSave = fullText;
+            backgroundUpdatePromise = backgroundUpdatePromise.then(() =>
+              ctx.runMutation(internal.chat.update.updateContent, {
+                messageId: messageId,
+                content: textToSave,
+              }),
+            );
+            charsSinceLastUpdate = 0;
+            lastUpdateTime = now;
+          }
+
+          await delay(5);
         }
 
-        await writer.write(encoder.encode(formattedChunk));
-
-        // simulate delay
-        await delay(5);
+        // Wait for all background updates to finish, then set final status
+        await backgroundUpdatePromise.then(() =>
+          ctx.runMutation(internal.chat.update.updateMessage, {
+            messageId: messageId,
+            content: fullText,
+            status: "done",
+          }),
+        );
+      } catch (e) {
+        console.error("An error occurred during streaming:", e);
+        // Ensure pending updates settle before marking as an error
+        await backgroundUpdatePromise;
+        await ctx.runMutation(internal.chat.update.updateMessage, {
+          messageId: messageId,
+          content: fullText,
+          status: "error",
+          status_message: "Error while generating response",
+        });
+        // Signal an error to the stream consumer
+        controller.error(e);
+      } finally {
+        // This is critical: close the stream when all work is done.
+        // The controller might already be closed if an error was thrown,
+        // so we check `byobRequest` which is null when closed.
+        controller.close();
       }
+    },
+  });
 
-      await Promise.allSettled(updates);
-      await ctx.runMutation(internal.chat.update.updateMessage, {
-        messageId: message,
-        content: fullText,
-        status: "done",
-      });
-    } catch (e) {
-      await ctx.runMutation(internal.chat.update.updateMessage, {
-        messageId: message,
-        content: fullText,
-        status: "error",
-        status_message: "Error while generating response",
-      });
-      console.error("An error occurred during streaming:", e);
-      await writer.abort(e);
-    } finally {
-      await writer.close();
-    }
-  };
-
-  sendChunks();
-
-  return new Response(readable, {
+  return new Response(readableStream, {
     headers: {
       "Access-Control-Allow-Origin": process.env.SITE_URL!,
       "Content-Type": "text/plain; charset=utf-8",
@@ -107,40 +131,4 @@ export const completeChat = httpAction(async (ctx, request) => {
       Vary: "Origin",
     },
   });
-
-  // Start streaming and persisting at the same time while
-  // we immediately return a streaming response to the client
-  // const response = await streamingComponent.stream(
-  //   ctx,
-  //   request,
-  //   body.streamId as StreamId,
-  //   async (ctx, request, streamId, append) => {
-  //     // Lets grab the history up to now so that the AI has some context
-  //     const history = await ctx.runQuery(internal.chat.get.history, {
-  //       chatId: body.chatId!,
-  //     });
-
-  //     // Lets kickoff a stream request to OpenAI
-  //     const stream = await openai.chat.completions.create({
-  //       model: "gpt-4.1-mini",
-  //       messages: [
-  //         {
-  //           role: "system",
-  //           content: `You are a helpful assistant that can answer questions and help with tasks.
-  //         Please provide your response in markdown format.
-
-  //         You are continuing a conversation. The conversation so far is found in the following JSON-formatted value:`,
-  //         },
-  //         ...(history as ChatCompletionMessageParam[]),
-  //       ],
-  //       stream: true,
-  //     });
-
-  //     // Append each chunk to the persistent stream as they come in from openai
-  //     for await (const part of stream) await append(part.choices[0]?.delta?.content || "");
-  //   },
-  // );
-
-  // response.headers.set("Access-Control-Allow-Origin", "*");
-  // response.headers.set("Vary", "Origin");
 });

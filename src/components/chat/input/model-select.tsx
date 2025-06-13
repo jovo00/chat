@@ -9,32 +9,47 @@ import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
 import { Drawer, DrawerContent, DrawerTrigger } from "@/components/ui/drawer";
-import { AtSign, BrainIcon, EyeIcon, FileText, Wrench } from "lucide-react";
+import { AtSign, BrainIcon, ChevronDown, EyeIcon, FileText, MousePointerClick, Wrench } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { DialogTitle } from "@radix-ui/react-dialog";
 import { api } from "@gen/api";
 import { Preloaded, useQuery } from "convex/react";
 import { usePreloadedPaginatedQuery } from "@/lib/convex/use-preload";
-import { Doc } from "@gen/dataModel";
+import { Doc, Id } from "@gen/dataModel";
 import useInputState from "@/lib/state/input";
 import ProviderLogo from "@/components/icons/logos/providers";
+import { useCookieState } from "@/lib/hooks/use-cookie-state";
 
 export default function ModelSelect({
   preloadedModels,
+  lastModelState,
   small = false,
 }: {
   preloadedModels: Preloaded<typeof api.models.get.many>;
   small?: boolean;
+  lastModelState?: Doc<"models">;
 }) {
   const model = useInputState((state) => state.model);
+  const setModel = useInputState((state) => state.setModel);
+  const [savedModel, setSavedModel] = useCookieState("modelId", lastModelState);
   const [open, setOpen] = useState(false);
+
+  useEffect(() => {
+    if (!model && savedModel) {
+      setModel(savedModel);
+    } else {
+      setSavedModel(model);
+    }
+  }, [savedModel, model]);
+
+  const currentModel = model ?? savedModel;
 
   if (isMobile) {
     return (
       <Drawer open={open} onOpenChange={setOpen}>
         <DrawerTrigger className="w-full" asChild>
-          {model ? (
-            <ModelButton small={small} setOpen={setOpen} />
+          {currentModel ? (
+            <ModelButton small={small} setOpen={setOpen} model={currentModel} lastModelState={lastModelState} />
           ) : (
             <NoModelSelected setOpen={setOpen} small={small} />
           )}
@@ -51,7 +66,11 @@ export default function ModelSelect({
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger className="w-full" asChild>
-        {model ? <ModelButton small={small} setOpen={setOpen} /> : <NoModelSelected setOpen={setOpen} small={small} />}
+        {currentModel ? (
+          <ModelButton small={small} model={currentModel} setOpen={setOpen} lastModelState={lastModelState} />
+        ) : (
+          <NoModelSelected setOpen={setOpen} small={small} />
+        )}
       </DialogTrigger>
       <DialogContent className="h-120 max-h-[calc(80dvh-3rem)] w-240 max-w-[calc(100dvw-2rem)] overflow-hidden rounded-3xl p-0 sm:max-w-[calc(100dvw-2rem)]">
         <DialogTitle className="hidden">Model Select</DialogTitle>
@@ -67,21 +86,31 @@ function NoModelSelected({ small, setOpen }: { small: boolean; setOpen: Dispatch
       variant="secondary"
       type="button"
       className={cn(
-        "bg-input h-16 w-full cursor-pointer justify-start rounded-full border-none px-4 ring-offset-transparent select-none focus:ring-0 focus:ring-transparent",
-        small && "-ml-2 h-fit w-fit p-2",
+        "bg-input flex h-16 w-full cursor-pointer items-center justify-between rounded-full border-none text-base font-semibold ring-offset-transparent select-none focus:ring-0 focus:ring-transparent has-[>svg]:px-7",
+        small && "-ml-2 h-fit w-fit justify-start gap-1 p-2 has-[>svg]:px-2",
+        small && "text-sm",
       )}
       onClick={() => setOpen(true)}
     >
-      No model selected
+      Choose a model <ChevronDown className="size-5" />
     </Button>
   );
 }
 
-function ModelButton({ small, setOpen }: { small?: boolean; setOpen: Dispatch<SetStateAction<boolean>> }) {
-  const model = useInputState((state) => state.model)!;
+function ModelButton({
+  small,
+  setOpen,
+  model,
+  lastModelState,
+}: {
+  small?: boolean;
+  setOpen: Dispatch<SetStateAction<boolean>>;
+  model: Id<"models">;
+  lastModelState?: Doc<"models">;
+}) {
   const selectedModel = useQuery(api.models.get.one, { model });
-
-  const maxTokens = selectedModel?.text_capabilities?.max_input_tokens ?? 0;
+  const currentSelectedModel = selectedModel ?? lastModelState;
+  const maxTokens = currentSelectedModel?.text_capabilities?.max_input_tokens ?? 0;
 
   return (
     <Button
@@ -95,10 +124,10 @@ function ModelButton({ small, setOpen }: { small?: boolean; setOpen: Dispatch<Se
       type="button"
     >
       <div>
-        {selectedModel ? (
+        {currentSelectedModel ? (
           <div className={cn("relative flex w-full items-center gap-3", small && "gap-2")}>
             <div className={cn("size-7 shrink-0 md:size-9", small && "size-6 md:size-6")}>
-              <ProviderLogo title={selectedModel.title} className="size-full" />
+              <ProviderLogo title={currentSelectedModel.title} className="size-full" />
             </div>
 
             <div className="flex min-w-0 flex-1 flex-col items-start justify-center">
@@ -108,7 +137,7 @@ function ModelButton({ small, setOpen }: { small?: boolean; setOpen: Dispatch<Se
                   small && "text-sm md:text-sm",
                 )}
               >
-                {selectedModel.title}
+                {currentSelectedModel.title}
               </h5>
 
               {!small && (
@@ -126,22 +155,22 @@ function ModelButton({ small, setOpen }: { small?: boolean; setOpen: Dispatch<Se
                   </p>
 
                   <div className="flex items-center gap-1">
-                    {selectedModel?.text_capabilities?.features?.image_input && (
+                    {currentSelectedModel?.text_capabilities?.features?.image_input && (
                       <span>
                         <EyeIcon className="size-[0.8rem] rounded-full text-emerald-300" />
                       </span>
                     )}
-                    {selectedModel?.text_capabilities?.features?.file_input && (
+                    {currentSelectedModel?.text_capabilities?.features?.file_input && (
                       <span>
                         <FileText className="size-[0.8rem] rounded-full text-sky-300" />
                       </span>
                     )}
-                    {selectedModel?.text_capabilities?.features?.tools_input && (
+                    {currentSelectedModel?.text_capabilities?.features?.tools_input && (
                       <span>
                         <Wrench className="size-[0.8rem] rounded-full text-slate-300" />
                       </span>
                     )}
-                    {selectedModel?.text_capabilities?.features?.reasoning_output && (
+                    {currentSelectedModel?.text_capabilities?.features?.reasoning_output && (
                       <span>
                         <BrainIcon className="size-[0.8rem] rounded-full text-purple-300" />
                       </span>

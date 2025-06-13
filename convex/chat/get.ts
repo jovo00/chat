@@ -1,4 +1,3 @@
-import { StreamId } from "@convex-dev/persistent-text-streaming";
 import { ConvexError, v } from "convex/values";
 import { paginationOptsValidator } from "convex/server";
 import { internalQuery, query } from "../_generated/server";

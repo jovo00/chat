@@ -6,7 +6,7 @@ import { Id } from "@gen/dataModel";
 import { Preloaded } from "convex/react";
 import { Fragment, useMemo } from "react";
 import MessageItem from "./message-item";
-import { ServerMessage } from "./assistant";
+import { Assistant } from "./assistant";
 import useChatState from "@/lib/state/chat";
 
 export default function Messages({
@@ -19,7 +19,7 @@ export default function Messages({
   const setStreaming = useChatState((state) => state.setStreaming);
 
   const reversed = useMemo(() => {
-    return messages.results.toReversed();
+    return messages.results?.reverse();
   }, [messages]);
 
   return (
@@ -31,7 +31,7 @@ export default function Messages({
               {message.prompt}
             </MessageItem>
             <MessageItem message={message} isUser={false}>
-              <ServerMessage
+              <Assistant
                 message={message}
                 isDriven={drivenIds.has(message._id)}
                 stopStreaming={() => {

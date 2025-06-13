@@ -1,14 +1,14 @@
 import { preloadPaginatedQuery } from "@/lib/convex/preload";
-import Logo from "../icons/logos/logo";
 import ChatInput from "./input/input";
-import ModelSelect from "./input/model-select";
 import { api } from "@gen/api";
 import { Id } from "@gen/dataModel";
 import Messages from "./message/messages";
+import { getLastModelState } from "@/lib/state/cookies";
 
 export default async function ChatList({ chatId }: { chatId: Id<"chats"> }) {
   const preloadedModels = await preloadPaginatedQuery(api.models.get.many, {}, { initialNumItems: 50 });
   const preloadedMessages = await preloadPaginatedQuery(api.chat.get.messages, { chatId }, { initialNumItems: 25 });
+  const lastModelState = await getLastModelState();
 
   return (
     <>
@@ -17,7 +17,7 @@ export default async function ChatList({ chatId }: { chatId: Id<"chats"> }) {
           <Messages preloadedMessages={preloadedMessages} />
         </div>
       </div>
-      <ChatInput preloadedModels={preloadedModels} chatId={chatId} />
+      <ChatInput preloadedModels={preloadedModels} chatId={chatId} lastModelState={lastModelState} />
     </>
   );
 }
