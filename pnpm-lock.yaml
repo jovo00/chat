@@ -17,9 +17,6 @@ importers:
       '@convex-dev/auth':
         specifier: ^0.0.87
         version: 0.0.87(@auth/core@0.37.4)(convex@1.24.8(react@19.1.0))(react@19.1.0)
-      '@convex-dev/persistent-text-streaming':
-        specifier: ^0.2.3
-        version: 0.2.3(convex@1.24.8(react@19.1.0))(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
       '@hookform/resolvers':
         specifier: ^5.1.1
         version: 5.1.1(react-hook-form@7.57.0(react@19.1.0))
@@ -203,13 +200,6 @@ packages:
     peerDependenciesMeta:
       react:
         optional: true
-
-  '@convex-dev/persistent-text-streaming@0.2.3':
-    resolution: {integrity: sha512-v6by8JB2lXyd+ZBH0I5TOsd98zk+tvmfPt6ofRuxC2GtNkqUpy6F7CdijRaXiGW+ozlUiQyRsBzhvhTUwVUAHg==}
-    peerDependencies:
-      convex: '>=1.23.0 <1.35.0'
-      react: ~18.3.1 || ^19.0.0
-      react-dom: ~18.3.1 || ^19.0.0
 
   '@emnapi/core@0.45.0':
     resolution: {integrity: sha512-DPWjcUDQkCeEM4VnljEOEcXdAD7pp8zSZsgOujk/LGIwCXWbXJngin+MO4zbH429lzeC3WbYLGjE2MaUOwzpyw==}
@@ -2745,12 +2735,6 @@ snapshots:
       server-only: 0.0.1
     optionalDependencies:
       react: 19.1.0
-
-  '@convex-dev/persistent-text-streaming@0.2.3(convex@1.24.8(react@19.1.0))(react-dom@19.1.0(react@19.1.0))(react@19.1.0)':
-    dependencies:
-      convex: 1.24.8(react@19.1.0)
-      react: 19.1.0
-      react-dom: 19.1.0(react@19.1.0)
 
   '@emnapi/core@0.45.0':
     dependencies:
