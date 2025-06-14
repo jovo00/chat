@@ -3,7 +3,7 @@ import { paginationOptsValidator } from "convex/server";
 import { internalQuery, query } from "../_generated/server";
 import { getUser } from "../users/get";
 
-export const chat = internalQuery({
+export const internalChat = internalQuery({
   args: {
     chat: v.id("chats"),
   },
@@ -115,5 +115,20 @@ export const chats = query({
       .withIndex("by_user", (q) => q.eq("user", user._id))
       .order("desc")
       .paginate(args.paginationOpts);
+  },
+});
+
+export const chat = query({
+  args: {
+    chatId: v.id("chats"),
+  },
+  handler: async (ctx, args) => {
+    const user = await getUser(ctx);
+    if (!user) throw new ConvexError("Not authorized");
+
+    const chat = await ctx.db.get(args.chatId);
+    if (chat?.user !== user._id) throw new ConvexError("Not allowed");
+
+    return chat;
   },
 });

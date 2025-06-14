@@ -3,7 +3,7 @@
 import { Button } from "../ui/button";
 import { Ban, ExternalLink, FileIcon, Link, LoaderCircle, RefreshCcw, Trash2 } from "lucide-react";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "../ui/card";
-import { cn } from "@/lib/utils";
+import { cn, getErrorMessage } from "@/lib/utils";
 import { useEffect, useMemo, useState } from "react";
 import { useInView } from "react-intersection-observer";
 import { toast } from "sonner";
@@ -17,11 +17,12 @@ import {
   DialogTrigger,
 } from "../ui/dialog";
 import { DialogClose } from "@radix-ui/react-dialog";
-import { useConvex, useMutation } from "convex/react";
+import { useConvex } from "convex/react";
 import { api } from "@gen/api";
 import { Preloaded, usePreloadedPaginatedQuery } from "@/lib/convex/use-preload";
 import { Doc } from "@gen/dataModel";
 import { ConvexError } from "convex/values";
+import { useMutation } from "@/lib/convex/use-mutation";
 
 export default function FileUploads({ preloadedFiles }: { preloadedFiles: Preloaded<typeof api.files.get.many> }) {
   const convex = useConvex();
@@ -41,7 +42,13 @@ export default function FileUploads({ preloadedFiles }: { preloadedFiles: Preloa
     },
   });
 
-  const deleteFile = useMutation(api.files.delete.one);
+  const deleteFile = useMutation(api.files.delete.one, {
+    onError(e) {
+      toast.error("Could not delete the file", {
+        description: getErrorMessage(e),
+      });
+    },
+  });
 
   async function openFile(file: Doc<"files">) {
     try {
@@ -119,7 +126,11 @@ export default function FileUploads({ preloadedFiles }: { preloadedFiles: Preloa
                             <DialogClose asChild>
                               <Button variant={"ghost"}>Cancel</Button>
                             </DialogClose>
-                            <Button variant={"destructive"} onClick={() => deleteFile({ file: file._id })}>
+                            <Button
+                              variant={"destructive"}
+                              onClick={() => deleteFile.mutate({ file: file._id })}
+                              disabled={deleteFile.isPending}
+                            >
                               Delete
                             </Button>
                           </DialogFooter>

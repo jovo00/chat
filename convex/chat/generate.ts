@@ -14,13 +14,14 @@ export const completeChat = httpAction(async (ctx, request) => {
   const body = (await request.json()) as {
     messageId?: Id<"messages">;
   };
+  let chatId: Id<"chats"> | undefined;
 
   if (body?.messageId) {
     const message = await ctx.runQuery(internal.chat.get.message, {
       message: body.messageId,
     });
 
-    if (!message || message?.user !== user.user._id) {
+    if (!message || message?.user !== user._id) {
       throw new ConvexError("Not allowed to access this chat");
     } else if (message?.status !== "pending") {
       return new Response("", {
@@ -31,7 +32,11 @@ export const completeChat = httpAction(async (ctx, request) => {
         },
       });
     }
+
+    chatId = message.chat;
   }
+
+  if (!chatId) throw new ConvexError("Chat not found");
 
   const messageId = body?.messageId!;
 
@@ -89,6 +94,7 @@ export const completeChat = httpAction(async (ctx, request) => {
 
             await ctx.runMutation(internal.chat.update.updateMessage, {
               messageId,
+              chatId,
               content,
               reasoning,
               status: "error",
@@ -104,6 +110,7 @@ export const completeChat = httpAction(async (ctx, request) => {
 
             await ctx.runMutation(internal.chat.update.updateMessage, {
               messageId,
+              chatId,
               content,
               reasoning,
               status: "done",
@@ -117,6 +124,7 @@ export const completeChat = httpAction(async (ctx, request) => {
         if (incrementalUpdater.cancelled) {
           await ctx.runMutation(internal.chat.update.updateMessage, {
             messageId,
+            chatId,
             content,
             reasoning,
             status: "done",

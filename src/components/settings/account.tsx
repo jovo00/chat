@@ -10,8 +10,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { Form, FormControl, FormField, FormItem, FormMessage } from "@/components/ui/form";
 import { Label } from "@/components/ui/label";
-import { useMutation } from "convex/react";
-import { getInitials } from "@/lib/utils";
+import { getErrorMessage, getInitials } from "@/lib/utils";
 import { PreloadedUser } from "@/lib/auth/server";
 import { api } from "@gen/api";
 import { toast } from "sonner";
@@ -30,6 +29,7 @@ import {
 import { LoaderCircle } from "lucide-react";
 import { useAuthActions } from "@convex-dev/auth/react";
 import { usePreloadedQuery } from "@/lib/convex/use-preload";
+import { useMutation } from "@/lib/convex/use-mutation";
 
 const formSchemaGeneral = z.object({
   name: z.string().min(1).max(100),
@@ -39,8 +39,6 @@ export default function Account({ preloadedUser }: { preloadedUser: PreloadedUse
   const { data: user } = usePreloadedQuery(preloadedUser);
 
   const { signOut } = useAuthActions();
-  const [updating, setUpdating] = useState(false);
-  const [deleting, setDeleting] = useState(false);
 
   const formGeneral = useForm<z.infer<typeof formSchemaGeneral>>({
     resolver: zodResolver(formSchemaGeneral),
@@ -49,39 +47,31 @@ export default function Account({ preloadedUser }: { preloadedUser: PreloadedUse
     },
   });
 
-  const updateUserName = useMutation(api.users.update.one);
+  const updateUserName = useMutation(api.users.update.one, {
+    onError(e) {
+      toast.error("Name could not be updated", { description: getErrorMessage(e) });
+    },
+    onSuccess() {
+      toast.success("Name updated successfully");
+    },
+  });
 
   async function onSubmit(values: z.infer<typeof formSchemaGeneral>) {
-    setUpdating(true);
-    try {
-      await updateUserName({ name: values.name });
-      toast.success("Name updated successfully");
-    } catch (e) {
-      if (e instanceof ConvexError) {
-        toast.error("Name could not be updated", { description: e?.data });
-      } else {
-        toast.error("Name could not be updated", { description: "Please try again later" });
-      }
-    }
-    setUpdating(false);
+    updateUserName.mutate({ name: values.name });
   }
 
-  const deleteAccount = useMutation(api.users.delete.delete_account);
-
-  async function onDelete() {
-    setDeleting(true);
-    try {
-      await deleteAccount();
+  const deleteAccount = useMutation(api.users.delete.delete_account, {
+    onError(e) {
+      toast.error("Account could not be deleted", { description: getErrorMessage(e) });
+    },
+    async onSuccess() {
       await signOut();
       window.location.reload();
-    } catch (e) {
-      if (e instanceof ConvexError) {
-        toast.error("Account could not be deleted", { description: e?.data });
-      } else {
-        toast.error("Account could not be deleted", { description: "Please try again later" });
-      }
-    }
-    setDeleting(false);
+    },
+  });
+
+  async function onDelete() {
+    await deleteAccount.mutate();
   }
 
   return (
@@ -132,7 +122,7 @@ export default function Account({ preloadedUser }: { preloadedUser: PreloadedUse
               />
             </CardContent>
             <CardFooter className="border-t px-6 py-4">
-              <Button type="submit" disabled={updating}>
+              <Button type="submit" disabled={updateUserName.isPending}>
                 Save Changes
               </Button>
             </CardFooter>
@@ -163,8 +153,8 @@ export default function Account({ preloadedUser }: { preloadedUser: PreloadedUse
                   <Button variant={"ghost"}>Cancel</Button>
                 </DialogClose>
 
-                <Button variant={"destructive"} disabled={deleting} className="w-28" onClick={onDelete}>
-                  {deleting ? <LoaderCircle className="repeat-infinite animate-spin" /> : "Delete"}
+                <Button variant={"destructive"} disabled={deleteAccount.isPending} className="w-28" onClick={onDelete}>
+                  {deleteAccount.isPending ? <LoaderCircle className="repeat-infinite animate-spin" /> : "Delete"}
                 </Button>
               </DialogFooter>
             </DialogContent>

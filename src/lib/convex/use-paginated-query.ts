@@ -263,7 +263,6 @@ export function usePaginatedQuery<Query extends PaginatedQueryReference>(
     } as const;
   }, [maybeLastResult, currState.nextPageKey]);
 
-  // Handle error case
   if (error) {
     return {
       results: [],

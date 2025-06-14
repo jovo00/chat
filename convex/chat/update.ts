@@ -27,14 +27,19 @@ export const updateTitle = internalMutation({
 export const updateMessage = internalMutation({
   args: {
     messageId: v.id("messages"),
+    chatId: v.id("chats"),
     content: v.string(),
     status: messageStatus,
     status_message: v.optional(v.string()),
     reasoning: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
-    const { messageId, ...data } = args;
+    const { messageId, chatId, ...data } = args;
     await ctx.db.patch(messageId, data);
+    await ctx.db.patch(chatId, {
+      latest_message_status: data.status,
+      latest_message: messageId,
+    });
   },
 });
 
@@ -43,7 +48,14 @@ export const cancel = mutation({
     messageId: v.id("messages"),
   },
   handler: async (ctx, args) => {
+    const user = await getUser(ctx);
+    if (!user) throw new ConvexError("Not authorized");
+
     const { messageId } = args;
+
+    const message = await ctx.db.get(args.messageId);
+    if (message?.user !== user._id) throw new ConvexError("Not allowed");
+
     await ctx.db.patch(messageId, {
       cancelled: true,
     });

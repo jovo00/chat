@@ -13,11 +13,11 @@ import { Input } from "@/components/ui/input";
 import { MessageSquare } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Doc } from "@gen/dataModel";
-import { useMutation } from "convex/react";
 import { api } from "@gen/api";
-import { ConvexError } from "convex/values";
 import { toast } from "sonner";
 import { useParams, useRouter } from "next/navigation";
+import { useMutation } from "@/lib/convex/use-mutation";
+import { getErrorMessage } from "@/lib/utils";
 
 interface DialogProps {
   open: boolean;
@@ -27,7 +27,6 @@ interface DialogProps {
 
 export function RenameChatDialog({ open, onOpenChange, chat }: DialogProps) {
   const [title, setTitle] = useState(chat?.title ?? "");
-  const [pending, setPending] = useState(false);
 
   useEffect(() => {
     if (open) {
@@ -35,7 +34,12 @@ export function RenameChatDialog({ open, onOpenChange, chat }: DialogProps) {
     }
   }, [open, chat?.title]);
 
-  const renameChat = useMutation(api.chat.update.renameChat);
+  const renameChat = useMutation(api.chat.update.renameChat, {
+    onError(e) {
+      toast.error("Could not rename the chat", { description: getErrorMessage(e) });
+    },
+  });
+
   const handleRename = () => {
     if (title.trim().length === 0) {
       toast.error("Could not rename the chat", { description: "Title cannot be empty" });
@@ -43,16 +47,7 @@ export function RenameChatDialog({ open, onOpenChange, chat }: DialogProps) {
     }
     if (title.trim() === chat?.title) return;
 
-    setPending(true);
-
-    try {
-      renameChat({ chatId: chat._id, newTitle: title });
-    } catch (err) {
-      if (err instanceof ConvexError) {
-        toast.error("Could not rename the chat", { description: err?.data });
-      }
-    }
-    setPending(false);
+    renameChat.mutate({ chatId: chat._id, newTitle: title });
   };
 
   return (
@@ -72,8 +67,8 @@ export function RenameChatDialog({ open, onOpenChange, chat }: DialogProps) {
           <Button variant="ghost" onClick={() => onOpenChange(false)}>
             Cancel
           </Button>
-          <Button onClick={handleRename} disabled={pending}>
-            {pending ? "Renaming..." : "Rename"}
+          <Button onClick={handleRename} disabled={renameChat.isPending}>
+            {renameChat.isPending ? "Renaming..." : "Rename"}
           </Button>
         </DialogFooter>
       </DialogContent>
@@ -83,23 +78,19 @@ export function RenameChatDialog({ open, onOpenChange, chat }: DialogProps) {
 
 export function DeleteChatDialog({ open, onOpenChange, chat }: DialogProps) {
   const { chatId } = useParams();
-  const [pending, setPending] = useState(false);
   const router = useRouter();
 
-  const deleteChat = useMutation(api.chat.delete.one);
+  const deleteChat = useMutation(api.chat.delete.one, {
+    onError(e) {
+      toast.error("Could not delete the chat", { description: getErrorMessage(e) });
+    },
+    onSuccess(result) {
+      router.push("/");
+    },
+  });
 
   const handleDelete = async () => {
-    setPending(true);
-
-    try {
-      await deleteChat({ chat: chat._id });
-      router.push("/");
-    } catch (err) {
-      if (err instanceof ConvexError) {
-        toast.error("Could not delete the chat", { description: err?.data });
-      }
-    }
-    setPending(false);
+    await deleteChat.mutate({ chat: chat._id });
   };
 
   const title = chat?.title && chat?.title?.trim()?.length > 0 ? chat?.title?.trim() : chat?.prompt_short;
@@ -119,8 +110,8 @@ export function DeleteChatDialog({ open, onOpenChange, chat }: DialogProps) {
           <Button variant="ghost" onClick={() => onOpenChange(false)}>
             Cancel
           </Button>
-          <Button variant="destructive" onClick={handleDelete} disabled={pending}>
-            {pending ? "Deleting..." : "Delete"}
+          <Button variant="destructive" onClick={handleDelete} disabled={deleteChat.isPending}>
+            {deleteChat.isPending ? "Deleting..." : "Delete"}
           </Button>
         </DialogFooter>
       </DialogContent>

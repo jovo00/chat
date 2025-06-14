@@ -3,7 +3,7 @@
 import { Button } from "../ui/button";
 import { FileIcon, LoaderCircle, Plus, Trash2 } from "lucide-react";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "../ui/card";
-import { cn } from "@/lib/utils";
+import { cn, getErrorMessage } from "@/lib/utils";
 import { useInView } from "react-intersection-observer";
 import {
   Dialog,
@@ -15,7 +15,6 @@ import {
   DialogTrigger,
 } from "../ui/dialog";
 import { DialogClose } from "@radix-ui/react-dialog";
-import { useAction, useConvex, useMutation } from "convex/react";
 import { api } from "@gen/api";
 import { Preloaded, usePreloadedPaginatedQuery } from "@/lib/convex/use-preload";
 import { useEffect, useMemo, useState } from "react";
@@ -23,6 +22,7 @@ import { OpenRouterModel } from "../../../convex/models/openrouter";
 import ProviderLogo from "../icons/logos/providers";
 import { useOpenRouterModels } from "@/lib/hooks/use-openrouter-models";
 import { toast } from "sonner";
+import { useMutation } from "@/lib/convex/use-mutation";
 
 export default function AdminModels({ preloadedModels }: { preloadedModels: Preloaded<typeof api.models.get.many> }) {
   const models = usePreloadedPaginatedQuery(preloadedModels);
@@ -31,9 +31,17 @@ export default function AdminModels({ preloadedModels }: { preloadedModels: Prel
     return new Set(models.results.map((model) => model.api_id));
   }, [models]);
 
-  const createModel = useMutation(api.models.create.one);
+  const createModel = useMutation(api.models.create.one, {
+    onError(e) {
+      toast.error("Model could not be added", { description: getErrorMessage(e) });
+    },
+  });
 
-  const deleteModel = useMutation(api.models.delete.one);
+  const deleteModel = useMutation(api.models.delete.one, {
+    onError(e) {
+      toast.error("Model could not be deleted", { description: getErrorMessage(e) });
+    },
+  });
 
   const openrouterModels = useOpenRouterModels({
     onError(message) {
@@ -42,7 +50,7 @@ export default function AdminModels({ preloadedModels }: { preloadedModels: Prel
   });
 
   async function addModel(model: OpenRouterModel) {
-    await createModel({
+    await createModel.mutate({
       api: "openrouter",
       api_id: model.id,
       title: model.name,
@@ -124,7 +132,11 @@ export default function AdminModels({ preloadedModels }: { preloadedModels: Prel
                             <DialogClose asChild>
                               <Button variant={"ghost"}>Cancel</Button>
                             </DialogClose>
-                            <Button variant={"destructive"} onClick={() => deleteModel({ model: model._id })}>
+                            <Button
+                              variant={"destructive"}
+                              disabled={deleteModel.isPending}
+                              onClick={() => deleteModel.mutate({ model: model._id })}
+                            >
                               Delete
                             </Button>
                           </DialogFooter>
@@ -149,19 +161,19 @@ export default function AdminModels({ preloadedModels }: { preloadedModels: Prel
 
             <h3 className="mt-4 text-base font-bold">Available Models (OpenRouter)</h3>
             <div className="bg-background flex h-[30rem] max-h-[30rem] w-full flex-col gap-2 overflow-y-auto rounded-xl p-2">
-              {openrouterModels.isLoading && (
+              {openrouterModels.isPending && (
                 <div className="flex h-full w-full items-center justify-center gap-2 py-2 opacity-50">
                   <LoaderCircle className="repeat-infinite size-5 animate-spin" /> Loading models from OpenRouter
                 </div>
               )}
 
-              {!openrouterModels.isLoading && openrouterModels?.data?.length === 0 && (
+              {!openrouterModels.isPending && openrouterModels?.data?.length === 0 && (
                 <div className="flex h-full w-full items-center justify-center text-center text-sm opacity-30">
                   No OpenRouter models found
                 </div>
               )}
 
-              {!openrouterModels.isLoading &&
+              {!openrouterModels.isPending &&
                 openrouterModels?.data.map((model, i) => {
                   return (
                     <div
@@ -178,7 +190,12 @@ export default function AdminModels({ preloadedModels }: { preloadedModels: Prel
                         <h3 className="text-sm font-semibold">{model?.name}</h3>
                         {/* <div className="text-xs opacity-80">{model?.id}</div> */}
                       </div>
-                      <Button variant={"ghost"} size={"icon"} onClick={() => addModel(model)}>
+                      <Button
+                        variant={"ghost"}
+                        size={"icon"}
+                        onClick={() => addModel(model)}
+                        disabled={createModel.isPending}
+                      >
                         <Plus />
                       </Button>
                     </div>

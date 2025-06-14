@@ -1,4 +1,5 @@
 import { clsx, type ClassValue } from "clsx";
+import { ConvexError } from "convex/values";
 import { twMerge } from "tailwind-merge";
 
 export function cn(...inputs: ClassValue[]) {
@@ -101,3 +102,11 @@ export const updateListMargin = (messageRef: React.RefObject<HTMLDivElement | nu
     });
   });
 };
+
+export function getErrorMessage(error: Error) {
+  if (error instanceof ConvexError) {
+    return (error as ConvexError<string>).data;
+  } else {
+    return error?.message;
+  }
+}

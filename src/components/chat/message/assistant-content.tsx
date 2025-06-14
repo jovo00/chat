@@ -40,8 +40,8 @@ function AssistantComponent({
   const currentReasoning =
     (message?.reasoning?.length ?? 0) > (reasoning?.length ?? 0) ? message?.reasoning : reasoning;
 
-  const smoothContent = useSmoothText(currentContent ?? "", { charsPerSec: 512 });
-  const smoothReasoning = useSmoothText(currentReasoning ?? "", { charsPerSec: 512 });
+  const smoothContent = useSmoothText(currentContent ?? "", { charsPerSec: 1024 });
+  const smoothReasoning = useSmoothText(currentReasoning ?? "", { charsPerSec: 1024 });
 
   const isLoading = message.status === "pending" || (message.status === "generating" && status === "pending");
 

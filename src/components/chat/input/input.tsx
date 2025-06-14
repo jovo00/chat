@@ -1,17 +1,19 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
-import { ArrowUp, Square } from "lucide-react";
-import { FormEvent, KeyboardEventHandler, useRef } from "react";
+import { cn, getErrorMessage } from "@/lib/utils";
+import { ArrowUp, LoaderCircle, Square } from "lucide-react";
+import { FormEvent, KeyboardEventHandler, useRef, useState } from "react";
 import TextareaAutosize from "react-textarea-autosize";
 import ModelSelect from "./model-select";
-import { useMutation } from "convex/react";
 import { api } from "@gen/api";
 import useSendMessage from "@/lib/chat/use-send-message";
 import { Doc, Id } from "@gen/dataModel";
 import useChatState from "@/lib/state/chat";
 import { Preloaded } from "@/lib/convex/use-preload";
+import { useMutation } from "@/lib/convex/use-mutation";
+import { toast } from "sonner";
+import { useQuery } from "@/lib/convex/use-query";
 
 export default function ChatInput({
   preloadedModels,
@@ -25,13 +27,19 @@ export default function ChatInput({
   const textInput = useRef<HTMLTextAreaElement>(null);
   const streams = useChatState((state) => state.streaming);
   const messages = useSendMessage(chatId);
+  const { data: chat } = useQuery(api.chat.get.chat, chatId ? { chatId } : "skip");
+  const [cancelling, setCancelling] = useState(false);
 
   const streaming = chatId && streams.has(chatId);
+  const isGenerating =
+    streaming || chat?.latest_message_status === "generating" || chat?.latest_message_status === "pending";
 
   function submitHandler(e: FormEvent) {
     e.preventDefault();
     if (!textInput.current) return;
-    if (streaming) return;
+    if (isGenerating) return;
+
+    setCancelling(false);
 
     const prompt = textInput.current?.value;
     if (!prompt || !prompt?.trim()) return;
@@ -47,19 +55,33 @@ export default function ChatInput({
     }
   };
 
-  const cancelMessage = useMutation(api.chat.update.cancel);
+  const cancelMessage = useMutation(api.chat.update.cancel, {
+    onError(e) {
+      setCancelling(false);
+      toast.error("Could not cancel the generation", {
+        description: getErrorMessage(e),
+      });
+    },
+  });
+
   async function stopHandler() {
-    if (!streaming) return;
+    if (!isGenerating) return;
     if (!chatId) return;
 
-    const messages = streams.get(chatId);
-    if (!messages) return;
+    if (streaming) {
+      setCancelling(true);
+      const messages = streams.get(chatId);
+      if (!messages) return;
 
-    await Promise.allSettled(
-      Array.from(messages).map((message) => {
-        return cancelMessage({ messageId: message });
-      }),
-    );
+      await Promise.allSettled(
+        Array.from(messages).map((message) => {
+          return cancelMessage.mutate({ messageId: message });
+        }),
+      );
+    } else if (chat?.latest_message) {
+      setCancelling(true);
+      return cancelMessage.mutate({ messageId: chat?.latest_message });
+    }
   }
 
   return (
@@ -91,8 +113,17 @@ export default function ChatInput({
             variant="secondary"
             className="size-10 rounded-full"
             onClick={stopHandler}
+            disabled={cancelMessage.isPending}
           >
-            {streaming ? <Square className="h-4 w-4" /> : <ArrowUp className="h-5 w-5" />}
+            {isGenerating ? (
+              cancelMessage.isPending || cancelling ? (
+                <LoaderCircle className="repeat-infinite size-4 animate-spin" />
+              ) : (
+                <Square className="size-4" />
+              )
+            ) : (
+              <ArrowUp className="size-5" />
+            )}
             <span className="sr-only">Send message</span>
           </Button>
         </div>

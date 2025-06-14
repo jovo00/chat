@@ -68,8 +68,11 @@ export default defineSchema({
     user: v.id("users"),
     title: v.optional(v.string()),
     prompt_short: v.string(),
-    last_modified: v.number(),
-  }).index("by_user", ["user"]),
+    latest_message: v.optional(v.id("messages")),
+    latest_message_status: v.optional(messageStatus),
+  })
+    .index("by_user", ["user"])
+    .index("by_chat_and_latest_message_status", ["user", "latest_message_status"]),
 
   messages: defineTable({
     user: v.id("users"),

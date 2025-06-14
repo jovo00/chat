@@ -8,6 +8,8 @@ import { Preloaded, usePreloadedPaginatedQuery } from "@/lib/convex/use-preload"
 import useChatState from "@/lib/state/chat";
 import { Assistant } from "./assistant-content";
 import { User } from "./user-content";
+import ErrorDisplay from "@/components/error";
+import { getErrorMessage } from "@/lib/utils";
 
 interface MessageListProps {
   scrollRef: React.RefObject<HTMLDivElement | null>;
@@ -59,6 +61,15 @@ export const MessageList = memo(function MessageList({ preloadedMessages, scroll
 
   return (
     <>
+      {messages?.isError &&
+        (getErrorMessage(messages?.error) === "Not found" ? (
+          <div className={"flex flex-col items-center justify-center"}>
+            <h3 className="font-special text-lg text-red-500">Not found</h3>
+            <p className="text-center">This chat does not exist</p>
+          </div>
+        ) : (
+          <ErrorDisplay error={messages?.error} />
+        ))}
       {!messages.isLoading && (
         <div ref={inViewRef} className="pointer-events-none z-50 -mb-64 flex min-h-[15em] w-full"></div>
       )}

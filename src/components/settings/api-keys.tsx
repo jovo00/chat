@@ -19,12 +19,14 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { PreloadedUser } from "@/lib/auth/server";
-import { useAction, useMutation } from "convex/react";
 import { api } from "@gen/api";
 import { Doc } from "@gen/dataModel";
 import { ConvexError } from "convex/values";
 import { toast } from "sonner";
 import { Preloaded, usePreloadedQuery } from "@/lib/convex/use-preload";
+import { useMutation } from "@/lib/convex/use-mutation";
+import { getErrorMessage } from "@/lib/utils";
+import { useAction } from "@/lib/convex/use-action";
 
 function KeyInput({
   provider,
@@ -41,53 +43,44 @@ function KeyInput({
 
   const [override, setOverride] = useState(false);
   const [keyValue, setKeyValue] = useState("");
-  const [loading, setLoading] = useState(false);
 
-  const setToken = useAction(api.tokens.actions.setToken);
-  const unsetToken = useMutation(api.tokens.update.unset);
+  const setToken = useAction(api.tokens.actions.setToken, {
+    onSuccess(result) {
+      setKeyValue("");
+      setOverride(false);
+      toast.success(`${label} API Key set successfully`);
+    },
+    onError(e) {
+      toast.error("API Key could not be set", { description: getErrorMessage(e) });
+    },
+  });
+
+  const unsetToken = useMutation(api.tokens.update.unset, {
+    onError(e) {
+      toast.error("API Key could not be deleted", { description: getErrorMessage(e) });
+    },
+    onSuccess() {
+      toast.success(`${label} API Key deleted`);
+    },
+  });
 
   const apiKey = tokens?.find((key) => key.provider === provider);
 
   useEffect(() => {
     if (override) {
       setKeyValue("");
-      setLoading(false);
     }
   }, [override]);
 
   async function onSubmit(e: FormEvent<HTMLFormElement> | FormEvent<HTMLButtonElement>) {
     e.preventDefault();
-    setLoading(true);
-    try {
-      await setToken({ provider, token: keyValue });
-      setKeyValue("");
-      setOverride(false);
-      toast.success(`${label} API Key set successfully`);
-    } catch (e) {
-      if (e instanceof ConvexError) {
-        toast.error("API Key could not be set", { description: e?.data });
-      } else {
-        toast.error("API Key could not be set", { description: "Please try again later" });
-      }
-    }
-    setLoading(false);
+    await setToken.run({ provider, token: keyValue });
   }
 
   async function deleteApiKey() {
     if (!apiKey) return;
 
-    setLoading(true);
-    try {
-      await unsetToken({ token: apiKey._id });
-      toast.success(`${label} API Key deleted`);
-    } catch (e) {
-      if (e instanceof ConvexError) {
-        toast.error("API Key could not be deleted", { description: e?.data });
-      } else {
-        toast.error("API Key could not be deleted", { description: "Please try again later" });
-      }
-    }
-    setLoading(false);
+    await unsetToken.mutate({ token: apiKey._id });
   }
 
   return (
@@ -138,7 +131,12 @@ function KeyInput({
                         </Button>
                       </DialogClose>
                       <DialogClose>
-                        <Button type="button" variant="destructive" onClick={deleteApiKey}>
+                        <Button
+                          type="button"
+                          variant="destructive"
+                          onClick={deleteApiKey}
+                          disabled={unsetToken.isPending}
+                        >
                           Delete
                         </Button>
                       </DialogClose>
@@ -160,8 +158,8 @@ function KeyInput({
       </CardContent>
       {(!providers?.includes(provider) || override) && (
         <CardFooter className="gap-2 border-none px-6 py-4">
-          <Button type="submit" onClick={onSubmit} disabled={loading || keyValue?.trim()?.length === 0}>
-            {loading ? <LoaderCircle className="h-5 w-5 animate-spin" /> : "Save"}
+          <Button type="submit" onClick={onSubmit} disabled={setToken.isPending || keyValue?.trim()?.length === 0}>
+            {setToken.isPending ? <LoaderCircle className="h-5 w-5 animate-spin" /> : "Save"}
           </Button>
           {providers?.includes(provider) && override && (
             <>

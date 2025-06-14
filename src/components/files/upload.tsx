@@ -1,10 +1,10 @@
 "use client";
 
+import { useMutation } from "@/lib/convex/use-mutation";
 import { usePaginatedQuery } from "@/lib/convex/use-paginated-query";
 import { useAuthToken } from "@convex-dev/auth/react";
 import { api } from "@gen/api";
 import { Doc, Id } from "@gen/dataModel";
-import { useMutation } from "convex/react";
 import { FormEvent, useRef, useState } from "react";
 
 export default function UploadTest() {
@@ -83,7 +83,7 @@ export default function UploadTest() {
               e.preventDefault();
             }}
             onDoubleClick={async () => {
-              await deleteMutation({ file: file._id });
+              await deleteMutation.mutate({ file: file._id });
             }}
           >
             {file.name}

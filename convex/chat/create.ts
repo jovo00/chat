@@ -26,8 +26,8 @@ export const one = mutation({
     if (!chatId) {
       chatId = await ctx.db.insert("chats", {
         user: user._id,
-        last_modified: Date.now(),
         prompt_short: args.prompt.slice(0, 100),
+        latest_message_status: "pending",
       });
 
       const token = await ctx.db
@@ -42,6 +42,12 @@ export const one = mutation({
           encryptedToken: token.token,
         });
       }
+    } else {
+      const chat = await ctx.db.get(chatId);
+      if (!chat) throw new ConvexError("Chat does not exist");
+
+      if (chat.latest_message_status === "pending" || chat.latest_message_status === "generating")
+        throw new ConvexError("Can only generate one message at a time");
     }
 
     const messageId = await ctx.db.insert("messages", {
@@ -55,6 +61,8 @@ export const one = mutation({
       files: [],
       cancelled: false,
     });
+
+    await ctx.db.patch(chatId, { latest_message: messageId });
 
     return { messageId, chatId };
   },
@@ -161,6 +169,11 @@ export const assistantMessage = internalMutation({
 
     await ctx.db.patch(message._id, {
       status: "generating",
+    });
+
+    await ctx.db.patch(message.chat, {
+      latest_message_status: "generating",
+      latest_message: message._id,
     });
 
     context.reverse();

@@ -5,4 +5,4 @@ export async function preloadUser() {
   return await preloadQuery(api.users.get.current);
 }
 
-export type PreloadedUser = Awaited<ReturnType<typeof preloadUser> & { role?: string }>;
+export type PreloadedUser = Awaited<ReturnType<typeof preloadUser>>;
