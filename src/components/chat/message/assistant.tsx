@@ -19,7 +19,7 @@ export function Assistant({
   isDriven: boolean;
   stopStreaming: () => void;
 }) {
-  const { text, status } = useStream(message._id, isDriven);
+  const { content, reasoning, status } = useStream(message._id, isDriven);
 
   const isCurrentlyStreaming = useMemo(() => {
     if (!isDriven) return false;
@@ -32,14 +32,17 @@ export function Assistant({
     stopStreaming();
   }, [isDriven, isCurrentlyStreaming, stopStreaming]);
 
-  const content = (message?.content?.length ?? 0 > text.length) ? message?.content : text;
+  const currentContent = (message?.content?.length ?? 0 > content.length) ? message?.content : content;
+  const currentReasoning =
+    (message?.reasoning?.length ?? 0) > (reasoning?.length ?? 0) ? message?.reasoning : reasoning;
 
   return (
     <div className="md-answer">
+      {currentReasoning && <div className="opacity-50">Reasoning: {currentReasoning}</div>}
       {message.status === "pending" || (message.status === "generating" && status === "pending") ? (
         <Loader />
       ) : (
-        <Markdown>{content}</Markdown>
+        <Markdown>{currentContent}</Markdown>
       )}
       {status === "error" && <div className="mt-2 text-red-500">Error loading response</div>}
       {message.cancelled && <div className="mt-2 text-red-500">Generation stopped by the user</div>}

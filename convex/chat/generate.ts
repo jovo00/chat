@@ -70,7 +70,7 @@ export const completeChat = httpAction(async (ctx, request) => {
         switch (part.type) {
           case "text-delta": {
             content += part.textDelta;
-            controller.enqueue(encoder.encode(part.textDelta));
+            controller.enqueue(encoder.encode(encodeData(dataTypes.CONTENT, part.textDelta)));
             await incrementalUpdater.update(part.textDelta);
             break;
           }
@@ -80,7 +80,7 @@ export const completeChat = httpAction(async (ctx, request) => {
             } else {
               reasoning += part.textDelta;
             }
-            controller.enqueue(encoder.encode(part.textDelta));
+            controller.enqueue(encoder.encode(encodeData(dataTypes.REASONING, part.textDelta)));
             await incrementalUpdater.update(undefined, part.textDelta);
             break;
           }
@@ -138,6 +138,17 @@ export const completeChat = httpAction(async (ctx, request) => {
     },
   });
 });
+
+export const dataTypes = {
+  CONTENT: "c",
+  REASONING: "r",
+};
+
+export const validDataTypes = Object.values(dataTypes);
+
+function encodeData(dataType: string, data: any) {
+  return `${dataType}:${JSON.stringify(data)}\n`;
+}
 
 class IncrementalUpdater {
   ctx: GenericActionCtx<any>;

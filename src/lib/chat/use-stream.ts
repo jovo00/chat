@@ -8,6 +8,7 @@ import { FunctionReference } from "convex/server";
 import { Id } from "@gen/dataModel";
 import { useAuthToken } from "@convex-dev/auth/react";
 import { api } from "@gen/api";
+import { dataTypes, validDataTypes } from "../../../convex/chat/generate";
 
 export type StreamStatus = "pending" | "done" | "error" | "streaming";
 
@@ -16,7 +17,8 @@ export function useStream(messageId: Id<"messages">, driven: boolean) {
   const [streamEnded, setStreamEnded] = useState(null as boolean | null);
   const streamStarted = useRef(false);
 
-  const [streamBody, setStreamBody] = useState<string>("");
+  const [content, setContent] = useState<string>("");
+  const [reasoning, setReasoning] = useState<string | null>("");
 
   useEffect(() => {
     if (driven && messageId && !streamStarted.current) {
@@ -24,7 +26,19 @@ export function useStream(messageId: Id<"messages">, driven: boolean) {
         const success = await startStreaming(
           messageId,
           (text) => {
-            setStreamBody((prev) => prev + text);
+            text.split("\n").forEach((part) => {
+              if (!part) return;
+
+              const decoded = decodeData(part);
+              switch (decoded.dataType) {
+                case dataTypes.CONTENT:
+                  setContent((prev) => prev + decoded.data);
+                  break;
+                case dataTypes.REASONING:
+                  setReasoning((prev) => prev + decoded.data);
+                  break;
+              }
+            });
           },
           {
             Authorization: `Bearer ${authToken}`,
@@ -42,15 +56,16 @@ export function useStream(messageId: Id<"messages">, driven: boolean) {
   const body = useMemo(() => {
     let status: StreamStatus;
     if (streamEnded === null) {
-      status = streamBody.length > 0 ? "streaming" : "pending";
+      status = content.length > 0 ? "streaming" : "pending";
     } else {
       status = streamEnded ? "done" : "error";
     }
     return {
-      text: streamBody,
+      content,
+      reasoning,
       status: status as StreamStatus,
     };
-  }, [streamBody, streamEnded]);
+  }, [content, reasoning, streamEnded]);
 
   return body;
 }
@@ -96,3 +111,31 @@ async function startStreaming(
     }
   }
 }
+
+export const decodeData = (text: string) => {
+  const separatorIndex = text.indexOf(":");
+
+  if (separatorIndex === -1) {
+    console.log(text);
+    throw new Error("Failed to parse text");
+  }
+
+  const dataType = text.slice(0, separatorIndex);
+
+  if (!validDataTypes.includes(dataType)) {
+    throw new Error(`Failed to parse text. Invalid dataType ${dataType}.`);
+  }
+
+  const textValue = text.slice(separatorIndex + 1);
+  console.log(textValue);
+  const jsonValue = JSON.parse(textValue);
+
+  switch (dataType) {
+    case dataTypes.CONTENT:
+      return { dataType, data: jsonValue as string };
+    case dataTypes.REASONING:
+      return { dataType, data: jsonValue as string };
+    default:
+      return { dataType: undefined, data: jsonValue };
+  }
+};
