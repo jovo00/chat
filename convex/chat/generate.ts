@@ -54,9 +54,14 @@ export const completeChat = httpAction(async (ctx, request) => {
 
   const messageId = body?.messageId!;
 
-  const { context } = await ctx.runMutation(internal.chat.create.assistantMessage, {
+  const { context, token } = await ctx.runMutation(internal.chat.create.assistantMessage, {
     messageId: messageId,
   });
+
+  const decryptedToken = await ctx.runAction(internal.tokens.actions.decryptToken, { encryptedToken: token.token });
+
+  // const apiKey = decryptString(token.token);
+  // console.log(apiKey);
 
   const encoder = new TextEncoder();
   const readableStream = new ReadableStream({

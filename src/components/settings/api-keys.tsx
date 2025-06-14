@@ -19,7 +19,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { PreloadedUser } from "@/lib/auth/server";
-import { Preloaded, useMutation, usePreloadedQuery } from "convex/react";
+import { Preloaded, useAction, useMutation, usePreloadedQuery } from "convex/react";
 import { api } from "@gen/api";
 import { Doc } from "@gen/dataModel";
 import { ConvexError } from "convex/values";
@@ -42,7 +42,7 @@ function KeyInput({
   const [keyValue, setKeyValue] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const setToken = useMutation(api.tokens.update.set);
+  const setToken = useAction(api.tokens.actions.setToken);
   const unsetToken = useMutation(api.tokens.update.unset);
 
   const apiKey = tokens.find((key) => key.provider === provider);

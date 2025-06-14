@@ -1,7 +1,6 @@
 import { internalMutation, mutation } from "../_generated/server";
 import { ConvexError, v } from "convex/values";
 import { getUser } from "../users/get";
-import { PaginationOptions } from "convex/server";
 import { Doc } from "../_generated/dataModel";
 import { internal } from "../_generated/api";
 
@@ -52,6 +51,12 @@ export const assistantMessage = internalMutation({
     const model = await ctx.db.get(message.model);
     if (!model) throw new ConvexError("No model selected");
 
+    const token = await ctx.db
+      .query("tokens")
+      .withIndex("by_user_and_provider", (q) => q.eq("user", message.user).eq("provider", model.api))
+      .first();
+    if (!token) throw new ConvexError(`No token for ${model.api} found`);
+
     let context = [];
 
     const maxContextTokenCount = Math.min(20000, (model?.text_capabilities?.max_input_tokens ?? Infinity) / 2);
@@ -87,7 +92,7 @@ export const assistantMessage = internalMutation({
       status: "generating",
     });
 
-    return { context };
+    return { context, token };
   },
 });
 

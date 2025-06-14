@@ -1,10 +1,10 @@
-import { mutation } from "../_generated/server";
+import { internalMutation, mutation } from "../_generated/server";
 import { ConvexError, v } from "convex/values";
 import { getUser } from "../users/get";
 import { tokenProviders } from "../schema";
 // import { encryptString } from "../encryption";
 
-export const set = mutation({
+export const set = internalMutation({
   args: {
     provider: tokenProviders,
     token: v.string(),
