@@ -57,8 +57,8 @@ export function RenameChatDialog({ open, onOpenChange, chat }: DialogProps) {
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="bg-muted max-w-[min(32rem,calc(100vw-1rem))] rounded-xl border-none sm:rounded-xl">
-        <DialogHeader className="mb-2 text-left">
+      <DialogContent>
+        <DialogHeader>
           <DialogTitle>Rename Chat</DialogTitle>
         </DialogHeader>
         <Input
@@ -68,8 +68,8 @@ export function RenameChatDialog({ open, onOpenChange, chat }: DialogProps) {
           className="bg-accent ring-offset-muted rounded-full px-4 text-white"
           placeholder="Enter a new title..."
         />
-        <DialogFooter className="flex-row gap-2 pt-2 sm:justify-end">
-          <Button variant="ghost" className="bg-accent hover:bg-accent/80" onClick={() => onOpenChange(false)}>
+        <DialogFooter>
+          <Button variant="ghost" onClick={() => onOpenChange(false)}>
             Cancel
           </Button>
           <Button onClick={handleRename} disabled={pending}>
@@ -93,6 +93,7 @@ export function DeleteChatDialog({ open, onOpenChange, chat }: DialogProps) {
 
     try {
       await deleteChat({ chat: chat._id });
+      router.push("/");
     } catch (err) {
       if (err instanceof ConvexError) {
         toast.error("Could not delete the chat", { description: err?.data });
@@ -101,22 +102,24 @@ export function DeleteChatDialog({ open, onOpenChange, chat }: DialogProps) {
     setPending(false);
   };
 
+  const title = chat?.title && chat?.title?.trim()?.length > 0 ? chat?.title?.trim() : chat?.prompt_short;
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="bg-muted max-w-[min(32rem,calc(100vw-1rem))] rounded-xl border-none sm:rounded-xl">
-        <DialogHeader className="mb-2 text-left">
+      <DialogContent>
+        <DialogHeader>
           <DialogTitle>Delete Chat</DialogTitle>
           <DialogDescription>Are you sure you want to delete this chat?</DialogDescription>
         </DialogHeader>
-        <div className="bg-accent my-2 flex h-10 w-full max-w-full items-center gap-2 rounded-full px-5 font-medium text-white">
+        <div className="bg-accent my-2 flex h-10 w-full max-w-full items-center gap-2 overflow-hidden rounded-full px-5 font-medium text-white">
           <MessageSquare className="h-4 w-4 shrink-0" />
-          <span className="grow-0 overflow-hidden text-sm text-ellipsis whitespace-nowrap">{chat?.title}</span>
+          <span className="grow-0 overflow-hidden text-sm text-ellipsis whitespace-nowrap">{title}</span>
         </div>
-        <DialogFooter className="flex-row gap-2 sm:justify-start">
-          <Button className="bg-accent hover:bg-accent/80 w-full" variant="ghost" onClick={() => onOpenChange(false)}>
+        <DialogFooter>
+          <Button variant="ghost" onClick={() => onOpenChange(false)}>
             Cancel
           </Button>
-          <Button className="w-full" variant="destructive" onClick={handleDelete} disabled={pending}>
+          <Button variant="destructive" onClick={handleDelete} disabled={pending}>
             {pending ? "Deleting..." : "Delete"}
           </Button>
         </DialogFooter>

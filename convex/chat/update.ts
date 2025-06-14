@@ -14,6 +14,16 @@ export const updateContent = internalMutation({
   },
 });
 
+export const updateTitle = internalMutation({
+  args: {
+    chatId: v.id("chats"),
+    title: v.string(),
+  },
+  handler: async (ctx, args) => {
+    await ctx.db.patch(args.chatId, { title: args.title });
+  },
+});
+
 export const updateMessage = internalMutation({
   args: {
     messageId: v.id("messages"),

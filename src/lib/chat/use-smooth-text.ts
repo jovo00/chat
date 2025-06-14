@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 
-const FPS = 20;
+const FPS = 30;
 const MS_PER_FRAME = 1000 / FPS;
 const MAX_TIME_JUMP_MS = 250;
 /**

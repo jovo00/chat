@@ -37,86 +37,37 @@ export const UserWrapper = React.memo(function UserMessage({
   };
 
   return (
-    <ContextMenu>
-      <ContextMenuTrigger
-        className={cn(
-          "group bg-card relative flex w-fit max-w-[85%] items-start self-end rounded-4xl px-2",
-          messageIsHidden && "opacity-60",
-        )}
-      >
-        {messageIsHidden ? (
-          <Accordion type="single" collapsible className="w-full">
-            <AccordionItem value="user-message" className="w-full border-none px-4">
-              <AccordionTrigger className="flex items-center justify-between hover:no-underline">
-                <span className="flex items-center gap-2 pr-4 text-left">
-                  <X className="inline size-4 shrink-0" /> Message removed from context
-                </span>
-              </AccordionTrigger>
-              <AccordionContent className="flex w-full flex-1 flex-col p-4 pt-1 text-base hyphens-auto">
-                {children}
-              </AccordionContent>
-            </AccordionItem>
-          </Accordion>
-        ) : (
-          <div className="flex w-full flex-1 flex-col gap-2 p-4 text-base hyphens-auto">{children}</div>
-        )}
-      </ContextMenuTrigger>
-      <ContextMenuContent className="rounded-[1.2rem] p-1">
-        <ContextMenuItem className="flex items-center gap-2 rounded-full" onClick={handleCopy}>
-          <Copy className="size-3" /> Copy
-        </ContextMenuItem>
-        <ContextMenuItem className="flex items-center gap-2 rounded-full" onClick={handleToggleContext}>
-          {messageIsHidden ? <Plus className="size-3" /> : <X className="size-3" />}
-          {messageIsHidden ? "Add to context" : "Remove from context"}
-        </ContextMenuItem>
-      </ContextMenuContent>
-    </ContextMenu>
-  );
-});
-
-export const UserMessageContent = React.memo(function UserMessageContent({
-  text,
-  files,
-  token,
-}: {
-  text: string;
-  files?: Doc<"files">[];
-  token?: string;
-}) {
-  return (
-    <p className="max-w-full overflow-x-hidden break-words hyphens-auto">
-      {/* {(files?.length ?? 0) > 0 && (
-        <div className="mb-2 flex w-full flex-wrap gap-1">
-          {files?.map((file: RecordModel) => (
-            <a
-              href={pb.files.getURL(file, file.file, { token })}
-              key={file.id}
-              className="bg-accent flex max-w-56 items-center gap-2 rounded-full py-1 pr-3 pl-1 transition-colors hover:bg-white/10"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              {token && !file?.name?.endsWith(".pdf") ? (
-                <img
-                  src={pb.files.getURL(file, file.file, {
-                    token,
-                    thumb: "100x100",
-                  })}
-                  alt={file.name}
-                  className="size-6 shrink-0 rounded-full"
-                />
-              ) : (
-                <div className="bg-popover flex size-6 shrink-0 items-center justify-center rounded-full">
-                  <FileIcon className="size-4" />
-                </div>
-              )}
-              <div className="w-full overflow-hidden text-sm font-medium text-ellipsis whitespace-nowrap">
-                {file.name}
-              </div>
-            </a>
-          ))}
-        </div>
-      )} */}
-      {text}
-    </p>
+    <div
+      className={cn(
+        "group bg-card relative flex w-fit max-w-[85%] items-start self-end rounded-4xl px-2",
+        messageIsHidden && "opacity-60",
+      )}
+    >
+      {messageIsHidden ? (
+        <Accordion type="single" collapsible className="w-full">
+          <AccordionItem value="user-message" className="w-full border-none px-4">
+            <AccordionTrigger className="flex items-center justify-between hover:no-underline">
+              <span className="flex items-center gap-2 pr-4 text-left">
+                <X className="inline size-4 shrink-0" /> Message removed from context
+              </span>
+            </AccordionTrigger>
+            <AccordionContent className="flex w-full flex-1 flex-col p-4 pt-1 text-base hyphens-auto">
+              {children}
+            </AccordionContent>
+          </AccordionItem>
+        </Accordion>
+      ) : (
+        <div className="flex w-full flex-1 flex-col gap-2 p-4 text-base hyphens-auto">{children}</div>
+      )}
+    </div>
+    // <ContextMenuContent className="rounded-[1.2rem] p-1">
+    //   <ContextMenuItem className="flex items-center gap-2 rounded-full" onClick={handleCopy}>
+    //     <Copy className="size-3" /> Copy
+    //   </ContextMenuItem>
+    //   <ContextMenuItem className="flex items-center gap-2 rounded-full" onClick={handleToggleContext}>
+    //     {messageIsHidden ? <Plus className="size-3" /> : <X className="size-3" />}
+    //     {messageIsHidden ? "Add to context" : "Remove from context"}
+    //   </ContextMenuItem>
+    // </ContextMenuContent>
   );
 });

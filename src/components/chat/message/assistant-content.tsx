@@ -10,6 +10,7 @@ import { AssistantMessageWrapper } from "./assistant-wrapper";
 import { ReasoningAccordion } from "./reasoning";
 import MessageContent from "./content";
 import { MessageStatus } from "./status";
+import { useSmoothText } from "@/lib/chat/use-smooth-text";
 
 function AssistantComponent({
   message,
@@ -38,6 +39,10 @@ function AssistantComponent({
   const currentContent = (message?.content?.length ?? 0 > content.length) ? message?.content : content;
   const currentReasoning =
     (message?.reasoning?.length ?? 0) > (reasoning?.length ?? 0) ? message?.reasoning : reasoning;
+
+  const smoothContent = useSmoothText(currentContent ?? "", { charsPerSec: 512 });
+  const smoothReasoning = useSmoothText(currentReasoning ?? "", { charsPerSec: 512 });
+
   const isLoading = message.status === "pending" || (message.status === "generating" && status === "pending");
 
   const messageRef = useRef<HTMLDivElement | null>(null);
@@ -53,7 +58,7 @@ function AssistantComponent({
       <AssistantMessageWrapper message={message}>
         <div ref={messageRef} className="message flex w-full max-w-full flex-1 grow-0 flex-col gap-4">
           {(message?.reasoning || reasoning) && (
-            <ReasoningAccordion reasoning={currentReasoning} isReasoning={!!currentReasoning} />
+            <ReasoningAccordion reasoning={smoothReasoning[0]} isReasoning={!!currentReasoning} />
           )}
 
           {isLoading ? (
@@ -62,7 +67,7 @@ function AssistantComponent({
             </div>
           ) : (
             <>
-              {currentContent && <MessageContent markdown={currentContent} />}
+              {currentContent && <MessageContent markdown={smoothContent[0]} />}
               <MessageStatus
                 status={message?.status}
                 statusMessage={message?.status_message}

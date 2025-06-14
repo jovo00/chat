@@ -36,44 +36,38 @@ function AssistantMessageWrapperComponent({
 
   if (message?.hide) {
     return (
-      <ContextMenu>
-        <ContextMenuTrigger className="w-[calc(100%-2rem)]">
-          <Accordion
-            type="single"
-            collapsible
-            className="group relative flex w-[calc(100%-1rem)] items-start opacity-60"
-          >
-            <AccordionItem value="user-message" className="w-full border-none px-4">
-              <AccordionTrigger className="flex items-center justify-between pb-0 hover:no-underline">
-                <span className="flex items-center gap-2 text-left">
-                  <X className="size-4" /> Message removed from context
-                </span>
-              </AccordionTrigger>
-              <AccordionContent className="w-full">{children}</AccordionContent>
-            </AccordionItem>
-          </Accordion>
-        </ContextMenuTrigger>
-        <ContextMenuContent className="rounded-[1.2rem] p-1">
-          <ContextMenuItem className="flex items-center gap-2 rounded-full" onClick={handleToggleContext}>
-            <Plus className="size-3" /> Add to context
-          </ContextMenuItem>
-        </ContextMenuContent>
-      </ContextMenu>
+      <div className="w-[calc(100%-2rem)]">
+        <Accordion type="single" collapsible className="group relative flex w-[calc(100%-1rem)] items-start opacity-60">
+          <AccordionItem value="user-message" className="w-full border-none px-4">
+            <AccordionTrigger className="flex items-center justify-between pb-0 hover:no-underline">
+              <span className="flex items-center gap-2 text-left">
+                <X className="size-4" /> Message removed from context
+              </span>
+            </AccordionTrigger>
+            <AccordionContent className="w-full">{children}</AccordionContent>
+          </AccordionItem>
+        </Accordion>
+      </div>
+      // <ContextMenuContent className="rounded-[1.2rem] p-1">
+      //   <ContextMenuItem className="flex items-center gap-2 rounded-full" onClick={handleToggleContext}>
+      //     <Plus className="size-3" /> Add to context
+      //   </ContextMenuItem>
+      // </ContextMenuContent>
     );
   }
 
   return (
-    <ContextMenu>
-      <ContextMenuTrigger className="w-full">{children}</ContextMenuTrigger>
-      <ContextMenuContent className="rounded-[1.2rem] p-1">
-        <ContextMenuItem className="flex items-center gap-2 rounded-full" onClick={handleCopy}>
-          <Copy className="size-3" /> Copy
-        </ContextMenuItem>
-        <ContextMenuItem className="flex items-center gap-2 rounded-full" onClick={handleToggleContext}>
-          <X className="size-3" /> Remove from context
-        </ContextMenuItem>
-      </ContextMenuContent>
-    </ContextMenu>
+    // <ContextMenu>
+    <div className="w-full">{children}</div>
+    //   <ContextMenuContent className="rounded-[1.2rem] p-1">
+    //     <ContextMenuItem className="flex items-center gap-2 rounded-full" onClick={handleCopy}>
+    //       <Copy className="size-3" /> Copy
+    //     </ContextMenuItem>
+    //     <ContextMenuItem className="flex items-center gap-2 rounded-full" onClick={handleToggleContext}>
+    //       <X className="size-3" /> Remove from context
+    //     </ContextMenuItem>
+    //   </ContextMenuContent>
+    // </ContextMenu>
   );
 }
 

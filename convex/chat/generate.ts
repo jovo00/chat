@@ -1,7 +1,7 @@
-import { httpAction } from "../_generated/server";
+import { httpAction, internalAction } from "../_generated/server";
 import { api, internal } from "../_generated/api";
 // import { OpenAI } from "openai";
-import { ConvexError } from "convex/values";
+import { ConvexError, v } from "convex/values";
 import { Id } from "../_generated/dataModel";
 import { createOpenRouter } from "@openrouter/ai-sdk-provider";
 import { LanguageModel, streamText } from "ai";

@@ -58,7 +58,7 @@ export function ChatActions({ onRename, onDelete, isActive, menuOpen, onOpenChan
               variant={"destructive"}
               className="mt-2 h-12"
             >
-              <Trash2 className="mr-2 h-4 w-4" strokeWidth={1.5} /> Delete
+              <Trash2 className="text-destructive mr-2 h-4 w-4" strokeWidth={1.5} /> Delete
             </Button>
           </DrawerClose>
         </DrawerContent>
@@ -87,7 +87,7 @@ export function ChatActions({ onRename, onDelete, isActive, menuOpen, onOpenChan
             onDelete();
           }}
         >
-          <Trash2 className="mr-2 h-4 w-4" strokeWidth={1.5} /> Delete
+          <Trash2 className="mr-2 h-4 w-4 text-red-500" strokeWidth={1.5} /> Delete
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

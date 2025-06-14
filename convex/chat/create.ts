@@ -1,9 +1,14 @@
-import { internalMutation, mutation } from "../_generated/server";
+import { internalAction, internalMutation, mutation } from "../_generated/server";
 import { ConvexError, v } from "convex/values";
 import { getUser } from "../users/get";
 import { Doc } from "../_generated/dataModel";
 import { internal } from "../_generated/api";
-import { CoreMessage, Message } from "ai";
+import { CoreMessage, generateText, LanguageModel, Message, streamText } from "ai";
+import { createOpenRouter } from "@openrouter/ai-sdk-provider";
+
+function limitString(str: string, limit: number) {
+  return str.length > limit ? str.substring(0, limit).trim() + "..." : str;
+}
 
 export const one = mutation({
   args: {
@@ -12,6 +17,8 @@ export const one = mutation({
     model: v.id("models"),
   },
   handler: async (ctx, args) => {
+    if (args.prompt.trim().length === 0) throw new ConvexError("Prompt cannot be empty");
+
     const user = await getUser(ctx);
     if (!user) throw new ConvexError("Not authorized");
 
@@ -22,6 +29,19 @@ export const one = mutation({
         last_modified: Date.now(),
         prompt_short: args.prompt.slice(0, 100),
       });
+
+      const token = await ctx.db
+        .query("tokens")
+        .withIndex("by_user_and_provider", (q) => q.eq("user", user._id).eq("provider", "openrouter"))
+        .first();
+
+      if (token && chatId) {
+        ctx.scheduler.runAfter(0, internal.chat.create.generateTitle, {
+          prompt: limitString(args.prompt, 5000),
+          chat: chatId,
+          encryptedToken: token.token,
+        });
+      }
     }
 
     const messageId = await ctx.db.insert("messages", {
@@ -37,6 +57,45 @@ export const one = mutation({
     });
 
     return { messageId, chatId };
+  },
+});
+
+export const generateTitle = internalAction({
+  args: {
+    chat: v.id("chats"),
+    encryptedToken: v.string(),
+    prompt: v.string(),
+  },
+  async handler(ctx, args) {
+    const decryptedToken = await ctx.runAction(internal.tokens.actions.decryptToken, {
+      encryptedToken: args.encryptedToken,
+    });
+
+    const openrouter = createOpenRouter({
+      apiKey: decryptedToken,
+    });
+
+    const result = await generateText({
+      model: openrouter("google/gemini-flash-1.5-8b"),
+      messages: [
+        {
+          role: "system",
+          content:
+            "Write a short title for the following prompt snippet. Use 3 to 4 words. Use the language of the prompt. Don't be too creative, keep it simple and descriptive. Use simple worlds, be casual. Be as concise as possible. If the prompt is too short or unclear, don't ask for more information. You MUST always return a headline. Don't mention that it is a prompt or that you are writing a headline for a prompt. Don't use quotes.",
+        },
+        {
+          role: "user",
+          content: "Write a title for the following prompt snippet:\n\n" + args.prompt,
+        },
+      ],
+    });
+
+    if (result.text) {
+      await ctx.runMutation(internal.chat.update.updateTitle, {
+        chatId: args.chat,
+        title: result.text,
+      });
+    }
   },
 });
 
