@@ -85,8 +85,9 @@ export default defineSchema({
     reasoning: v.optional(v.string()),
     annotations: v.optional(v.array(v.any())),
   })
-    .index("by_user_and_chat", ["user", "chat"])
-    .index("by_chat", ["chat"]),
+    .index("by_user_and_chat", ["user", "chat", "hide"])
+    .index("by_chat", ["chat"])
+    .index("by_chat_and_hide", ["chat", "hide"]),
 
   files: defineTable({
     storage: v.id("_storage"),

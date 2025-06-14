@@ -14,12 +14,10 @@ export default async function ChatList({ chatId }: { chatId: Id<"chats"> }) {
 
   return (
     <>
-      <div className="h-auto w-full flex-1 overflow-y-auto">
-        <div className="flex h-full w-full flex-col items-center">
-          <ErrorBoundary fallbackRender={messagesErrorRender}>
-            <Messages preloadedMessages={preloadedMessages} />
-          </ErrorBoundary>
-        </div>
+      <div className="relative h-auto w-full flex-1 overflow-y-auto">
+        <ErrorBoundary fallbackRender={messagesErrorRender}>
+          <Messages preloadedMessages={preloadedMessages} />
+        </ErrorBoundary>
       </div>
       <ChatInput preloadedModels={preloadedModels} chatId={chatId} lastModelState={lastModelState} />
     </>

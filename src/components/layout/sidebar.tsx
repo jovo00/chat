@@ -81,8 +81,8 @@ export default function Sidebar({
             <Button
               variant={"ghost"}
               className={cn(
-                "group absolute top-0 mr-[2.8rem] w-[calc(100%-2.8rem)] justify-start gap-3 p-0 px-3 transition-all duration-300 hover:no-underline",
-                collapsed && "top-12 mr-0 w-full",
+                "group absolute top-0 mr-[2.8rem] w-[calc(100%-2.8rem)] justify-start gap-3 p-0 px-4! transition-all duration-300 hover:no-underline",
+                collapsed && "top-12 mr-0 w-full px-3!",
               )}
               asChild
             >

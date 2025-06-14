@@ -102,7 +102,7 @@ export default function Header({
             className={cn("mr-2 h-9 w-9 rounded-full p-0", pathname === "/chat" && "stop-event-propagation opacity-50")}
             asChild
           >
-            <Link href={"/chat"}>
+            <Link href={"/"}>
               <SquarePen
                 className={cn("h-[1.2rem] w-[1.2rem] opacity-80 transition-opacity hover:opacity-100")}
                 strokeWidth={1.5}

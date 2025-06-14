@@ -10,8 +10,8 @@ export default function ShiftMobile({ children }: { children: React.ReactNode })
   return (
     <div
       className={cn(
-        "w-full h-full transition-[transform,opacity] duration-300",
-        mobileMenuOpen && "translate-x-72 md:translate-x-80 lg:translate-x-0 opacity-60"
+        "h-full w-full transition-all duration-300",
+        mobileMenuOpen && "translate-x-72 opacity-60 md:translate-x-80 lg:translate-x-0",
       )}
       onClick={(e) => {
         e.stopPropagation();

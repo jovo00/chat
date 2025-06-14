@@ -85,3 +85,19 @@ export function getProviderName(provider: string) {
       return "";
   }
 }
+
+export function getFileExtension(filename: string) {
+  if (!filename.includes(".")) return { name: filename, extension: "" };
+  const parts = filename.split(".");
+  const extension = parts.pop();
+  return { name: parts.join("."), extension };
+}
+
+export const updateListMargin = (messageRef: React.RefObject<HTMLDivElement | null>) => {
+  messageRef?.current?.querySelectorAll("ol")?.forEach((el) => {
+    const start = parseInt(el.getAttribute("start") || "1");
+    el.querySelectorAll("li")?.forEach((li, i) => {
+      li.style.marginLeft = `${`${start + i}`.length + 1}ch`;
+    });
+  });
+};

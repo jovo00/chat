@@ -14,7 +14,7 @@ const useChatState = create<ChatState>((set, get) => ({
       const newChat = prev.streaming.get(chat) ?? new Set();
       newChat.add(message);
       prev.streaming.set(chat, newChat);
-      return { streaming: prev.streaming };
+      return { streaming: new Map(prev.streaming) };
     });
   },
 
@@ -31,7 +31,7 @@ const useChatState = create<ChatState>((set, get) => ({
         prev.streaming.delete(chat);
       }
 
-      return { streaming: prev.streaming };
+      return { streaming: new Map(prev.streaming) };
     });
   },
 }));

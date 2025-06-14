@@ -13,7 +13,7 @@ export default async function Chat({ params }: { params: Promise<{ chatId: strin
 
   return (
     <ShiftMobile>
-      <div className="flex h-full flex-1 flex-col overflow-y-auto">
+      <div className="flex h-full flex-1 flex-col">
         <ErrorBoundary fallbackRender={messagesErrorRender}>
           <ChatList chatId={chatId as Id<"chats">} />
         </ErrorBoundary>

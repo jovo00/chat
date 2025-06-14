@@ -1,0 +1,206 @@
+.message p,
+.message li,
+.message table {
+  @apply text-base leading-relaxed;
+}
+
+.message * {
+  overflow-wrap: break-word;
+}
+
+.message code {
+  @apply text-[0.9rem] sm:text-base;
+}
+
+.message .code * {
+  @apply leading-tight;
+}
+
+.message .code .token {
+  display: inline-block;
+}
+
+.message input {
+  @apply text-sm;
+}
+.message a {
+  @apply select-none;
+}
+
+.message * {
+  line-height: 1.6;
+}
+
+.message code:not(pre > code) {
+  @apply bg-accent mx-1 rounded-md px-2 font-mono;
+}
+
+.message pre {
+  @apply my-2 rounded-md;
+}
+
+.message pre pre {
+  @apply m-0 w-fit p-4;
+  padding-left: 1rem !important;
+  padding-right: 1rem !important;
+}
+
+.message pre .code {
+  @apply overflow-x-auto;
+}
+
+.message pre .code * {
+  @apply font-mono font-medium;
+  background: none !important;
+}
+
+.message ol,
+.message ul {
+  @apply flex list-outside flex-col gap-2 whitespace-normal;
+}
+
+.message ul {
+  @apply ml-3 pl-2;
+}
+
+.message li ol,
+.message li ul {
+  @apply pt-2;
+}
+
+.message h1,
+.message h2,
+.message h3,
+.message h4,
+.message h5,
+.message h6 {
+  @apply mt-2 -mb-2 text-base font-medium;
+}
+
+.accordion h3 {
+  margin: 0;
+}
+
+.message ol {
+  @apply list-decimal;
+}
+
+.message ul {
+  @apply list-disc;
+}
+
+.message ol li::marker,
+.message ul li::marker {
+  color: rgba(255, 255, 255, 0.5);
+  /* font-variant: normal; */
+}
+
+.message ol li,
+.message ul li {
+  @apply pl-1;
+}
+
+.message ol li {
+  @apply ml-[2ch];
+}
+
+.message a {
+  @apply text-white/50 underline transition-colors hover:text-white/80;
+}
+
+.message table {
+  @apply bg-secondary/40 overflow-hidden rounded-2xl;
+
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  overflow-x: auto;
+}
+
+.message th,
+.message td {
+  @apply px-4 py-1;
+}
+
+.message th {
+  @apply bg-secondary py-2 text-left;
+}
+
+.message tr:last-child td {
+  @apply pb-2;
+}
+
+.message tr:first-child td {
+  @apply pt-2;
+}
+
+.fade-in-with-delay {
+  opacity: 0;
+  animation: fadeIn 0.5s 0.5s ease-in-out forwards;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.history-menu-button-gradient {
+  background: linear-gradient(90deg, hsla(240, 5%, 12%, 0) 0%, hsla(240, 5%, 12%, 1) 50%, hsla(240, 5%, 12%, 1) 100%);
+}
+
+.history-menu-gradient {
+  background: linear-gradient(90deg, hsla(240, 5%, 12%, 0) 0%, hsla(240, 5%, 12%, 1) 90%, hsla(240, 5%, 12%, 1) 100%);
+}
+
+.sidebar-hover-bg {
+  @apply bg-[hsl(230,100%,90%)]/10;
+}
+
+.copy-check {
+  animation: checkInAnimation 0.4s forwards ease-in-out;
+}
+
+@keyframes checkInAnimation {
+  0% {
+    transform: translateX(0.1rem) scale(0);
+  }
+  60% {
+    transform: translateX(0.1rem) scale(1.1);
+  }
+  100% {
+    transform: translateX(0.1rem) scale(1);
+  }
+}
+
+.bounce-loader-1 {
+  animation: bounceLoaderAnimation 1.25s -0.4s infinite ease-out;
+}
+.bounce-loader-2 {
+  animation: bounceLoaderAnimation 1.25s -0.2s infinite ease-out;
+}
+.bounce-loader-3 {
+  animation: bounceLoaderAnimation 1.25s 0s infinite ease-out;
+}
+
+@keyframes bounceLoaderAnimation {
+  0% {
+    transform: translateY(0rem);
+    opacity: 0;
+  }
+  30% {
+    transform: translateY(0.25rem);
+    opacity: 0;
+  }
+  60% {
+    transform: translateY(-0.25rem);
+    opacity: 0.5;
+  }
+  100% {
+    transform: translateY(-0.15rem);
+    opacity: 0;
+  }
+}

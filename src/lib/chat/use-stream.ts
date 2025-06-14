@@ -116,7 +116,6 @@ export const decodeData = (text: string) => {
   const separatorIndex = text.indexOf(":");
 
   if (separatorIndex === -1) {
-    console.log(text);
     throw new Error("Failed to parse text");
   }
 
@@ -127,7 +126,6 @@ export const decodeData = (text: string) => {
   }
 
   const textValue = text.slice(separatorIndex + 1);
-  console.log(textValue);
   const jsonValue = JSON.parse(textValue);
 
   switch (dataType) {
