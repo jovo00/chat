@@ -2,12 +2,9 @@
 
 "use client";
 
-import { useQuery } from "convex/react";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { FunctionReference } from "convex/server";
 import { Id } from "@gen/dataModel";
 import { useAuthToken } from "@convex-dev/auth/react";
-import { api } from "@gen/api";
 import { dataTypes, validDataTypes } from "../../../convex/chat/generate";
 
 export type StreamStatus = "pending" | "done" | "error" | "streaming";

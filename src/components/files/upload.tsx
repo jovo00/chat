@@ -1,9 +1,10 @@
 "use client";
 
+import { usePaginatedQuery } from "@/lib/convex/use-paginated-query";
 import { useAuthToken } from "@convex-dev/auth/react";
 import { api } from "@gen/api";
 import { Doc, Id } from "@gen/dataModel";
-import { useAction, useMutation, usePaginatedQuery, useQuery } from "convex/react";
+import { useMutation } from "convex/react";
 import { FormEvent, useRef, useState } from "react";
 
 export default function UploadTest() {

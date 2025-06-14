@@ -10,7 +10,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { Form, FormControl, FormField, FormItem, FormMessage } from "@/components/ui/form";
 import { Label } from "@/components/ui/label";
-import { useMutation, usePreloadedQuery } from "convex/react";
+import { useMutation } from "convex/react";
 import { getInitials } from "@/lib/utils";
 import { PreloadedUser } from "@/lib/auth/server";
 import { api } from "@gen/api";
@@ -29,13 +29,14 @@ import {
 } from "@/components/ui/dialog";
 import { LoaderCircle } from "lucide-react";
 import { useAuthActions } from "@convex-dev/auth/react";
+import { usePreloadedQuery } from "@/lib/convex/use-preload";
 
 const formSchemaGeneral = z.object({
   name: z.string().min(1).max(100),
 });
 
 export default function Account({ preloadedUser }: { preloadedUser: PreloadedUser }) {
-  const { user } = usePreloadedQuery(preloadedUser);
+  const { data: user } = usePreloadedQuery(preloadedUser);
 
   const { signOut } = useAuthActions();
   const [updating, setUpdating] = useState(false);

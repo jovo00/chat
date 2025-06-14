@@ -12,8 +12,8 @@ import { usePathname } from "next/navigation";
 import { PreloadedUser } from "@/lib/auth/server";
 import { isServer } from "@/lib/state/server";
 import ChatHistory from "../chat/history/history";
-import { Preloaded } from "convex/react";
 import { api } from "@gen/api";
+import { Preloaded } from "@/lib/convex/use-preload";
 
 export default function Sidebar({
   lastSidebarState,

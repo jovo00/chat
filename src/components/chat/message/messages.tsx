@@ -1,13 +1,13 @@
 "use client";
 
 import { api } from "@gen/api";
-import { Preloaded } from "convex/react";
 
 import { useScrollAnchor } from "@/lib/hooks/use-scroll-anchor";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { ArrowDown } from "lucide-react";
 import { MessageList } from "./list";
+import { Preloaded } from "@/lib/convex/use-preload";
 
 export default function Messages({
   preloadedMessages,

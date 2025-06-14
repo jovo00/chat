@@ -1,7 +1,7 @@
 import { convexAuthNextjsToken } from "@convex-dev/auth/nextjs/server";
 import { api } from "@gen/api";
 import { Id } from "@gen/dataModel";
-import { fetchQuery, preloadQuery } from "convex/nextjs";
+import { fetchQuery } from "convex/nextjs";
 import { cookies } from "next/headers";
 
 export async function getLastSidebarState() {

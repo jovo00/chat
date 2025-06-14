@@ -13,9 +13,9 @@ import useMenuState from "@/lib/state/menu";
 import { useCookieState, useMediaQuery } from "@/lib/hooks";
 import MenuIcon from "@/components/icons/menu";
 import { PreloadedUser } from "@/lib/auth/server";
-import { usePreloadedQuery } from "convex/react";
 import { useAuthActions } from "@convex-dev/auth/react";
 import { isServer } from "@/lib/state/server";
+import { usePreloadedQuery } from "@/lib/convex/use-preload";
 
 export default function Header({
   preloadedUser,
@@ -24,7 +24,7 @@ export default function Header({
   preloadedUser: PreloadedUser;
   lastDeviceState: "mobile" | "desktop";
 }) {
-  const { user } = usePreloadedQuery(preloadedUser);
+  const { data: user } = usePreloadedQuery(preloadedUser);
   const { signOut } = useAuthActions();
   const router = useRouter();
   const pathname = usePathname();

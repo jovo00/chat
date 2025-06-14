@@ -13,12 +13,12 @@ import { AtSign, BrainIcon, ChevronDown, EyeIcon, FileText, MousePointerClick, W
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { DialogTitle } from "@radix-ui/react-dialog";
 import { api } from "@gen/api";
-import { Preloaded, useQuery } from "convex/react";
-import { usePreloadedPaginatedQuery } from "@/lib/convex/use-preload";
+import { Preloaded, usePreloadedPaginatedQuery } from "@/lib/convex/use-preload";
 import { Doc, Id } from "@gen/dataModel";
 import useInputState from "@/lib/state/input";
 import ProviderLogo from "@/components/icons/logos/providers";
 import { useCookieState } from "@/lib/hooks/use-cookie-state";
+import { useQuery } from "@/lib/convex/use-query";
 
 export default function ModelSelect({
   preloadedModels,
@@ -108,7 +108,7 @@ function ModelButton({
   model: Id<"models">;
   lastModelState?: Doc<"models">;
 }) {
-  const selectedModel = useQuery(api.models.get.one, { model });
+  const { data: selectedModel } = useQuery(api.models.get.one, { model });
   const currentSelectedModel = selectedModel ?? lastModelState;
   const maxTokens = currentSelectedModel?.text_capabilities?.max_input_tokens ?? 0;
 

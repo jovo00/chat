@@ -19,11 +19,12 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { PreloadedUser } from "@/lib/auth/server";
-import { Preloaded, useAction, useMutation, usePreloadedQuery } from "convex/react";
+import { useAction, useMutation } from "convex/react";
 import { api } from "@gen/api";
 import { Doc } from "@gen/dataModel";
 import { ConvexError } from "convex/values";
 import { toast } from "sonner";
+import { Preloaded, usePreloadedQuery } from "@/lib/convex/use-preload";
 
 function KeyInput({
   provider,
@@ -36,7 +37,7 @@ function KeyInput({
   url: string;
   tokens: Doc<"tokens">[];
 }) {
-  const providers = tokens.map((token) => token.provider);
+  const providers = tokens?.map((token) => token.provider);
 
   const [override, setOverride] = useState(false);
   const [keyValue, setKeyValue] = useState("");
@@ -45,7 +46,7 @@ function KeyInput({
   const setToken = useAction(api.tokens.actions.setToken);
   const unsetToken = useMutation(api.tokens.update.unset);
 
-  const apiKey = tokens.find((key) => key.provider === provider);
+  const apiKey = tokens?.find((key) => key.provider === provider);
 
   useEffect(() => {
     if (override) {
@@ -188,8 +189,7 @@ export default function ApiKeys({
   preloadedUser: PreloadedUser;
   preloadedTokens: Preloaded<typeof api.tokens.get.many>;
 }) {
-  const { user } = usePreloadedQuery(preloadedUser);
-  const tokens = usePreloadedQuery(preloadedTokens);
+  const { data: tokens } = usePreloadedQuery(preloadedTokens);
 
   return (
     <>

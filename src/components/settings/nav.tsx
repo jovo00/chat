@@ -1,13 +1,13 @@
 "use client";
 
 import { PreloadedUser } from "@/lib/auth/server";
+import { usePreloadedQuery } from "@/lib/convex/use-preload";
 import { cn } from "@/lib/utils";
-import { usePreloadedQuery } from "convex/react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 export default function SettingsNav({ preloadedUser }: { preloadedUser: PreloadedUser }) {
-  const { user } = usePreloadedQuery(preloadedUser);
+  const { data: user } = usePreloadedQuery(preloadedUser);
   const pathname = usePathname();
 
   function isActive(href: string) {

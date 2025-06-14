@@ -31,6 +31,6 @@ export const current = query({
       }
     }
 
-    return { user };
+    return user;
   },
 });

@@ -7,9 +7,8 @@ import { useVirtualizer } from "@tanstack/react-virtual";
 import { ChatListItem } from "./chat-list-item";
 import { getChatDateDescription } from "@/lib/date";
 import { Doc } from "@gen/dataModel";
-import { Preloaded } from "convex/react";
 import { api } from "@gen/api";
-import { usePreloadedPaginatedQuery } from "@/lib/convex/use-preload";
+import { Preloaded, usePreloadedPaginatedQuery } from "@/lib/convex/use-preload";
 
 type DisplayListItem = { type: "chat"; id: string; chat: Doc<"chats"> } | { type: "date"; id: string; value: string };
 

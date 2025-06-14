@@ -6,11 +6,12 @@ import { ArrowUp, Square } from "lucide-react";
 import { FormEvent, KeyboardEventHandler, useRef } from "react";
 import TextareaAutosize from "react-textarea-autosize";
 import ModelSelect from "./model-select";
-import { Preloaded, useMutation } from "convex/react";
+import { useMutation } from "convex/react";
 import { api } from "@gen/api";
 import useSendMessage from "@/lib/chat/use-send-message";
 import { Doc, Id } from "@gen/dataModel";
 import useChatState from "@/lib/state/chat";
+import { Preloaded } from "@/lib/convex/use-preload";
 
 export default function ChatInput({
   preloadedModels,

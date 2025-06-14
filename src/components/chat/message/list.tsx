@@ -4,8 +4,7 @@ import { Fragment, memo, useCallback, useEffect, useMemo, useRef } from "react";
 import { useInView } from "react-intersection-observer";
 import { Button } from "../../ui/button";
 import { api } from "@gen/api";
-import { Preloaded } from "convex/react";
-import { usePreloadedPaginatedQuery } from "@/lib/convex/use-preload";
+import { Preloaded, usePreloadedPaginatedQuery } from "@/lib/convex/use-preload";
 import useChatState from "@/lib/state/chat";
 import { Assistant } from "./assistant-content";
 import { User } from "./user-content";
@@ -23,7 +22,7 @@ export const MessageList = memo(function MessageList({ preloadedMessages, scroll
 
   const list = useMemo(() => {
     return [...messages.results].reverse();
-  }, [messages]);
+  }, [messages?.results]);
 
   const drivenIds = useChatState((state) => state.streaming);
   const removeStreaming = useChatState((state) => state.removeStreaming);
