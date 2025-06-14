@@ -21,6 +21,16 @@ export const message = internalQuery({
   },
 });
 
+export const cancelled = internalQuery({
+  args: {
+    message: v.id("messages"),
+  },
+  handler: async (ctx, args) => {
+    const message = await ctx.db.get(args.message);
+    return message?.cancelled;
+  },
+});
+
 export const paginateHistory = internalQuery({
   args: {
     paginationOpts: paginationOptsValidator,
@@ -61,7 +71,8 @@ export const messages = query({
     if (!user) throw new ConvexError("Not authorized");
 
     const chat = await ctx.db.get(args.chatId);
-    if (!chat || chat?.user !== user._id) throw new ConvexError("Not allowed");
+    if (!chat) throw new ConvexError("Not found");
+    if (chat?.user !== user._id) throw new ConvexError("Not allowed");
 
     const messages = await ctx.db
       .query("messages")
@@ -88,5 +99,21 @@ export const history = internalQuery({
     return allMessages.map((message) => ({
       content: message?.content,
     }));
+  },
+});
+
+export const chats = query({
+  args: {
+    paginationOpts: paginationOptsValidator,
+  },
+  handler: async (ctx, args) => {
+    const user = await getUser(ctx);
+    if (!user) throw new ConvexError("Not authorized");
+
+    return await ctx.db
+      .query("chats")
+      .withIndex("by_user", (q) => q.eq("user", user._id))
+      .order("desc")
+      .paginate(args.paginationOpts);
   },
 });

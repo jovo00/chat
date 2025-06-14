@@ -10,8 +10,7 @@ import useChatState from "../state/chat";
 
 export default function useSendMessage(chatId?: Id<"chats">) {
   const model = useInputState((state) => state.model);
-  const addDrivenId = useChatState((state) => state.addDrivenId);
-  const setStreaming = useChatState((state) => state.setStreaming);
+  const addStreaming = useChatState((state) => state.addStreaming);
   const router = useRouter();
 
   const sendMessage = useMutation(api.chat.create.one);
@@ -26,8 +25,7 @@ export default function useSendMessage(chatId?: Id<"chats">) {
         chat: chatId,
       });
 
-      addDrivenId(data?.messageId);
-      setStreaming(true);
+      addStreaming(data?.chatId, data?.messageId);
 
       router.push("/chat/" + data.chatId);
     },

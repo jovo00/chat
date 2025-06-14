@@ -6,7 +6,7 @@ import { ArrowUp, Square } from "lucide-react";
 import { FormEvent, KeyboardEventHandler, useRef } from "react";
 import TextareaAutosize from "react-textarea-autosize";
 import ModelSelect from "./model-select";
-import { Preloaded } from "convex/react";
+import { Preloaded, useMutation } from "convex/react";
 import { api } from "@gen/api";
 import useSendMessage from "@/lib/chat/use-send-message";
 import { Doc, Id } from "@gen/dataModel";
@@ -22,12 +22,15 @@ export default function ChatInput({
   lastModelState?: Doc<"models">;
 }) {
   const textInput = useRef<HTMLTextAreaElement>(null);
-  const streaming = useChatState((state) => state.streaming);
+  const streams = useChatState((state) => state.streaming);
   const messages = useSendMessage(chatId);
+
+  const streaming = chatId && streams.has(chatId);
 
   function submitHandler(e: FormEvent) {
     e.preventDefault();
     if (!textInput.current) return;
+    if (streaming) return;
 
     const prompt = textInput.current?.value;
     if (!prompt || !prompt?.trim()) return;
@@ -42,6 +45,21 @@ export default function ChatInput({
       submitHandler(e);
     }
   };
+
+  const cancelMessage = useMutation(api.chat.update.cancel);
+  async function stopHandler() {
+    if (!streaming) return;
+    if (!chatId) return;
+
+    const messages = streams.get(chatId);
+    if (!messages) return;
+
+    await Promise.allSettled(
+      Array.from(messages).map((message) => {
+        return cancelMessage({ messageId: message });
+      }),
+    );
+  }
 
   return (
     <form className="w-full px-2 lg:px-4" onSubmit={submitHandler}>
@@ -66,7 +84,13 @@ export default function ChatInput({
           <div>
             <ModelSelect small preloadedModels={preloadedModels} lastModelState={lastModelState} />
           </div>
-          <Button type="submit" size="icon" variant="secondary" className="size-10 rounded-full">
+          <Button
+            type={streaming ? "button" : "submit"}
+            size="icon"
+            variant="secondary"
+            className="size-10 rounded-full"
+            onClick={stopHandler}
+          >
             {streaming ? <Square className="h-4 w-4" /> : <ArrowUp className="h-5 w-5" />}
             <span className="sr-only">Send message</span>
           </Button>

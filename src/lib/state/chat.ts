@@ -2,25 +2,37 @@ import { Id } from "@gen/dataModel";
 import { create } from "zustand";
 
 export type ChatState = {
-  drivenIds: Set<Id<"messages">>;
-  addDrivenId: (id: Id<"messages">) => void;
-
-  streaming: boolean;
-  setStreaming: (streaming: boolean) => void;
+  streaming: Map<Id<"chats">, Set<Id<"messages">>>;
+  addStreaming: (chat: Id<"chats">, message: Id<"messages">) => void;
+  removeStreaming: (chat: Id<"chats">, message: Id<"messages">) => void;
 };
 
 const useChatState = create<ChatState>((set, get) => ({
-  drivenIds: new Set(),
-  addDrivenId(id) {
+  streaming: new Map(),
+  addStreaming(chat, message) {
     set((prev) => {
-      prev.drivenIds.add(id);
-      return { drivenIds: new Set(prev.drivenIds) };
+      const newChat = prev.streaming.get(chat) ?? new Set();
+      newChat.add(message);
+      prev.streaming.set(chat, newChat);
+      return { streaming: prev.streaming };
     });
   },
 
-  streaming: false,
-  setStreaming(streaming) {
-    set({ streaming });
+  removeStreaming(chat, message) {
+    set((prev) => {
+      if (!prev.streaming.has(chat)) return { streaming: prev.streaming };
+
+      const messages = prev.streaming.get(chat);
+      if (!messages) return { streaming: prev.streaming };
+
+      messages.delete(message);
+
+      if (messages.size === 0) {
+        prev.streaming.delete(chat);
+      }
+
+      return { streaming: prev.streaming };
+    });
   },
 }));
 

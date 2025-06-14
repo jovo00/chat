@@ -11,14 +11,19 @@ import Logo from "@/components/icons/logos/logo";
 import { usePathname } from "next/navigation";
 import { PreloadedUser } from "@/lib/auth/server";
 import { isServer } from "@/lib/state/server";
+import ChatHistory from "../chat/history/history";
+import { Preloaded } from "convex/react";
+import { api } from "@gen/api";
 
 export default function Sidebar({
   lastSidebarState,
   lastDeviceState,
+  preloadedChatHistory,
 }: {
   lastSidebarState: boolean;
   lastDeviceState: "mobile" | "desktop";
   preloadedUser: PreloadedUser;
+  preloadedChatHistory: Preloaded<typeof api.chat.get.chats>;
 }) {
   const pathname = usePathname();
   const [collapsed, setCollapsed] = useCookieState("sidebarState", lastSidebarState);
@@ -49,44 +54,44 @@ export default function Sidebar({
   return (
     <aside
       className={cn(
-        "absolute lg:relative w-[18rem] md:w-[20rem] max-w-screen bg-sidebar shrink-0 h-full transition-[border,width,max-width] duration-300 z-40 overflow-x-hidden",
-        (isDesktop ? collapsed : !mobileMenuOpen) && "w-0 md:w-0 lg:w-14"
+        "bg-sidebar absolute z-40 h-full w-[18rem] max-w-screen shrink-0 overflow-x-hidden transition-[border,width,max-width] duration-300 md:w-[20rem] lg:relative",
+        (isDesktop ? collapsed : !mobileMenuOpen) && "w-0 md:w-0 lg:w-14",
       )}
     >
       {isDesktop && (
         <div
           className={cn(
-            "z-10 flex flex-col p-2 w-full h-full absolute top-0 left-0 pt-4 transition-[padding-top] duration-300 overflow-hidden"
+            "absolute top-0 left-0 z-10 flex h-full w-full flex-col overflow-hidden p-2 pt-4 transition-[padding-top] duration-300",
           )}
         >
           <Link
             href="/"
-            className={cn("flex justify-center w-10 mb-8 transition-[margin-bottom] duration-300", collapsed && "mb-6")}
+            className={cn("mb-8 flex w-10 justify-center transition-[margin-bottom] duration-300", collapsed && "mb-6")}
           >
             {isDesktop && (
               <Logo
                 className={cn(
-                  "h-6 w-0 lg:w-6 transition-[filter,width] duration-300 lg:opacity-100 opacity-0 lg:pointer-events-auto"
+                  "h-6 w-0 opacity-0 transition-[filter,width] duration-300 lg:pointer-events-auto lg:w-6 lg:opacity-100",
                 )}
               />
             )}
           </Link>
 
-          <div className="w-full flex relative justify-end">
+          <div className="relative flex w-full justify-end">
             <Button
               variant={"ghost"}
               className={cn(
-                "group p-0 absolute w-[calc(100%-2.8rem)] mr-[2.8rem] transition-all duration-300 top-0 justify-start px-3 gap-3 hover:no-underline",
-                collapsed && "mr-0 w-full top-12"
+                "group absolute top-0 mr-[2.8rem] w-[calc(100%-2.8rem)] justify-start gap-3 p-0 px-3 transition-all duration-300 hover:no-underline",
+                collapsed && "top-12 mr-0 w-full",
               )}
               asChild
             >
               <Link href={"/"} prefetch>
-                <SquarePen className={cn("w-4 h-4 transition-opacity")} />
+                <SquarePen className={cn("h-4 w-4 transition-opacity")} />
                 <span
                   className={cn(
-                    "absolute top-1/2 -translate-y-1/2 left-11 opacity-100 transition-opacity delay-100 duration-300 font-bold",
-                    collapsed && "opacity-0 delay-0 duration-100 pointer-events-none"
+                    "absolute top-1/2 left-11 -translate-y-1/2 font-bold opacity-100 transition-opacity delay-100 duration-300",
+                    collapsed && "pointer-events-none opacity-0 delay-0 duration-100",
                   )}
                 >
                   New Chat
@@ -96,15 +101,20 @@ export default function Sidebar({
             <Button
               variant={"ghost"}
               size={"icon"}
-              className="group p-0 size-10"
+              className="group size-10 p-0"
               onClick={() => setCollapsed((v: boolean) => !v)}
             >
-              <ChevronLeft className={cn("w-4 h-4 transition-opacity", collapsed && "rotate-180")} />
+              <ChevronLeft className={cn("h-4 w-4 transition-opacity", collapsed && "rotate-180")} />
             </Button>
           </div>
         </div>
       )}
-      {/* <ChatHistory user={user} collapsed={collapsed} isDesktop={isDesktop} mobileMenuOpen={mobileMenuOpen} /> */}
+      <ChatHistory
+        collapsed={collapsed}
+        isDesktop={isDesktop}
+        mobileMenuOpen={mobileMenuOpen}
+        preloadedChatHistory={preloadedChatHistory}
+      />
     </aside>
   );
 }

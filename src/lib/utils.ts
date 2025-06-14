@@ -22,6 +22,19 @@ export function getInitials(name?: string, username?: string, email?: string): s
   }
 }
 
+export const fontSize =
+  typeof window === "undefined" ? 16 : parseFloat(getComputedStyle(document.documentElement).fontSize);
+
+export function convertRemToPixels(rem: number) {
+  if (typeof window === "undefined") return rem * 16;
+  return rem * fontSize;
+}
+
+export function convertPixelsToRem(px: number) {
+  if (typeof window === "undefined") return px / 16;
+  return px / fontSize;
+}
+
 export function getPricingColor(pricing: number) {
   if (pricing === 0) {
     return "#8ecaff";

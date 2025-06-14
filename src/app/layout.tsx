@@ -8,6 +8,7 @@ import "@/styles/fonts/techna-sans.css";
 import "@/styles/globals.css";
 import { Toaster } from "@/components/ui/sonner";
 import { ErrorBoundary } from "react-error-boundary";
+import { globalErrorFallback } from "@/components/global-error-fallback";
 
 const fontSans = Plus_Jakarta_Sans({
   subsets: ["latin"],
@@ -48,7 +49,7 @@ export default function RootLayout({
           className={`h-dvh min-h-full w-full overflow-x-hidden ${fontSans.variable} ${fontMono.variable} antialiased`}
         >
           <ThemeProvider attribute="class" defaultTheme="dark" disableTransitionOnChange>
-            <ErrorBoundary fallback={"Something went wrong"}>
+            <ErrorBoundary fallbackRender={globalErrorFallback}>
               <ConvexClientProvider>
                 {children}
                 <Toaster richColors position="top-center" />

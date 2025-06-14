@@ -15,11 +15,11 @@ export default function Messages({
   preloadedMessages: Preloaded<typeof api.chat.get.messages>;
 }) {
   const messages = usePreloadedPaginatedQuery(preloadedMessages);
-  const drivenIds = useChatState((state) => state.drivenIds);
-  const setStreaming = useChatState((state) => state.setStreaming);
+  const drivenIds = useChatState((state) => state.streaming);
+  const removeStreaming = useChatState((state) => state.removeStreaming);
 
   const reversed = useMemo(() => {
-    return messages.results?.reverse();
+    return [...messages.results]?.reverse();
   }, [messages]);
 
   return (
@@ -33,9 +33,9 @@ export default function Messages({
             <MessageItem message={message} isUser={false}>
               <Assistant
                 message={message}
-                isDriven={drivenIds.has(message._id)}
+                isDriven={!!drivenIds.get(message.chat)?.has(message._id)}
                 stopStreaming={() => {
-                  setStreaming(false);
+                  removeStreaming(message.chat, message._id);
                 }}
               />
             </MessageItem>

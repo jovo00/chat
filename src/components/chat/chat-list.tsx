@@ -4,6 +4,8 @@ import { api } from "@gen/api";
 import { Id } from "@gen/dataModel";
 import Messages from "./message/messages";
 import { getLastModelState } from "@/lib/state/cookies";
+import { messagesErrorRender } from "./message/error-fallback";
+import { ErrorBoundary } from "react-error-boundary";
 
 export default async function ChatList({ chatId }: { chatId: Id<"chats"> }) {
   const preloadedModels = await preloadPaginatedQuery(api.models.get.many, {}, { initialNumItems: 50 });
@@ -14,7 +16,9 @@ export default async function ChatList({ chatId }: { chatId: Id<"chats"> }) {
     <>
       <div className="h-auto w-full flex-1 overflow-y-auto">
         <div className="flex h-full w-full flex-col items-center">
-          <Messages preloadedMessages={preloadedMessages} />
+          <ErrorBoundary fallbackRender={messagesErrorRender}>
+            <Messages preloadedMessages={preloadedMessages} />
+          </ErrorBoundary>
         </div>
       </div>
       <ChatInput preloadedModels={preloadedModels} chatId={chatId} lastModelState={lastModelState} />
