@@ -36,7 +36,7 @@ export function Assistant({
 
   return (
     <div className="md-answer">
-      <Markdown>{content ? smoothText[0] : "Thinking..."}</Markdown>
+      <Markdown>{content ? (isDriven ? text : smoothText[0]) : "Thinking..."}</Markdown>
       {status === "error" && <div className="mt-2 text-red-500">Error loading response</div>}
     </div>
   );

@@ -79,7 +79,6 @@ export default defineSchema({
     status_message: v.optional(v.string()),
     cancelled: v.boolean(),
     model: v.id("models"),
-    role: v.union(v.literal("user"), v.literal("assistant")),
     hide: v.boolean(),
     files: v.array(v.id("files")),
     content: v.optional(v.string()),

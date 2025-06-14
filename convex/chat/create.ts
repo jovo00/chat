@@ -3,6 +3,7 @@ import { ConvexError, v } from "convex/values";
 import { getUser } from "../users/get";
 import { Doc } from "../_generated/dataModel";
 import { internal } from "../_generated/api";
+import { CoreMessage, Message } from "ai";
 
 export const one = mutation({
   args: {
@@ -30,7 +31,6 @@ export const one = mutation({
       status: "pending",
       status_message: undefined,
       model: args.model,
-      role: "user",
       hide: false,
       files: [],
       cancelled: false,
@@ -57,9 +57,12 @@ export const assistantMessage = internalMutation({
       .first();
     if (!token) throw new ConvexError(`No token for ${model.api} found`);
 
-    let context = [];
+    let context: CoreMessage[] | Omit<Message, "id">[] | undefined = [];
 
-    const maxContextTokenCount = Math.min(20000, (model?.text_capabilities?.max_input_tokens ?? Infinity) / 2);
+    const maxContextTokenCount = Math.max(
+      Math.min(20000, (model?.text_capabilities?.max_input_tokens ?? Infinity) / 2),
+      10000,
+    );
     let estimatedTokenCount = 0;
 
     let page: Doc<"messages">[];
@@ -79,10 +82,19 @@ export const assistantMessage = internalMutation({
         estimatedTokenCount += estimateTokenCount(message);
         if (estimatedTokenCount > maxContextTokenCount) break;
 
-        context.push({
-          role: message.role,
-          content: message.content,
-        });
+        if (message.content && message.content?.trim()?.length > 0) {
+          context.push({
+            role: "assistant",
+            content: message.content ?? "",
+          });
+        }
+
+        if ((message.prompt ?? "").length > 0) {
+          context.push({
+            role: "user",
+            content: message.prompt ?? "",
+          });
+        }
       }
 
       if (estimatedTokenCount > maxContextTokenCount) break;
@@ -92,11 +104,15 @@ export const assistantMessage = internalMutation({
       status: "generating",
     });
 
-    return { context, token };
+    context.reverse();
+
+    return { context, token, model };
   },
 });
 
 function estimateTokenCount(message: Doc<"messages">) {
   // Currently estimating the token count by word count
-  return (message?.content?.split("\n").join(" ").split(" ").length ?? 0) * 1.5;
+  const promptWords = message?.prompt?.split("\n").join(" ").split(" ").length ?? 0;
+  const contentWords = message?.content?.split("\n").join(" ").split(" ").length ?? 0;
+  return (promptWords + contentWords) * 1.5;
 }

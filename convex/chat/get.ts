@@ -86,7 +86,6 @@ export const history = internalQuery({
       .collect();
 
     return allMessages.map((message) => ({
-      role: message?.role,
       content: message?.content,
     }));
   },

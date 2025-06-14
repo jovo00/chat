@@ -3,32 +3,12 @@ import { api, internal } from "../_generated/api";
 // import { OpenAI } from "openai";
 import { ConvexError } from "convex/values";
 import { Id } from "../_generated/dataModel";
-import { createOpenRouter } from "@openrouter/ai-sdk-provider";
-
-// const openai = new OpenAI();
-
-const loremIpsum = `
-Lorem ipsum dolor sit amet, consectetur adipiscing elit. 
-Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. 
-Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. 
-Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. 
-Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas.
-Vestibulum tortor quam, feugiat vitae, ultricies eget, tempor sit amet, ante.
-Donec eu libero sit amet quam egestas semper. Aenean ultricies mi vitae est.
-Mauris placerat eleifend leo.
-`;
-
-const chunks = loremIpsum.trim().split(" ");
-const delay = (ms: number) => new Promise((res) => setTimeout(res, ms));
+import { createOpenRouter, LanguageModelV1, OpenRouterProvider } from "@openrouter/ai-sdk-provider";
+import { LanguageModel, streamText } from "ai";
 
 export const completeChat = httpAction(async (ctx, request) => {
   let user = await ctx.runQuery(api.users.get.current);
   if (!user) throw new ConvexError("Not authorized");
-
-  //     const openrouter = createOpenRouter({
-  //   apiKey: 'YOUR_OPENROUTER_API_KEY',
-  // });
 
   const body = (await request.json()) as {
     messageId?: Id<"messages">;
@@ -54,14 +34,39 @@ export const completeChat = httpAction(async (ctx, request) => {
 
   const messageId = body?.messageId!;
 
-  const { context, token } = await ctx.runMutation(internal.chat.create.assistantMessage, {
+  const { context, token, model } = await ctx.runMutation(internal.chat.create.assistantMessage, {
     messageId: messageId,
   });
 
+  console.log(context);
+
   const decryptedToken = await ctx.runAction(internal.tokens.actions.decryptToken, { encryptedToken: token.token });
 
-  // const apiKey = decryptString(token.token);
-  // console.log(apiKey);
+  let apiModel: LanguageModel | undefined = undefined;
+
+  if (model.api === "openrouter") {
+    const openrouter = createOpenRouter({
+      apiKey: decryptedToken,
+    });
+    apiModel = openrouter(model.api_id);
+  }
+
+  if (!apiModel) throw new ConvexError("Could not initialize model");
+
+  const { textStream } = streamText({
+    model: apiModel,
+    messages: context,
+    // providerOptions: {
+    //   openrouter: {
+    //     reasoning: {
+    //       max_tokens: 10,
+    //     },
+    //   },
+    // },
+    onError: (e) => {
+      console.log(e);
+    },
+  });
 
   const encoder = new TextEncoder();
   const readableStream = new ReadableStream({
@@ -74,12 +79,11 @@ export const completeChat = httpAction(async (ctx, request) => {
       let charsSinceLastUpdate = 0;
 
       try {
-        for (const chunk of chunks) {
-          const formattedChunk = chunk + "\n";
-          fullText += formattedChunk;
-          charsSinceLastUpdate += formattedChunk.length;
+        for await (const chunk of textStream) {
+          fullText += chunk;
+          charsSinceLastUpdate += chunk.length;
 
-          controller.enqueue(encoder.encode(formattedChunk));
+          controller.enqueue(encoder.encode(chunk));
 
           const now = Date.now();
           const timeSinceLastUpdate = now - lastUpdateTime;
@@ -95,8 +99,6 @@ export const completeChat = httpAction(async (ctx, request) => {
             charsSinceLastUpdate = 0;
             lastUpdateTime = now;
           }
-
-          await delay(5);
         }
 
         // Wait for all background updates to finish, then set final status
