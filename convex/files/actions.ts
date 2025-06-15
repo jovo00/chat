@@ -1,7 +1,7 @@
 import { internal } from "../_generated/api";
 import { httpAction } from "../_generated/server";
 
-export const uploadAction = httpAction(async (ctx, request) => {
+export const upload = httpAction(async (ctx, request) => {
   const blob = await request.blob();
   const storageId = await ctx.storage.store(blob);
 

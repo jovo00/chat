@@ -15,7 +15,7 @@ export default function useSendMessage(online: boolean, fileAttachments: Doc<"fi
   const addStreaming = useChatState((state) => state.addStreaming);
   const router = useRouter();
 
-  const sendMessage = useMutation(api.chat.create.one, {
+  const sendMessage = useMutation(api.chat.create.newChatMessage, {
     onSuccess(result) {
       addStreaming(result?.chatId, result?.messageId);
       router.push("/chat/" + result.chatId);

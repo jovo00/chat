@@ -5,7 +5,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Id } from "@gen/dataModel";
 import { useAuthToken } from "@convex-dev/auth/react";
-import { dataTypes, validDataTypes } from "../../../convex/chat/generate";
+import { dataTypes, validDataTypes } from "../../../convex/chat/encoding";
 
 export type StreamStatus = "pending" | "done" | "error" | "streaming";
 

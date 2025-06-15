@@ -45,7 +45,7 @@ export default function Account({ preloadedUser }: { preloadedUser: PreloadedUse
     },
   });
 
-  const updateUserName = useMutation(api.users.update.one, {
+  const updateUserName = useMutation(api.users.update.current, {
     onError(e) {
       toast.error("Name could not be updated", { description: getErrorMessage(e) });
     },
@@ -58,7 +58,7 @@ export default function Account({ preloadedUser }: { preloadedUser: PreloadedUse
     updateUserName.mutate({ name: values.name });
   }
 
-  const deleteAccount = useMutation(api.users.delete.delete_account, {
+  const deleteAccount = useMutation(api.users.delete.current, {
     onError(e) {
       toast.error("Account could not be deleted", { description: getErrorMessage(e) });
     },

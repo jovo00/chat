@@ -1,8 +1,7 @@
-import { ConvexError, v } from "convex/values";
-import { action, internalAction, internalMutation, mutation, query } from "../_generated/server";
+import { v } from "convex/values";
+import { action, internalAction, internalMutation } from "../_generated/server";
 import { ActionCache } from "@convex-dev/action-cache";
 import { api, components, internal } from "../_generated/api";
-import { getUser } from "../users/get";
 
 export type OpenRouterModel = {
   id: string;

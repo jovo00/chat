@@ -4,7 +4,8 @@ import { internalQuery, query } from "../_generated/server";
 import { getUser } from "../users/get";
 import { Doc, Id } from "../_generated/dataModel";
 
-export const internalChat = internalQuery({
+// Internal
+export const getChatInternal = internalQuery({
   args: {
     chat: v.id("chats"),
   },
@@ -13,7 +14,7 @@ export const internalChat = internalQuery({
   },
 });
 
-export const message = internalQuery({
+export const getMessageInternal = internalQuery({
   args: {
     message: v.id("messages"),
   },
@@ -22,7 +23,7 @@ export const message = internalQuery({
   },
 });
 
-export const cancelled = internalQuery({
+export const isCancelledInternal = internalQuery({
   args: {
     message: v.id("messages"),
   },
@@ -32,7 +33,7 @@ export const cancelled = internalQuery({
   },
 });
 
-export const paginateHistory = internalQuery({
+export const paginateHistoryInternal = internalQuery({
   args: {
     paginationOpts: paginationOptsValidator,
     chatId: v.id("chats"),
@@ -47,20 +48,40 @@ export const paginateHistory = internalQuery({
   },
 });
 
-export const one = internalQuery({
-  args: {
-    message: v.id("messages"),
-  },
-  handler: async (ctx, args) => {
-    const user = await getUser(ctx);
-    if (!user) throw new ConvexError("Not authorized");
+// export const getMessageInternal = internalQuery({
+//   args: {
+//     message: v.id("messages"),
+//   },
+//   handler: async (ctx, args) => {
+//     const user = await getUser(ctx);
+//     if (!user) throw new ConvexError("Not authorized");
 
-    const message = await ctx.db.get(args.message);
-    if (message?.user !== user._id) throw new ConvexError("Not allowed");
+//     const message = await ctx.db.get(args.message);
+//     if (message?.user !== user._id) throw new ConvexError("Not allowed");
 
-    return message;
-  },
-});
+//     return message;
+//   },
+// });
+
+// export const getGistoryInternal = internalQuery({
+//   args: {
+//     chatId: v.optional(v.id("chats")),
+//   },
+//   handler: async (ctx, args) => {
+//     if (!args.chatId) return [];
+//     // Grab all the user messages
+//     const allMessages = await ctx.db
+//       .query("messages")
+//       .withIndex("by_chat", (q) => q.eq("chat", args.chatId!))
+//       .collect();
+
+//     return allMessages.map((message) => ({
+//       content: message?.content,
+//     }));
+//   },
+// });
+
+// Public Queries
 
 export const messages = query({
   args: {
@@ -125,24 +146,6 @@ export const messages = query({
     return messages as typeof messages & {
       page: typeof messages.page & { model: Id<"models"> | Doc<"models">; files: Id<"files">[] | Doc<"files">[] }[];
     };
-  },
-});
-
-export const history = internalQuery({
-  args: {
-    chatId: v.optional(v.id("chats")),
-  },
-  handler: async (ctx, args) => {
-    if (!args.chatId) return [];
-    // Grab all the user messages
-    const allMessages = await ctx.db
-      .query("messages")
-      .withIndex("by_chat", (q) => q.eq("chat", args.chatId!))
-      .collect();
-
-    return allMessages.map((message) => ({
-      content: message?.content,
-    }));
   },
 });
 

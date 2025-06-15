@@ -1,8 +1,6 @@
 "use node";
 
 import crypto from "crypto";
-import { internalAction } from "./_generated/server";
-import { v } from "convex/values";
 
 const { secret_key, secret_iv, encryption_method } = {
   secret_key: process.env.SECRET_KEY,

@@ -1,7 +1,6 @@
-import { mutation, query } from "../_generated/server";
+import { mutation } from "../_generated/server";
 import { ConvexError, v } from "convex/values";
 import { getUser } from "../users/get";
-import { apiProviders } from "../schema";
 
 export const rename = mutation({
   args: {
