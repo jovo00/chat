@@ -8,11 +8,14 @@ import { ArrowDown } from "lucide-react";
 import { MessageList } from "./list";
 import { Preloaded } from "@/lib/convex/use-preload";
 import { useLayoutEffect, useState } from "react";
+import { Id } from "@gen/dataModel";
 
 export default function Messages({
   preloadedMessages,
+  chatId,
 }: {
   preloadedMessages: Preloaded<typeof api.chat.get.messages>;
+  chatId: Id<"chats">;
 }) {
   const { messagesRef, scrollRef, visibilityRef, isAtBottom, scrollToBottom } = useScrollAnchor();
   const [init, setInit] = useState(false);
@@ -47,7 +50,7 @@ export default function Messages({
           className="relative mx-auto flex h-fit w-full max-w-240 grow-0 flex-col gap-2 px-3 py-8 pt-20 lg:px-4"
           ref={messagesRef}
         >
-          <MessageList preloadedMessages={preloadedMessages} scrollRef={scrollRef} />
+          <MessageList preloadedMessages={preloadedMessages} chatId={chatId} scrollRef={scrollRef} />
 
           <div className="h-px w-full" ref={visibilityRef} />
         </div>

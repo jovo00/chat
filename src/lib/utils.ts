@@ -1,3 +1,4 @@
+import { Doc, Id } from "@gen/dataModel";
 import { clsx, type ClassValue } from "clsx";
 import { ConvexError } from "convex/values";
 import { twMerge } from "tailwind-merge";
@@ -95,4 +96,28 @@ export function getErrorMessage(error: Error) {
   } else {
     return error?.message;
   }
+}
+
+export function createOptimisticMessage(
+  chatId: Id<"chats">,
+  optimisticData: {
+    prompt: string;
+    model: Doc<"models">;
+    files: Doc<"files">[];
+  },
+) {
+  return {
+    _id: "optimistic" as Id<"messages">,
+    _creationTime: Date.now(),
+    prompt: optimisticData.prompt,
+    cancelled: false,
+    chat: chatId,
+    files: optimisticData.files,
+    hide_content: false,
+    hide_prompt: false,
+    model: optimisticData.model,
+    online: false,
+    status: "pending",
+    user: "current" as Id<"users">,
+  } as Doc<"messages"> & { files: Doc<"files">[]; model: Doc<"models"> };
 }

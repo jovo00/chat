@@ -9,19 +9,24 @@ import useChatState from "@/lib/state/chat";
 import { Assistant } from "./assistant/content";
 import { User } from "./user/content";
 import ErrorDisplay from "@/components/error";
-import { getErrorMessage } from "@/lib/utils";
+import { createOptimisticMessage, getErrorMessage } from "@/lib/utils";
+import useInputState from "@/lib/state/input";
+import { Doc, Id } from "@gen/dataModel";
 
 interface MessageListProps {
   scrollRef: React.RefObject<HTMLDivElement | null>;
   preloadedMessages: Preloaded<typeof api.chat.get.messages>;
+  chatId: Id<"chats">;
 }
 
-export const MessageList = memo(function MessageList({ preloadedMessages, scrollRef }: MessageListProps) {
+export const MessageList = memo(function MessageList({ preloadedMessages, scrollRef, chatId }: MessageListProps) {
   const { ref: inViewRef, inView } = useInView({ threshold: 0 });
   const messages = usePreloadedPaginatedQuery(preloadedMessages);
   const lastScrollPosition = useRef(0);
   const drivenIds = useChatState((state) => state.streaming);
   const removeStreaming = useChatState((state) => state.removeStreaming);
+  const optimisticPrompts = useInputState((state) => state.optimisticPrompts);
+  const model = useInputState((state) => state.model);
 
   const list = useMemo(() => {
     return [...messages.results].reverse();
@@ -53,6 +58,12 @@ export const MessageList = memo(function MessageList({ preloadedMessages, scroll
     }
   }, [inView, messages.status, messages.isLoading, fetchNextPage]);
 
+  const optimisticMessage = useMemo(() => {
+    if (!optimisticPrompts[chatId]) return undefined;
+
+    return createOptimisticMessage(chatId, optimisticPrompts[chatId]);
+  }, [optimisticPrompts[chatId]]);
+
   return (
     <>
       {messages?.isError &&
@@ -76,18 +87,22 @@ export const MessageList = memo(function MessageList({ preloadedMessages, scroll
         </Button>
       )}
 
-      {list.map((message) => (
+      {list.map((message, i) => (
         <Fragment key={message._id}>
           <User message={message} />
           <Assistant
             message={message}
             isStreamed={!!drivenIds.get(message.chat)?.has(message._id)}
-            stopStreaming={() => {
+            onStopStreaming={() => {
               removeStreaming(message.chat, message._id);
             }}
+            isLast={i === list?.length - 1}
           />
         </Fragment>
       ))}
+
+      {optimisticMessage && <User message={optimisticMessage} />}
+      {optimisticMessage && <Assistant message={optimisticMessage} isStreamed={false} />}
     </>
   );
 });

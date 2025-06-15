@@ -43,6 +43,7 @@ export default function ChatInput({
     MAX_FILE_COUNT,
   } = useFileAttachments();
   const selectedModel = useInputState((state) => state.model);
+  const addOptimisticPrompt = useInputState((state) => state.addOptimisticPrompt);
   const { data: currentModel } = useQuery(api.models.get.one, selectedModel ? { model: selectedModel } : "skip");
   const messages = useSendMessage(enableSearchGrounding, attachedFiles, chatId);
   const { data: chat } = useQuery(api.chat.get.chat, chatId ? { chatId } : "skip");
@@ -59,12 +60,15 @@ export default function ChatInput({
     if (!textInput.current) return;
     if (isGenerating) return;
     if (pending > 0) return;
+    if (!currentModel) return;
+
+    const prompt = textInput.current?.value;
+    if (!prompt || !prompt?.trim()) return;
 
     setSubmitting(true);
     setCancelling(false);
 
-    const prompt = textInput.current?.value;
-    if (!prompt || !prompt?.trim()) return;
+    chatId && addOptimisticPrompt(chatId, currentModel, prompt?.trim(), attachedFiles);
 
     await messages.send(prompt);
 
@@ -114,7 +118,6 @@ export default function ChatInput({
   const allowedFiletypes = useMemo(() => {
     if (!currentModel) return [];
 
-    // [".pdf", ".jpg", ".png", ".webp", ".jpeg"]
     const filetypes = [];
     if (currentModel.text_capabilities?.features.file_input) {
       filetypes.push(".pdf");

@@ -11,18 +11,22 @@ import MessageContent from "../content";
 import { MessageStatus } from "./status";
 import { useSmoothText } from "@/lib/chat/use-smooth-text";
 import AssistantMessageFooter from "./footer";
+import useInputState from "@/lib/state/input";
 
 function AssistantComponent({
   message,
   isStreamed,
-  stopStreaming,
+  onStopStreaming: stopStreaming,
   className,
+  isLast,
 }: {
   message: Doc<"messages">;
   isStreamed: boolean;
-  stopStreaming: () => void;
+  onStopStreaming?: () => void;
   className?: string;
+  isLast?: boolean;
 }) {
+  const clearOptimisticPrompt = useInputState((state) => state.clearOptimisticPrompt);
   const { content, reasoning, status } = useStream(message._id, isStreamed);
 
   const isCurrentlyStreaming = useMemo(() => {
@@ -33,8 +37,13 @@ function AssistantComponent({
   useEffect(() => {
     if (!isStreamed) return;
     if (isCurrentlyStreaming) return;
-    stopStreaming();
+    stopStreaming?.();
   }, [isStreamed, isCurrentlyStreaming, stopStreaming]);
+
+  useEffect(() => {
+    if (!isLast) return;
+    clearOptimisticPrompt(message.chat);
+  }, [message, isCurrentlyStreaming, isLast]);
 
   const currentContent = (message?.content?.length ?? 0 > content.length) ? message?.content : content;
   const currentReasoning =

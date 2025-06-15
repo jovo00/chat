@@ -258,7 +258,7 @@ function ModelList({
                     setModel(model._id);
                     setOpen(false);
                   }}
-                  className="rounded-full"
+                  className="mt-1 rounded-full"
                   asChild
                 >
                   <div
@@ -326,7 +326,7 @@ function ModelList({
                       {model?.text_capabilities?.features?.image_input && (
                         <Tooltip>
                           <TooltipTrigger>
-                            <EyeIcon className="size-8 min-h-8 min-w-8 rounded-full bg-emerald-600/20 p-2 text-emerald-300" />
+                            <EyeIcon className="size-8 min-h-8 min-w-8 rounded-full bg-emerald-900/80 p-2 text-emerald-200" />
                           </TooltipTrigger>
                           <TooltipContent>Supports image upload and analysis</TooltipContent>
                         </Tooltip>
@@ -334,7 +334,7 @@ function ModelList({
                       {model?.text_capabilities?.features?.file_input && (
                         <Tooltip>
                           <TooltipTrigger>
-                            <FileText className="size-8 min-h-8 min-w-8 rounded-full bg-sky-600/20 p-2 text-sky-300" />
+                            <FileText className="size-8 min-h-8 min-w-8 rounded-full bg-sky-900/80 p-2 text-sky-200" />
                           </TooltipTrigger>
                           <TooltipContent>Supports document upload and analysis</TooltipContent>
                         </Tooltip>
@@ -350,7 +350,7 @@ function ModelList({
                       {model?.text_capabilities?.features?.reasoning_output && (
                         <Tooltip>
                           <TooltipTrigger>
-                            <BrainIcon className="size-8 min-h-8 min-w-8 rounded-full bg-purple-600/20 p-2 text-purple-300" />
+                            <BrainIcon className="size-8 min-h-8 min-w-8 rounded-full bg-purple-900/80 p-2 text-purple-200" />
                           </TooltipTrigger>
                           <TooltipContent>Has reasoning capabilities</TooltipContent>
                         </Tooltip>
