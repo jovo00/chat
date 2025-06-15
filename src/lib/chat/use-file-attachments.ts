@@ -9,6 +9,7 @@ const MAX_FILE_COUNT = 10;
 
 export function useFileAttachments() {
   const [attachedFiles, setAttachedFiles] = useState<Doc<"files">[]>([]);
+  const [pending, setPending] = useState(0);
 
   const authToken = useAuthToken();
   const user = useQuery(api.users.get.current);
@@ -26,6 +27,8 @@ export function useFileAttachments() {
 
   const uploadFile = (file: File) => {
     if (!user.data?._id) throw new Error("Not authorized");
+
+    setPending((prev) => prev + 1);
 
     const randomId = Math.random().toString(36).substring(7);
     const optimisticFile: Doc<"files"> = {
@@ -61,6 +64,7 @@ export function useFileAttachments() {
 
     // get the response of the request
     xhr.onreadystatechange = () => {
+      setPending((prev) => prev - 1);
       if (xhr.readyState === 4 && xhr.status === 200) {
         const res = JSON.parse(xhr.responseText);
         setAttachedFiles((prev) => prev.map((f) => (f._id === randomId ? res : f)));
@@ -96,12 +100,19 @@ export function useFileAttachments() {
     setAttachedFiles((prev) => prev.filter((f) => f._id !== fileId));
   }, []);
 
+  function resetAttachments() {
+    setPending(0);
+    setAttachedFiles([]);
+  }
+
   return {
     attachedFiles,
     setAttachedFiles,
     handleFileDrop,
     handleFileInputChange,
     removeFile,
+    resetAttachments,
+    pending,
     MAX_FILE_COUNT,
   };
 }

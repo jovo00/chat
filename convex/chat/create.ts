@@ -15,6 +15,8 @@ export const one = mutation({
     prompt: v.string(),
     chat: v.optional(v.id("chats")),
     model: v.id("models"),
+    online: v.boolean(),
+    files: v.array(v.id("files")),
   },
   handler: async (ctx, args) => {
     if (args.prompt.trim().length === 0) throw new ConvexError("Prompt cannot be empty");
@@ -59,8 +61,9 @@ export const one = mutation({
       status_message: undefined,
       model: args.model,
       hide: false,
-      files: [],
+      files: args.files,
       cancelled: false,
+      online: args.online,
     });
 
     await ctx.db.patch(chatId, { latest_message: messageId });
@@ -125,7 +128,7 @@ export const assistantMessage = internalMutation({
       .first();
     if (!token) throw new ConvexError(`No token for ${model.api} found`);
 
-    let context: CoreMessage[] | Omit<Message, "id">[] | undefined = [];
+    let context = [];
 
     const maxContextTokenCount = Math.max(
       Math.min(20000, (model?.text_capabilities?.max_input_tokens ?? Infinity) / 2),
@@ -158,10 +161,37 @@ export const assistantMessage = internalMutation({
         }
 
         if ((message.prompt ?? "").length > 0) {
-          context.push({
-            role: "user",
-            content: message.prompt ?? "",
-          });
+          if ((message.status === "generating" || message.status === "pending") && message.files.length > 0) {
+            const files = (await Promise.allSettled(message.files.map((file) => ctx.db.get(file)))).map(
+              async (file) => {
+                if (file.status === "rejected" || !file.value) return undefined;
+
+                if (file.value?.name?.endsWith(".pdf") && model.text_capabilities?.features.file_input) {
+                  return {
+                    type: "file",
+                    data: await ctx.storage.getUrl(file.value.storage),
+                    mimeType: "application/pdf",
+                  };
+                } else if (model.text_capabilities?.features.image_input) {
+                  return { type: "image", image: await ctx.storage.getUrl(file.value!.storage) };
+                }
+              },
+            );
+
+            const filesContent = (await Promise.allSettled(files))
+              .map((file) => (file.status === "fulfilled" ? file.value : undefined))
+              .filter((f) => f !== undefined);
+
+            context.push({
+              role: "user",
+              content: [{ type: "text", text: message.prompt ?? "" }, ...filesContent],
+            });
+          } else {
+            context.push({
+              role: "user",
+              content: message.prompt ?? "",
+            });
+          }
         }
       }
 
@@ -179,7 +209,7 @@ export const assistantMessage = internalMutation({
 
     context.reverse();
 
-    return { context, token, model };
+    return { context, token, model, message };
   },
 });
 

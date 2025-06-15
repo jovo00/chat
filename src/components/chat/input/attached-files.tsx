@@ -2,6 +2,7 @@ import React from "react";
 import { Button } from "@/components/ui/button";
 import { FileIcon, LoaderCircle, X } from "lucide-react";
 import { Doc } from "@gen/dataModel";
+import getIcon from "@/lib/file-icons/get-icon";
 
 interface AttachedFilesProps {
   files: Doc<"files">[];
@@ -18,7 +19,7 @@ const AttachedFiles: React.FC<AttachedFilesProps> = ({ files, onRemove }) => {
           {file.storage.startsWith("%") ? (
             <LoaderCircle className="size-4 shrink-0 animate-spin" />
           ) : (
-            <FileIcon className="size-4 shrink-0" />
+            <img src={getIcon(file?.name, false)} className="size-4 shrink-0" />
           )}
           <p className="w-full overflow-hidden text-sm font-medium text-ellipsis whitespace-nowrap">{file.name}</p>
           <Button

@@ -1,7 +1,7 @@
 "use client";
 
 import { api } from "@gen/api";
-import { Id } from "@gen/dataModel";
+import { Doc, Id } from "@gen/dataModel";
 import { useCallback, useState } from "react";
 import useInputState from "../state/input";
 import { useRouter } from "next/navigation";
@@ -10,7 +10,7 @@ import { useMutation } from "../convex/use-mutation";
 import { toast } from "sonner";
 import { getErrorMessage } from "../utils";
 
-export default function useSendMessage(chatId?: Id<"chats">) {
+export default function useSendMessage(online: boolean, fileAttachments: Doc<"files">[], chatId?: Id<"chats">) {
   const model = useInputState((state) => state.model);
   const addStreaming = useChatState((state) => state.addStreaming);
   const router = useRouter();
@@ -33,9 +33,11 @@ export default function useSendMessage(chatId?: Id<"chats">) {
         prompt,
         model,
         chat: chatId,
+        online,
+        files: fileAttachments.map((file) => file._id),
       });
     },
-    [model, sendMessage],
+    [model, sendMessage, online, fileAttachments],
   );
 
   return { send };

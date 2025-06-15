@@ -109,7 +109,15 @@ function ModelButton({
   lastModelState?: Doc<"models">;
 }) {
   const { data: selectedModel } = useQuery(api.models.get.one, { model });
-  const currentSelectedModel = selectedModel ?? lastModelState;
+
+  const [currentSelectedModel, setCurrentSelectedModel] = useState(lastModelState);
+
+  useEffect(() => {
+    if (selectedModel) {
+      setCurrentSelectedModel(selectedModel);
+    }
+  }, [selectedModel]);
+
   const maxTokens = currentSelectedModel?.text_capabilities?.max_input_tokens ?? 0;
 
   return (
@@ -167,11 +175,11 @@ function ModelButton({
                         <FileText className="size-[0.8rem] rounded-full text-sky-300" />
                       </span>
                     )}
-                    {currentSelectedModel?.text_capabilities?.features?.tools_input && (
+                    {/* {currentSelectedModel?.text_capabilities?.features?.tools_input && (
                       <span>
                         <Wrench className="size-[0.8rem] rounded-full text-slate-300" />
                       </span>
-                    )}
+                    )} */}
                     {currentSelectedModel?.text_capabilities?.features?.reasoning_output && (
                       <span>
                         <BrainIcon className="size-[0.8rem] rounded-full text-purple-300" />
@@ -336,14 +344,14 @@ function ModelList({
                           <TooltipContent>Supports document upload and analysis</TooltipContent>
                         </Tooltip>
                       )}
-                      {model?.text_capabilities?.features?.tools_input && (
+                      {/* {model?.text_capabilities?.features?.tools_input && (
                         <Tooltip>
                           <TooltipTrigger>
                             <Wrench className="size-8 min-h-8 min-w-8 rounded-full bg-slate-600/40 p-2 text-slate-300" />
                           </TooltipTrigger>
                           <TooltipContent>Supports Tools</TooltipContent>
                         </Tooltip>
-                      )}
+                      )} */}
                       {model?.text_capabilities?.features?.reasoning_output && (
                         <Tooltip>
                           <TooltipTrigger>

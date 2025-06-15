@@ -23,9 +23,6 @@
 .message input {
   @apply text-sm;
 }
-.message a {
-  @apply select-none;
-}
 
 .message * {
   line-height: 1.6;

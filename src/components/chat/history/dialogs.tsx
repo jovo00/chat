@@ -2,6 +2,7 @@
 
 import {
   Dialog,
+  DialogClose,
   DialogContent,
   DialogDescription,
   DialogFooter,
@@ -121,15 +122,18 @@ export function DeleteChatDialog({ open, onOpenChange, chat }: DialogProps) {
             <DialogTitle>Delete Chat</DialogTitle>
             <DialogDescription>Are you sure you want to delete this chat?</DialogDescription>
           </DialogHeader>
-          <div className="bg-accent my-2 flex h-10 w-full max-w-full items-center gap-2 overflow-hidden rounded-full px-5 font-medium text-white">
+          <div className="bg-accent relative my-2 flex h-10 w-full max-w-full items-center gap-2 overflow-hidden rounded-full px-5 font-medium text-white">
             <MessageSquare className="h-4 w-4 shrink-0" />
             <span className="grow-0 overflow-hidden text-sm text-ellipsis whitespace-nowrap">{title}</span>
+            <input type="text" className="pointer-events-none absolute opacity-0" />
           </div>
           <DialogFooter>
-            <Button variant="ghost" type="button" onClick={() => onOpenChange(false)}>
-              Cancel
-            </Button>
-            <Button variant="destructive" type="submit" disabled={deleteChat.isPending}>
+            <DialogClose asChild>
+              <Button variant="ghost" type="button">
+                Cancel
+              </Button>
+            </DialogClose>
+            <Button variant="destructive" type="submit" autoFocus disabled={deleteChat.isPending}>
               {deleteChat.isPending ? "Deleting..." : "Delete"}
             </Button>
           </DialogFooter>

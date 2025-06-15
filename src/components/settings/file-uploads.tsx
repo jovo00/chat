@@ -23,6 +23,7 @@ import { Preloaded, usePreloadedPaginatedQuery } from "@/lib/convex/use-preload"
 import { Doc } from "@gen/dataModel";
 import { ConvexError } from "convex/values";
 import { useMutation } from "@/lib/convex/use-mutation";
+import getIcon from "@/lib/file-icons/get-icon";
 
 export default function FileUploads({ preloadedFiles }: { preloadedFiles: Preloaded<typeof api.files.get.many> }) {
   const convex = useConvex();
@@ -89,11 +90,11 @@ export default function FileUploads({ preloadedFiles }: { preloadedFiles: Preloa
                   <div
                     key={file?._id}
                     className={cn(
-                      "bg-accent/40 border-accent/40 flex items-center gap-2 rounded-full border px-2 py-1 pr-1",
+                      "bg-accent/40 border-accent/40 flex items-center gap-1.5 rounded-full border px-2 py-1 pr-1",
                     )}
                   >
-                    <div className="bg-popover flex size-8 items-center justify-center rounded-full">
-                      <FileIcon className="size-4" />
+                    <div className="flex size-8 items-center justify-center rounded-full">
+                      <img src={getIcon(file?.name, false)} className="size-5" />
                     </div>
                     <div className="flex flex-1 flex-col">
                       <h3 className="text-sm font-semibold">{file?.name}</h3>

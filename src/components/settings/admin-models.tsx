@@ -109,7 +109,9 @@ export default function AdminModels({ preloadedModels }: { preloadedModels: Prel
                     </div>
                     <div className="flex flex-1 flex-col">
                       <h3 className="text-sm font-semibold">{model?.title}</h3>
-                      {/* <div className="text-xs opacity-80">{model?.id}</div> */}
+                      <div className="text-xs opacity-80">
+                        {model?.api} ({model?.api_id})
+                      </div>
                     </div>
 
                     <div>

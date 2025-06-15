@@ -2,9 +2,9 @@ import { httpAction, internalAction } from "../_generated/server";
 import { api, internal } from "../_generated/api";
 // import { OpenAI } from "openai";
 import { ConvexError, v } from "convex/values";
-import { Id } from "../_generated/dataModel";
+import { Doc, Id } from "../_generated/dataModel";
 import { createOpenRouter } from "@openrouter/ai-sdk-provider";
-import { LanguageModel, streamText } from "ai";
+import { CoreMessage, LanguageModel, streamText } from "ai";
 import { GenericActionCtx } from "convex/server";
 
 export const completeChat = httpAction(async (ctx, request) => {
@@ -40,7 +40,7 @@ export const completeChat = httpAction(async (ctx, request) => {
 
   const messageId = body?.messageId!;
 
-  const { context, token, model } = await ctx.runMutation(internal.chat.create.assistantMessage, {
+  const { context, token, model, message } = await ctx.runMutation(internal.chat.create.assistantMessage, {
     messageId: messageId,
   });
 
@@ -52,7 +52,11 @@ export const completeChat = httpAction(async (ctx, request) => {
     const openrouter = createOpenRouter({
       apiKey: decryptedToken,
     });
-    apiModel = openrouter(model.api_id);
+    if (message.online) {
+      apiModel = openrouter(model.api_id + ":online");
+    } else {
+      apiModel = openrouter(model.api_id);
+    }
   }
 
   if (!apiModel) throw new ConvexError("Could not initialize model");
@@ -60,7 +64,7 @@ export const completeChat = httpAction(async (ctx, request) => {
   const abortController = new AbortController();
   const result = streamText({
     model: apiModel,
-    messages: context,
+    messages: context as CoreMessage[],
     abortSignal: abortController.signal,
   });
 

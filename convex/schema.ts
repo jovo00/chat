@@ -85,6 +85,7 @@ export default defineSchema({
     model: v.id("models"),
     hide: v.boolean(),
     files: v.array(v.id("files")),
+    online: v.boolean(),
     content: v.optional(v.string()),
     reasoning: v.optional(v.string()),
     annotations: v.optional(v.array(v.any())),

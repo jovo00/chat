@@ -81,6 +81,7 @@ export const messages = query({
       .order("desc")
       .paginate(args.paginationOpts);
 
+    // Join models
     const modelIds = new Set(messages.page.map((message) => message.model));
     const modelPromises = await Promise.allSettled(Array.from(modelIds).map((modelId) => ctx.db.get(modelId)));
     const models: Map<Id<"models">, Doc<"models">> = new Map();
@@ -97,7 +98,33 @@ export const messages = query({
       }
     });
 
-    return messages as typeof messages & { page: typeof messages.page & { model: Id<"models"> | Doc<"models"> }[] };
+    // Join files
+
+    const fileIds = new Set(messages.page.flatMap((message) => message.files));
+    const filesPromises = await Promise.allSettled(
+      Array.from(fileIds).map(async (fileId) => {
+        try {
+          return await ctx.db.get(fileId);
+        } catch (e) {
+          return Promise.reject();
+        }
+      }),
+    );
+    const files: Map<Id<"files">, Doc<"files">> = new Map();
+    filesPromises.forEach((promise) => {
+      if (promise.status === "fulfilled" && promise.value) {
+        files.set(promise.value._id, promise.value);
+      }
+    });
+
+    messages.page.forEach((message, i) => {
+      const fileDocs = message.files.map((f) => files.get(f));
+      messages.page[i].files = (fileDocs as any)?.map((f: any) => (f ? f : { _id: "deleted" }));
+    });
+
+    return messages as typeof messages & {
+      page: typeof messages.page & { model: Id<"models"> | Doc<"models">; files: Id<"files">[] | Doc<"files">[] }[];
+    };
   },
 });
 
