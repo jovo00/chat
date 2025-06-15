@@ -1,7 +1,6 @@
-import { internalAction, internalMutation, mutation } from "../_generated/server";
+import { internalAction, mutation } from "../_generated/server";
 import { ConvexError, v } from "convex/values";
 import { getUser } from "../users/get";
-import { Doc } from "../_generated/dataModel";
 import { internal } from "../_generated/api";
 import { generateText } from "ai";
 import { createOpenRouter } from "@openrouter/ai-sdk-provider";
@@ -20,9 +19,17 @@ export const newChatMessage = mutation({
   },
   handler: async (ctx, args) => {
     if (args.prompt.trim().length === 0) throw new ConvexError("Prompt cannot be empty");
+    if (args.files.length > 10) throw new ConvexError("You can only add up to 10 files per message");
 
     const user = await getUser(ctx);
     if (!user) throw new ConvexError("Not authorized");
+
+    const token = await ctx.db
+      .query("tokens")
+      .withIndex("by_user_and_provider", (q) => q.eq("user", user._id).eq("provider", "openrouter"))
+      .first();
+
+    if (!token) throw new ConvexError("Please add an API Key to start chatting");
 
     let chatId = args.chat;
     if (!chatId) {
@@ -33,12 +40,7 @@ export const newChatMessage = mutation({
         pinned: false,
       });
 
-      const token = await ctx.db
-        .query("tokens")
-        .withIndex("by_user_and_provider", (q) => q.eq("user", user._id).eq("provider", "openrouter"))
-        .first();
-
-      if (token && chatId) {
+      if (chatId) {
         ctx.scheduler.runAfter(0, internal.chat.create.generateTitle, {
           prompt: limitString(args.prompt, 5000),
           chat: chatId,

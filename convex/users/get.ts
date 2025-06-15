@@ -1,4 +1,4 @@
-import { getAuthUserId, getAuthSessionId, Doc } from "@convex-dev/auth/server";
+import { getAuthUserId, Doc } from "@convex-dev/auth/server";
 import { MutationCtx, query, QueryCtx } from "../_generated/server";
 import { Id } from "../_generated/dataModel";
 import { ConvexError } from "convex/values";

@@ -4,6 +4,7 @@ import { useState, useRef, useCallback, FormEvent } from "react";
 import { toast } from "sonner";
 import { useQuery } from "../convex/use-query";
 import { api } from "@gen/api";
+import { MAX_FILE_SIZE } from "../../../convex/files/actions";
 
 const MAX_FILE_COUNT = 10;
 
@@ -25,7 +26,20 @@ export function useFileAttachments() {
   }
 
   const uploadFile = (file: File) => {
-    if (!user.data?._id) throw new Error("Not authorized");
+    if (!user.data?._id) {
+      toast.error("You are not allowed to upload files");
+      return;
+    }
+
+    if (file.size > MAX_FILE_SIZE) {
+      toast.error("File to large", { description: "You can only upload files with max. 10MiB" });
+      return;
+    }
+
+    if (attachedFiles.length > MAX_FILE_COUNT) {
+      toast.error("Too many files", { description: "You can only upload up to " + MAX_FILE_COUNT + "files" });
+      return;
+    }
 
     setPending((prev) => prev + 1);
 

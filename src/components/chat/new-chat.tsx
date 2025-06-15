@@ -3,14 +3,17 @@ import ChatInput from "./input/input";
 import ModelSelect from "./input/model-select";
 import { api } from "@gen/api";
 import { getLastModelState } from "@/lib/state/cookies";
-import { preloadPaginatedQuery } from "@/lib/convex/preload";
+import { preloadPaginatedQuery, preloadQuery } from "@/lib/convex/preload";
+import NeedsApiKey from "./api-key-check";
 
 export default async function NewChat() {
   const preloadedModels = await preloadPaginatedQuery(api.models.get.many, {}, { initialNumItems: 50 });
+  const preloadedTokens = await preloadQuery(api.tokens.get.many);
+  const preloadedUser = await preloadQuery(api.users.get.current);
   const lastModelState = await getLastModelState();
 
   return (
-    <>
+    <NeedsApiKey preloadedTokens={preloadedTokens} preloadedUser={preloadedUser}>
       <div className="h-auto w-full flex-1 overflow-y-auto">
         <div className="flex h-full w-full flex-col items-center justify-center">
           <div className="flex items-center gap-3">
@@ -22,6 +25,6 @@ export default async function NewChat() {
         </div>
       </div>
       <ChatInput preloadedModels={preloadedModels} lastModelState={lastModelState} />
-    </>
+    </NeedsApiKey>
   );
 }

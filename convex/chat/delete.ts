@@ -13,7 +13,7 @@ export const one = deleteMutation({
     const chat = await ctx.db.get(args.chat);
     if (!chat) throw new ConvexError("Not found");
 
-    if (chat.user !== user._id) throw new ConvexError("Not allowed");
+    if (chat.user !== user._id) throw new ConvexError("You cannot delete the chat of another user");
 
     await ctx.db.delete(chat._id);
   },

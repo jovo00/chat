@@ -1,10 +1,7 @@
-import { internalAction, internalMutation, mutation } from "../_generated/server";
+import { internalMutation } from "../_generated/server";
 import { ConvexError, v } from "convex/values";
-import { getUser } from "../users/get";
 import { Doc } from "../_generated/dataModel";
 import { internal } from "../_generated/api";
-import { generateText } from "ai";
-import { createOpenRouter } from "@openrouter/ai-sdk-provider";
 
 export const createContext = internalMutation({
   args: {

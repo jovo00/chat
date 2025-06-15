@@ -54,3 +54,12 @@ export const many = query({
     return files;
   },
 });
+
+export const getMetadata = internalQuery({
+  args: {
+    storageId: v.id("_storage"),
+  },
+  handler: async (ctx, args) => {
+    return await ctx.db.system.get(args.storageId);
+  },
+});

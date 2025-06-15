@@ -1,5 +1,5 @@
 import { ConvexError, v } from "convex/values";
-import { internalMutation, mutation } from "../_generated/server";
+import { internalMutation } from "../_generated/server";
 import { getUser } from "../users/get";
 
 export const one = internalMutation({
@@ -13,6 +13,13 @@ export const one = internalMutation({
       ctx.storage.delete(args.storage);
       throw new ConvexError("Not authorized");
     }
+
+    const token = await ctx.db
+      .query("tokens")
+      .withIndex("by_user_and_provider", (q) => q.eq("user", user._id))
+      .first();
+
+    if (!token) throw new ConvexError(`No Api Key set`);
 
     const _id = await ctx.db.insert("files", {
       name: args.name,

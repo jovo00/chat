@@ -7,8 +7,9 @@ import { cn } from "@/lib/utils";
 import { ArrowDown } from "lucide-react";
 import { MessageList } from "./list";
 import { Preloaded } from "@/lib/convex/use-preload";
-import { useLayoutEffect, useState } from "react";
+import { useEffect, useLayoutEffect, useState } from "react";
 import { Id } from "@gen/dataModel";
+import { useQuery } from "@/lib/convex/use-query";
 
 export default function Messages({
   preloadedMessages,
@@ -17,8 +18,15 @@ export default function Messages({
   preloadedMessages: Preloaded<typeof api.chat.get.messages>;
   chatId: Id<"chats">;
 }) {
+  const { data: chat } = useQuery(api.chat.get.chat, { chatId });
   const { messagesRef, scrollRef, visibilityRef, isAtBottom, scrollToBottom } = useScrollAnchor();
   const [init, setInit] = useState(false);
+
+  useEffect(() => {
+    if (!chat) return;
+    const title = chat?.title && chat?.title?.trim()?.length > 0 ? chat?.title?.trim() : chat?.prompt_short;
+    document.title = `${title} - jovochat`;
+  }, [chat]);
 
   useLayoutEffect(() => {
     scrollToBottom();

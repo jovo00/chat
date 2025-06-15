@@ -14,34 +14,30 @@ export const completeChat = httpAction(async (ctx, request) => {
   const body = (await request.json()) as {
     messageId?: Id<"messages">;
   };
-  let chatId: Id<"chats"> | undefined;
 
-  if (body?.messageId) {
-    const message = await ctx.runQuery(internal.chat.get.getMessageInternal, {
-      message: body.messageId,
+  if (!body.messageId) throw new ConvexError("Missing messageId");
+
+  const initialMessage = await ctx.runQuery(internal.chat.get.getMessageInternal, {
+    message: body.messageId,
+  });
+
+  if (!initialMessage || initialMessage?.user !== user._id) {
+    throw new ConvexError("Not allowed to access this chat");
+  } else if (initialMessage?.status !== "pending") {
+    return new Response("", {
+      headers: {
+        "Access-Control-Allow-Origin": process.env.SITE_URL!,
+        "Content-Type": "text/plain; charset=utf-8",
+        Vary: "Origin",
+      },
     });
-
-    if (!message || message?.user !== user._id) {
-      throw new ConvexError("Not allowed to access this chat");
-    } else if (message?.status !== "pending") {
-      return new Response("", {
-        headers: {
-          "Access-Control-Allow-Origin": process.env.SITE_URL!,
-          "Content-Type": "text/plain; charset=utf-8",
-          Vary: "Origin",
-        },
-      });
-    }
-
-    chatId = message.chat;
   }
 
-  if (!chatId) throw new ConvexError("Chat not found");
-
-  const messageId = body?.messageId!;
+  const messageId = initialMessage._id;
+  const chatId = initialMessage.chat;
 
   const { context, token, model, message } = await ctx.runMutation(internal.chat.context.createContext, {
-    messageId: messageId,
+    messageId: initialMessage._id,
   });
 
   const decryptedToken = await ctx.runAction(internal.tokens.actions.decryptToken, { encryptedToken: token.token });
@@ -70,7 +66,7 @@ export const completeChat = httpAction(async (ctx, request) => {
 
   let content = "";
   let reasoning: undefined | string = undefined;
-  let incrementalUpdater = new IncrementalUpdater(ctx, messageId);
+  let incrementalUpdater = new IncrementalUpdater(ctx, message._id);
 
   const encoder = new TextEncoder();
   const readableStream = new ReadableStream({

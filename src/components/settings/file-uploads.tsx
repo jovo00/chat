@@ -112,28 +112,34 @@ export default function FileUploads({ preloadedFiles }: { preloadedFiles: Preloa
                           </Button>
                         </DialogTrigger>
                         <DialogContent className="max-w-100">
-                          <DialogHeader>
-                            <DialogTitle>Delete File</DialogTitle>
-                            <DialogDescription className="leading-relaxed">
-                              Are you sure you want to delete{" "}
-                              <span className="rounded-full bg-white/10 px-2 py-[0.15rem] text-xs font-semibold break-all text-white/80">
-                                {file?.name}
-                              </span>
-                              ?
-                            </DialogDescription>
-                          </DialogHeader>
-                          <DialogFooter>
-                            <DialogClose asChild>
-                              <Button variant={"ghost"}>Cancel</Button>
-                            </DialogClose>
-                            <Button
-                              variant={"destructive"}
-                              onClick={() => deleteFile.mutate({ file: file._id })}
-                              disabled={deleteFile.isPending}
-                            >
-                              Delete
-                            </Button>
-                          </DialogFooter>
+                          <form
+                            onSubmit={(e) => {
+                              e.preventDefault();
+                              deleteFile.mutate({ file: file._id });
+                            }}
+                          >
+                            <DialogHeader>
+                              <DialogTitle>Delete File</DialogTitle>
+                              <DialogDescription className="leading-relaxed">
+                                Are you sure you want to delete{" "}
+                                <span className="rounded-full bg-white/10 px-2 py-[0.15rem] text-xs font-semibold break-all text-white/80">
+                                  {file?.name}
+                                </span>
+                                ?
+                              </DialogDescription>
+                            </DialogHeader>
+                            <input type="text" className="pointer-events-none absolute opacity-0" />
+                            <DialogFooter>
+                              <DialogClose asChild>
+                                <Button variant={"ghost"} type="button">
+                                  Cancel
+                                </Button>
+                              </DialogClose>
+                              <Button variant={"destructive"} disabled={deleteFile.isPending}>
+                                Delete
+                              </Button>
+                            </DialogFooter>
+                          </form>
                         </DialogContent>
                       </Dialog>
                     </div>

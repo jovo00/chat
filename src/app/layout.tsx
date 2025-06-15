@@ -25,8 +25,8 @@ const fontMono = Source_Code_Pro({
 });
 
 export const metadata: Metadata = {
-  title: "AI Chat App",
-  description: "Chat with AI's",
+  title: "jovochat",
+  description: "AI Chat App",
 };
 
 export default function RootLayout({

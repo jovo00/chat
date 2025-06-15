@@ -19,7 +19,7 @@ interface ChatActionsProps {
 }
 
 export function ChatActions({ onRename, onDelete, isActive, menuOpen, isPinned, chatId }: ChatActionsProps) {
-  const pin = useMutation(api.chat.update.pinChat);
+  const menuItems = useChatItemActions({ isPinned, onDelete, onRename, chatId });
 
   const trigger = (
     <div
@@ -34,46 +34,57 @@ export function ChatActions({ onRename, onDelete, isActive, menuOpen, isPinned, 
   );
 
   return (
-    <Menu
-      onTrigger={() => {}}
-      items={[
-        {
-          type: MenuItemType.Item,
-          content: isPinned ? (
-            <div className="flex items-center gap-2">
-              <PinOff className="text-primary/80 size-4" strokeWidth={2.5} /> Unpin
-            </div>
-          ) : (
-            <div className="flex items-center gap-2">
-              <Pin className="text-primary/80 size-4" strokeWidth={2.5} /> Pin
-            </div>
-          ),
-          onSelect: () => pin.mutate({ chatId, pin: !isPinned }),
-        },
-        {
-          type: MenuItemType.Item,
-          content: (
-            <div className="flex items-center gap-2">
-              <TextCursor className="text-primary/80 size-4" strokeWidth={2.5} /> Rename
-            </div>
-          ),
-          onSelect: () => onRename(),
-        },
-        {
-          type: MenuItemType.Item,
-          variant: "destructive",
-          content: (
-            <div className="flex items-center gap-2 text-red-500">
-              <Trash2 className="size-4 text-red-500" strokeWidth={2.5} /> Delete
-            </div>
-          ),
-          onSelect: () => onDelete(),
-        },
-      ]}
-      context
-      menuType={isMobile ? MenuType.Drawer : MenuType.Dropdown}
-    >
+    <Menu onTrigger={() => {}} items={menuItems} context menuType={isMobile ? MenuType.Drawer : MenuType.Dropdown}>
       {trigger}
     </Menu>
   );
+}
+
+export function useChatItemActions({
+  isPinned,
+  onRename,
+  onDelete,
+  chatId,
+}: {
+  isPinned: boolean;
+  onRename: () => void;
+  onDelete: () => void;
+  chatId: Id<"chats">;
+}) {
+  const pin = useMutation(api.chat.update.pinChat);
+
+  return [
+    {
+      type: MenuItemType.Item,
+      content: isPinned ? (
+        <div className="flex items-center gap-2">
+          <PinOff className="text-primary/80 size-4" strokeWidth={2.5} /> Unpin
+        </div>
+      ) : (
+        <div className="flex items-center gap-2">
+          <Pin className="text-primary/80 size-4" strokeWidth={2.5} /> Pin
+        </div>
+      ),
+      onSelect: () => pin.mutate({ chatId, pin: !isPinned }),
+    },
+    {
+      type: MenuItemType.Item,
+      content: (
+        <div className="flex items-center gap-2">
+          <TextCursor className="text-primary/80 size-4" strokeWidth={2.5} /> Rename
+        </div>
+      ),
+      onSelect: () => onRename(),
+    },
+    {
+      type: MenuItemType.Item,
+      variant: "destructive",
+      content: (
+        <div className="flex items-center gap-2 text-red-500">
+          <Trash2 className="size-4 text-red-500" strokeWidth={2.5} /> Delete
+        </div>
+      ),
+      onSelect: () => onDelete(),
+    },
+  ];
 }

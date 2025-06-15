@@ -10,7 +10,7 @@ import { api } from "@gen/api";
 import useSendMessage from "@/lib/chat/use-send-message";
 import { Doc, Id } from "@gen/dataModel";
 import useChatState from "@/lib/state/chat";
-import { Preloaded } from "@/lib/convex/use-preload";
+import { Preloaded, usePreloadedQuery } from "@/lib/convex/use-preload";
 import { useMutation } from "@/lib/convex/use-mutation";
 import { toast } from "sonner";
 import { useQuery } from "@/lib/convex/use-query";
@@ -45,10 +45,11 @@ export default function ChatInput({
   const selectedModel = useInputState((state) => state.model);
   const addOptimisticPrompt = useInputState((state) => state.addOptimisticPrompt);
   const { data: currentModel } = useQuery(api.models.get.one, selectedModel ? { model: selectedModel } : "skip");
-  const messages = useSendMessage(enableSearchGrounding, attachedFiles, chatId);
-  const { data: chat } = useQuery(api.chat.get.chat, chatId ? { chatId } : "skip");
   const [cancelling, setCancelling] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+
+  const messages = useSendMessage(enableSearchGrounding, attachedFiles, setSubmitting, chatId);
+  const { data: chat } = useQuery(api.chat.get.chat, chatId ? { chatId } : "skip");
 
   const streaming = chatId && streams.has(chatId);
   const isGenerating =
@@ -177,7 +178,13 @@ export default function ChatInput({
             {allowedFiletypes?.length > 0 && (
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <Button className="relative" type="button" variant={"secondary"} size={"icon"}>
+                  <Button
+                    className="relative"
+                    type="button"
+                    variant={"secondary"}
+                    size={"icon"}
+                    disabled={attachedFiles.length >= MAX_FILE_COUNT}
+                  >
                     <input
                       type="file"
                       className="absolute top-0 left-0 z-50 h-full w-full cursor-pointer opacity-0"
@@ -189,7 +196,9 @@ export default function ChatInput({
                     <Paperclip className="size-4.5" />
                   </Button>
                 </TooltipTrigger>
-                <TooltipContent>Add an attachment</TooltipContent>
+                <TooltipContent>
+                  {attachedFiles.length >= MAX_FILE_COUNT ? "You can only add up to 10 files" : "Add an attachment"}
+                </TooltipContent>
               </Tooltip>
             )}
           </div>
