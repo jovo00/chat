@@ -80,7 +80,7 @@ export default function FileUploads({ preloadedFiles }: { preloadedFiles: Preloa
             <div className="flex w-full flex-col gap-2">
               {files.results?.length === 0 && (
                 <div className="flex h-full w-full items-center justify-center text-center text-sm opacity-30">
-                  No files yet
+                  Nothing here yet
                 </div>
               )}
 

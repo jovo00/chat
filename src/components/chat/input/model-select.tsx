@@ -149,7 +149,9 @@ function ModelButton({
                     )}
                   >
                     <span className="text-xs font-normal">
-                      {maxTokens ? Math.round(maxTokens / 100000) / 10 + "M" : Math.round(maxTokens / 1000) + "k"}{" "}
+                      {maxTokens >= 1000000
+                        ? Math.round(maxTokens / 100000) / 10 + "M"
+                        : Math.round(maxTokens / 1000) + "k"}{" "}
                       Context
                     </span>
                   </p>
@@ -247,7 +249,6 @@ function ModelList({
             );
             return (
               <Fragment key={model._id}>
-                {!searching && i === 0 && <p className="px-2 pt-1 pb-2 text-sm font-medium opacity-50">Top</p>}
                 <CommandItem
                   value={model._id}
                   onSelect={(value) => {
@@ -354,9 +355,6 @@ function ModelList({
                     </div>
                   </div>
                 </CommandItem>
-                {/* {!searching && model._id === lastFavorite?.id && (
-                  <p className="px-2 pt-1 pb-2 text-sm font-medium opacity-50">Other</p>
-                )} */}
               </Fragment>
             );
           })}

@@ -2,8 +2,8 @@
 
 import { Button } from "@/components/ui/button";
 import { cn, getErrorMessage } from "@/lib/utils";
-import { ArrowUp, LoaderCircle, Square } from "lucide-react";
-import { FormEvent, KeyboardEventHandler, useEffect, useRef, useState } from "react";
+import { ArrowUp, Globe, LoaderCircle, Paperclip, Square } from "lucide-react";
+import { FormEvent, FormEventHandler, KeyboardEventHandler, useEffect, useRef, useState } from "react";
 import TextareaAutosize from "react-textarea-autosize";
 import ModelSelect from "./model-select";
 import { api } from "@gen/api";
@@ -14,6 +14,11 @@ import { Preloaded } from "@/lib/convex/use-preload";
 import { useMutation } from "@/lib/convex/use-mutation";
 import { toast } from "sonner";
 import { useQuery } from "@/lib/convex/use-query";
+import { useFileAttachments } from "@/lib/chat/use-file-attachments";
+import Dropzone from "@/components/ui/dropzone";
+import AttachedFiles from "./attached-files";
+import { Tooltip, TooltipContent } from "@/components/ui/tooltip";
+import { TooltipTrigger } from "@radix-ui/react-tooltip";
 
 export default function ChatInput({
   preloadedModels,
@@ -30,6 +35,7 @@ export default function ChatInput({
   const { data: chat } = useQuery(api.chat.get.chat, chatId ? { chatId } : "skip");
   const [cancelling, setCancelling] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  const [enableSearchGrounding, setEnableSearchGrounding] = useState(false);
 
   const streaming = chatId && streams.has(chatId);
   const isGenerating =
@@ -93,13 +99,21 @@ export default function ChatInput({
     }
   }
 
+  const { attachedFiles, setAttachedFiles, handleFileDrop, handleFileInputChange, removeFile, MAX_FILE_COUNT } =
+    useFileAttachments();
+
+  const allowedFiletypes = [".pdf", ".jpg", ".png", ".webp", ".jpeg"];
+
   return (
     <form className="w-full px-2 lg:px-4" onSubmit={submitHandler}>
+      <Dropzone onDrop={(files) => handleFileDrop(files, allowedFiletypes)} />
       <div
         className={cn(
           "bg-input relative mx-auto flex w-full max-w-240 grow flex-col gap-4 overflow-hidden rounded-t-md p-5 pb-3",
         )}
       >
+        <AttachedFiles files={attachedFiles} onRemove={removeFile} />
+
         <TextareaAutosize
           ref={textInput}
           className="placeholder:text-secondary-foreground/60 max-h-6 w-full resize-none text-base outline-none"
@@ -113,7 +127,42 @@ export default function ChatInput({
         ></TextareaAutosize>
 
         <div className="flex w-full items-center justify-between">
-          <ModelSelect small preloadedModels={preloadedModels} lastModelState={lastModelState} />
+          <div className="flex flex-1 items-center gap-2">
+            <ModelSelect small preloadedModels={preloadedModels} lastModelState={lastModelState} />
+
+            <Tooltip>
+              <TooltipTrigger>
+                <Button
+                  className={"relative"}
+                  type="button"
+                  variant={enableSearchGrounding ? "default" : "secondary"}
+                  size={"icon"}
+                  onClick={() => setEnableSearchGrounding((prev) => !prev)}
+                >
+                  <span className="sr-only">Enable search grounding</span>
+                  <Globe className="size-4.5" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>Enable search grounding</TooltipContent>
+            </Tooltip>
+
+            <Tooltip>
+              <TooltipTrigger>
+                <Button className="relative" type="button" variant={"secondary"} size={"icon"}>
+                  <input
+                    type="file"
+                    className="absolute top-0 left-0 z-50 h-full w-full cursor-pointer opacity-0"
+                    accept={allowedFiletypes.join(",")}
+                    onInput={handleFileInputChange as FormEventHandler}
+                    title=""
+                  />
+                  <span className="sr-only">Attach Files</span>
+                  <Paperclip className="size-4.5" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>Add an attachment</TooltipContent>
+            </Tooltip>
+          </div>
           <Button
             type={streaming ? "button" : "submit"}
             size="icon"

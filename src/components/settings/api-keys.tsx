@@ -193,12 +193,12 @@ export default function ApiKeys({
     <>
       <div className="grid gap-6">
         <KeyInput label="OpenRouter" provider="openrouter" tokens={tokens} url="https://openrouter.ai/settings/keys" />
-        <KeyInput
+        {/* <KeyInput
           label="Replicate"
           provider="replicate"
           tokens={tokens}
           url="https://replicate.com/account/api-tokens"
-        />
+        /> */}
       </div>
     </>
   );

@@ -1,4 +1,4 @@
-import { query } from "../_generated/server";
+import { internalQuery, query } from "../_generated/server";
 import { ConvexError, v } from "convex/values";
 import { getUser } from "../users/get";
 import { paginationOptsValidator } from "convex/server";
@@ -48,6 +48,7 @@ export const many = query({
     const files = await ctx.db
       .query("files")
       .withIndex("by_user", (q) => q.eq("user", user?._id))
+      .order("desc")
       .paginate(args.paginationOpts);
 
     return files;

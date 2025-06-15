@@ -20,6 +20,9 @@ export const one = internalMutation({
       user: user._id,
     });
 
-    return { _id };
+    const file = await ctx.db.get(_id);
+    if (!file) throw new ConvexError("Not found");
+
+    return { ...file, url: await ctx.storage.getUrl(file.storage) };
   },
 });
