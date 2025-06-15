@@ -1,10 +1,9 @@
 "use client";
 
 import { Button } from "../ui/button";
-import { Ban, ExternalLink, FileIcon, Link, LoaderCircle, RefreshCcw, Trash2 } from "lucide-react";
+import { ExternalLink, Trash2 } from "lucide-react";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "../ui/card";
 import { cn, getErrorMessage } from "@/lib/utils";
-import { useEffect, useMemo, useState } from "react";
 import { useInView } from "react-intersection-observer";
 import { toast } from "sonner";
 import {

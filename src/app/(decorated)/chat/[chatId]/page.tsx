@@ -1,12 +1,8 @@
-import ChatList from "@/components/chat/chat-list";
-import { messagesErrorRender } from "@/components/chat/message/error-fallback";
-import Messages from "@/components/chat/message/messages";
-import NewChat from "@/components/chat/new-chat";
+import ChatList from "@/components/chat/existing-chat";
 import ShiftMobile from "@/components/layout/shift-mobile";
-import { preloadPaginatedQuery } from "@/lib/convex/preload";
-import { api } from "@gen/api";
 import { Id } from "@gen/dataModel";
 import { ErrorBoundary } from "react-error-boundary";
+import { messagesErrorRender } from "@/components/chat/messages/error";
 
 export default async function Chat({ params }: { params: Promise<{ chatId: string }> }) {
   const { chatId } = await params;

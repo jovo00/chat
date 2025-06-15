@@ -16,7 +16,7 @@ import { useEffect, useState } from "react";
 import { Doc } from "@gen/dataModel";
 import { api } from "@gen/api";
 import { toast } from "sonner";
-import { useParams, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useMutation } from "@/lib/convex/use-mutation";
 import { getErrorMessage } from "@/lib/utils";
 
@@ -89,7 +89,6 @@ export function RenameChatDialog({ open, onOpenChange, chat }: DialogProps) {
 }
 
 export function DeleteChatDialog({ open, onOpenChange, chat }: DialogProps) {
-  const { chatId } = useParams();
   const router = useRouter();
 
   const deleteChat = useMutation(api.chat.delete.one, {

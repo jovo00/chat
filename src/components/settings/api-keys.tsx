@@ -18,15 +18,25 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { PreloadedUser } from "@/lib/auth/server";
 import { api } from "@gen/api";
 import { Doc } from "@gen/dataModel";
-import { ConvexError } from "convex/values";
 import { toast } from "sonner";
 import { Preloaded, usePreloadedQuery } from "@/lib/convex/use-preload";
 import { useMutation } from "@/lib/convex/use-mutation";
 import { getErrorMessage } from "@/lib/utils";
 import { useAction } from "@/lib/convex/use-action";
+
+export default function ApiKeys({ preloadedTokens }: { preloadedTokens: Preloaded<typeof api.tokens.get.many> }) {
+  const { data: tokens } = usePreloadedQuery(preloadedTokens);
+
+  return (
+    <>
+      <div className="grid gap-6">
+        <KeyInput label="OpenRouter" provider="openrouter" tokens={tokens} url="https://openrouter.ai/settings/keys" />
+      </div>
+    </>
+  );
+}
 
 function KeyInput({
   provider,
@@ -34,15 +44,21 @@ function KeyInput({
   url,
   tokens,
 }: {
-  provider: "openrouter" | "replicate";
+  provider: "openrouter";
   label: string;
   url: string;
   tokens: Doc<"tokens">[];
 }) {
   const providers = tokens?.map((token) => token.provider);
-
+  const apiKey = tokens?.find((key) => key.provider === provider);
   const [override, setOverride] = useState(false);
   const [keyValue, setKeyValue] = useState("");
+
+  useEffect(() => {
+    if (override) {
+      setKeyValue("");
+    }
+  }, [override]);
 
   const setToken = useAction(api.tokens.actions.setToken, {
     onSuccess(result) {
@@ -63,14 +79,6 @@ function KeyInput({
       toast.success(`${label} API Key deleted`);
     },
   });
-
-  const apiKey = tokens?.find((key) => key.provider === provider);
-
-  useEffect(() => {
-    if (override) {
-      setKeyValue("");
-    }
-  }, [override]);
 
   async function onSubmit(e: FormEvent<HTMLFormElement> | FormEvent<HTMLButtonElement>) {
     e.preventDefault();
@@ -177,29 +185,5 @@ function KeyInput({
         </CardFooter>
       )}
     </Card>
-  );
-}
-
-export default function ApiKeys({
-  preloadedUser,
-  preloadedTokens,
-}: {
-  preloadedUser: PreloadedUser;
-  preloadedTokens: Preloaded<typeof api.tokens.get.many>;
-}) {
-  const { data: tokens } = usePreloadedQuery(preloadedTokens);
-
-  return (
-    <>
-      <div className="grid gap-6">
-        <KeyInput label="OpenRouter" provider="openrouter" tokens={tokens} url="https://openrouter.ai/settings/keys" />
-        {/* <KeyInput
-          label="Replicate"
-          provider="replicate"
-          tokens={tokens}
-          url="https://replicate.com/account/api-tokens"
-        /> */}
-      </div>
-    </>
   );
 }

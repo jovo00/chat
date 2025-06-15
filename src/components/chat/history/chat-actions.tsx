@@ -1,17 +1,9 @@
 "use client";
 
 import { isMobile } from "react-device-detect";
-import { Ellipsis, Pencil, Pin, PinOff, TextCursor, Trash2 } from "lucide-react";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Drawer, DrawerClose, DrawerContent, DrawerTrigger } from "@/components/ui/drawer";
-import { Button } from "@/components/ui/button";
+import { Ellipsis, Pin, PinOff, TextCursor, Trash2 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { demoItems, Menu, MenuItemType, MenuType } from "@/components/ui/menu";
+import { Menu, MenuItemType, MenuType } from "@/components/ui/menu";
 import { useMutation } from "@/lib/convex/use-mutation";
 import { api } from "@gen/api";
 import { Id } from "@gen/dataModel";
@@ -26,15 +18,7 @@ interface ChatActionsProps {
   chatId: Id<"chats">;
 }
 
-export function ChatActions({
-  onRename,
-  onDelete,
-  isActive,
-  menuOpen,
-  onOpenChange,
-  isPinned,
-  chatId,
-}: ChatActionsProps) {
+export function ChatActions({ onRename, onDelete, isActive, menuOpen, isPinned, chatId }: ChatActionsProps) {
   const pin = useMutation(api.chat.update.pinChat);
 
   const trigger = (

@@ -9,7 +9,7 @@ import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
 import { Drawer, DrawerContent, DrawerTrigger } from "@/components/ui/drawer";
-import { AtSign, BrainIcon, ChevronDown, EyeIcon, FileText, MousePointerClick, Wrench } from "lucide-react";
+import { BrainIcon, ChevronDown, EyeIcon, FileText } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { DialogTitle } from "@radix-ui/react-dialog";
 import { api } from "@gen/api";
@@ -175,11 +175,6 @@ function ModelButton({
                         <FileText className="size-[0.8rem] rounded-full text-sky-300" />
                       </span>
                     )}
-                    {/* {currentSelectedModel?.text_capabilities?.features?.tools_input && (
-                      <span>
-                        <Wrench className="size-[0.8rem] rounded-full text-slate-300" />
-                      </span>
-                    )} */}
                     {currentSelectedModel?.text_capabilities?.features?.reasoning_output && (
                       <span>
                         <BrainIcon className="size-[0.8rem] rounded-full text-purple-300" />
@@ -285,7 +280,7 @@ function ModelList({
                         {model.title}
                       </h5>
                       <div className="flex items-center gap-1">
-                        <p className="opacity-80">{getProviderName(model.title)}</p>
+                        <p className="opacity-80">{getProviderName(model.api)}</p>
                         <Tooltip>
                           <TooltipTrigger>
                             <p

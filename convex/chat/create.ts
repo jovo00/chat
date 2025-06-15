@@ -60,7 +60,8 @@ export const one = mutation({
       status: "pending",
       status_message: undefined,
       model: args.model,
-      hide: false,
+      hide_content: false,
+      hide_prompt: false,
       files: args.files,
       cancelled: false,
       online: args.online,
@@ -153,14 +154,14 @@ export const assistantMessage = internalMutation({
         estimatedTokenCount += estimateTokenCount(message);
         if (estimatedTokenCount > maxContextTokenCount) break;
 
-        if (message.content && message.content?.trim()?.length > 0) {
+        if (message.content && !message.hide_content && message.content?.trim()?.length > 0) {
           context.push({
             role: "assistant",
             content: message.content ?? "",
           });
         }
 
-        if ((message.prompt ?? "").length > 0) {
+        if ((message.prompt ?? "").length > 0 && !message.hide_prompt) {
           if ((message.status === "generating" || message.status === "pending") && message.files.length > 0) {
             const files = (await Promise.allSettled(message.files.map((file) => ctx.db.get(file)))).map(
               async (file) => {

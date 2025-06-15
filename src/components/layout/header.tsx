@@ -10,11 +10,11 @@ import { usePathname, useRouter } from "next/navigation";
 import { Button } from "../ui/button";
 import Link from "next/link";
 import useMenuState from "@/lib/state/menu";
-import { useCookieState, useMediaQuery } from "@/lib/hooks";
+import { useCookieState } from "@/lib/hooks/use-cookie-state";
+import { useMediaQuery } from "@/lib/hooks/use-media-query";
 import MenuIcon from "@/components/icons/menu";
 import { PreloadedUser } from "@/lib/auth/server";
 import { useAuthActions } from "@convex-dev/auth/react";
-import { isServer } from "@/lib/state/server";
 import { usePreloadedQuery } from "@/lib/convex/use-preload";
 
 export default function Header({

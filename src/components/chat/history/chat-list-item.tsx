@@ -7,7 +7,6 @@ import { cn } from "@/lib/utils";
 import { DeleteChatDialog, RenameChatDialog } from "./dialogs";
 import { ChatActions } from "./chat-actions";
 import { Doc } from "@gen/dataModel";
-import { LoaderCircle } from "lucide-react";
 import Loader from "@/components/ui/loader";
 
 interface ChatListItemProps {

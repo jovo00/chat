@@ -1,17 +1,16 @@
 "use client";
 
-import Logo from "@/components/icons/logos/logo";
 import Loader from "@/components/ui/loader";
 import { useStream } from "@/lib/chat/use-stream";
 import { cn, updateListMargin } from "@/lib/utils";
 import { Doc } from "@gen/dataModel";
 import { useMemo, useEffect, memo, useRef } from "react";
-import { AssistantMessageWrapper } from "./assistant-wrapper";
+import { AssistantMessageWrapper } from "./layout";
 import { ReasoningAccordion } from "./reasoning";
-import MessageContent from "./content";
+import MessageContent from "../content";
 import { MessageStatus } from "./status";
 import { useSmoothText } from "@/lib/chat/use-smooth-text";
-import AssistantMessageFooter from "./assistant-footer";
+import AssistantMessageFooter from "./footer";
 
 function AssistantComponent({
   message,
@@ -55,16 +54,16 @@ function AssistantComponent({
   }, [currentContent, currentReasoning]);
 
   return (
-    <div className={cn("group relative flex items-start", className)}>
+    <div className={cn("group relative flex w-full flex-col items-start gap-4", className)}>
       <AssistantMessageWrapper message={message}>
-        <div ref={messageRef} className="message flex w-full max-w-full flex-1 grow-0 flex-col gap-4">
-          {(message?.reasoning || reasoning) && (
-            <ReasoningAccordion
-              reasoning={smoothReasoning[0]}
-              isReasoning={!!currentReasoning && content?.length === 0 && message?.content?.length === 0 && isLoading}
-            />
-          )}
+        {(message?.reasoning || reasoning) && (
+          <ReasoningAccordion
+            reasoning={smoothReasoning[0]}
+            isReasoning={!!currentReasoning && content?.length === 0 && message?.content?.length === 0 && isLoading}
+          />
+        )}
 
+        <div ref={messageRef} className="message flex w-full max-w-full flex-1 grow-0 flex-col gap-4">
           {isLoading ? (
             <div className="relative ml-1 h-5 w-10 overflow-hidden">
               <Loader />
@@ -79,11 +78,10 @@ function AssistantComponent({
               />
             </>
           )}
-
-          {/* {Array.isArray(parsedAnnotations) && <Annotations annotations={parsedAnnotations} />} */}
-          {!isLoading && message.status === "done" && <AssistantMessageFooter message={message} />}
         </div>
       </AssistantMessageWrapper>
+
+      {!isLoading && message.status === "done" && <AssistantMessageFooter message={message} />}
     </div>
   );
 }

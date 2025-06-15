@@ -6,8 +6,8 @@ import { Button } from "../../ui/button";
 import { api } from "@gen/api";
 import { Preloaded, usePreloadedPaginatedQuery } from "@/lib/convex/use-preload";
 import useChatState from "@/lib/state/chat";
-import { Assistant } from "./assistant-content";
-import { User } from "./user-content";
+import { Assistant } from "./assistant/content";
+import { User } from "./user/content";
 import ErrorDisplay from "@/components/error";
 import { getErrorMessage } from "@/lib/utils";
 
@@ -18,20 +18,14 @@ interface MessageListProps {
 
 export const MessageList = memo(function MessageList({ preloadedMessages, scrollRef }: MessageListProps) {
   const { ref: inViewRef, inView } = useInView({ threshold: 0 });
-  const lastScrollPosition = useRef(0);
-
   const messages = usePreloadedPaginatedQuery(preloadedMessages);
+  const lastScrollPosition = useRef(0);
+  const drivenIds = useChatState((state) => state.streaming);
+  const removeStreaming = useChatState((state) => state.removeStreaming);
 
   const list = useMemo(() => {
     return [...messages.results].reverse();
   }, [messages?.results]);
-
-  const drivenIds = useChatState((state) => state.streaming);
-  const removeStreaming = useChatState((state) => state.removeStreaming);
-
-  //   const reversed = useMemo(() => {
-  //     return [...messages.results]?.reverse();
-  //   }, [messages]);
 
   const fetchNextPage = useCallback(async () => {
     if (scrollRef.current) {

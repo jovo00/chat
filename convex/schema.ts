@@ -2,8 +2,8 @@ import { defineSchema, defineTable } from "convex/server";
 import { authTables as allAuthTables } from "@convex-dev/auth/server";
 import { v } from "convex/values";
 
-export const tokenProviders = v.union(v.literal("openrouter"), v.literal("replicate"));
-export const apiProviders = v.union(v.literal("openrouter"), v.literal("replicate"));
+export const tokenProviders = v.union(v.literal("openrouter"));
+export const apiProviders = v.union(v.literal("openrouter"));
 export const messageStatus = v.union(
   v.literal("done"),
   v.literal("error"),
@@ -83,16 +83,16 @@ export default defineSchema({
     status_message: v.optional(v.string()),
     cancelled: v.boolean(),
     model: v.id("models"),
-    hide: v.boolean(),
+    hide_prompt: v.boolean(),
+    hide_content: v.boolean(),
     files: v.array(v.id("files")),
     online: v.boolean(),
     content: v.optional(v.string()),
     reasoning: v.optional(v.string()),
     annotations: v.optional(v.array(v.any())),
   })
-    .index("by_user_and_chat", ["user", "chat", "hide"])
-    .index("by_chat", ["chat"])
-    .index("by_chat_and_hide", ["chat", "hide"]),
+    .index("by_user_and_chat", ["user", "chat"])
+    .index("by_chat", ["chat"]),
 
   files: defineTable({
     storage: v.id("_storage"),

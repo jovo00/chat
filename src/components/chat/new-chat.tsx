@@ -1,9 +1,9 @@
-import { preloadPaginatedQuery } from "@/lib/convex/preload";
 import Logo from "../icons/logos/logo";
 import ChatInput from "./input/input";
 import ModelSelect from "./input/model-select";
 import { api } from "@gen/api";
 import { getLastModelState } from "@/lib/state/cookies";
+import { preloadPaginatedQuery } from "@/lib/convex/preload";
 
 export default async function NewChat() {
   const preloadedModels = await preloadPaginatedQuery(api.models.get.many, {}, { initialNumItems: 50 });

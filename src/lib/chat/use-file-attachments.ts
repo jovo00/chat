@@ -10,7 +10,6 @@ const MAX_FILE_COUNT = 10;
 export function useFileAttachments() {
   const [attachedFiles, setAttachedFiles] = useState<Doc<"files">[]>([]);
   const [pending, setPending] = useState(0);
-
   const authToken = useAuthToken();
   const user = useQuery(api.users.get.current);
 

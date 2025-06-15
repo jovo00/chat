@@ -73,9 +73,7 @@ export default function ChatInput({
   }
 
   useEffect(() => {
-    if (!isGenerating) {
-      setSubmitting(false);
-    }
+    setSubmitting(false);
   }, [isGenerating]);
 
   const onKeyDownHandler: KeyboardEventHandler<HTMLTextAreaElement> = (e) => {

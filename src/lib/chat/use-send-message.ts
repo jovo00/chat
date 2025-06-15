@@ -2,7 +2,7 @@
 
 import { api } from "@gen/api";
 import { Doc, Id } from "@gen/dataModel";
-import { useCallback, useState } from "react";
+import { useCallback } from "react";
 import useInputState from "../state/input";
 import { useRouter } from "next/navigation";
 import useChatState from "../state/chat";

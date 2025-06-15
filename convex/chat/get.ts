@@ -77,7 +77,7 @@ export const messages = query({
 
     let messages = await ctx.db
       .query("messages")
-      .withIndex("by_chat_and_hide", (q) => q.eq("chat", chat._id))
+      .withIndex("by_chat", (q) => q.eq("chat", chat._id))
       .order("desc")
       .paginate(args.paginationOpts);
 
@@ -137,7 +137,7 @@ export const history = internalQuery({
     // Grab all the user messages
     const allMessages = await ctx.db
       .query("messages")
-      .withIndex("by_chat_and_hide", (q) => q.eq("chat", args.chatId!).eq("hide", false))
+      .withIndex("by_chat", (q) => q.eq("chat", args.chatId!))
       .collect();
 
     return allMessages.map((message) => ({

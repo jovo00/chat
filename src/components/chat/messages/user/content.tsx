@@ -1,17 +1,15 @@
 "use client";
 
-import { cn, getErrorMessage, updateListMargin } from "@/lib/utils";
+import { getErrorMessage, updateListMargin } from "@/lib/utils";
 import { Doc, Id } from "@gen/dataModel";
 import { useEffect, memo, useRef } from "react";
-import MessageContent from "./content";
-import { UserWrapper } from "./user-wrapper";
-import { FileIcon, X } from "lucide-react";
+import MessageContent from "../content";
+import { UserWrapper } from "./layout";
+import { X } from "lucide-react";
 import getIcon from "@/lib/file-icons/get-icon";
 import { useConvex } from "convex/react";
 import { toast } from "sonner";
 import { api } from "@gen/api";
-import { ConvexError } from "convex/values";
-import { getErrorMap } from "zod";
 
 function UserComponent({
   message,

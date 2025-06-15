@@ -8,7 +8,7 @@ import "@/styles/fonts/techna-sans.css";
 import "@/styles/globals.css";
 import { Toaster } from "@/components/ui/sonner";
 import { ErrorBoundary } from "react-error-boundary";
-import { globalErrorFallback } from "@/components/global-error-fallback";
+import { globalErrorFallback } from "@/components/global-error";
 
 const fontSans = Plus_Jakarta_Sans({
   subsets: ["latin"],
@@ -38,7 +38,7 @@ export default function RootLayout({
     <ConvexAuthNextjsServerProvider>
       <html lang="en" className="dark" style={{ colorScheme: "dark" }}>
         <head>
-          <link rel="icon" type="image/svg+xml" href="/favicon.ico" />
+          <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
           <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimum-scale=1" />
           <meta name="theme-color" content="#000000" />
           <meta httpEquiv="Pragma" content="cache" />

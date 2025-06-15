@@ -1,10 +1,7 @@
 "use client";
 
-import { convexAuthNextjsToken } from "@convex-dev/auth/nextjs/server";
-import { EmptyObject } from "convex-helpers";
-import { NextjsOptions, preloadQuery as preloadQueryConvex } from "convex/nextjs";
-import { PaginatedQueryArgs, Preloaded as PreloadedConvex, UsePaginatedQueryReturnType } from "convex/react";
-import { ArgsAndOptions, FunctionReference, makeFunctionReference, Query } from "convex/server";
+import { PaginatedQueryArgs, Preloaded as PreloadedConvex } from "convex/react";
+import { FunctionReference, makeFunctionReference } from "convex/server";
 import { jsonToConvex } from "convex/values";
 import { useMemo } from "react";
 import { UsePaginatedQueryWithErrorReturnType, usePaginatedQuery } from "./use-paginated-query";

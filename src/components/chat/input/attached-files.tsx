@@ -1,6 +1,6 @@
 import React from "react";
 import { Button } from "@/components/ui/button";
-import { FileIcon, LoaderCircle, X } from "lucide-react";
+import { LoaderCircle, X } from "lucide-react";
 import { Doc } from "@gen/dataModel";
 import getIcon from "@/lib/file-icons/get-icon";
 
@@ -27,7 +27,7 @@ const AttachedFiles: React.FC<AttachedFilesProps> = ({ files, onRemove }) => {
             size="icon"
             className="aspect-square size-6 shrink-0"
             onClick={() => onRemove(file._id)}
-            // disabled={file.loading}
+            disabled={file.storage.startsWith("%")}
           >
             <X className="size-4" />
             <span className="sr-only">Remove {file.name}</span>

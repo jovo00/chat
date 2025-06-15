@@ -3,7 +3,7 @@
 import { memo } from "react";
 import { cn } from "@/lib/utils";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import Content from "./content";
+import Content from "../content";
 import Loader from "@/components/ui/loader";
 
 function ReasoningAccordionComponent({ reasoning, isReasoning }: { reasoning?: string | null; isReasoning: boolean }) {

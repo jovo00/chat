@@ -1,9 +1,7 @@
-import { cn } from "@/lib/utils";
-
 export default function Logo({ className }: { className?: string }) {
   return (
     <svg
-      className={cn("hue-rotate-[92deg]", className)}
+      className={className}
       xmlns="http://www.w3.org/2000/svg"
       width="40.028"
       height="40.028"
@@ -18,8 +16,8 @@ export default function Logo({ className }: { className?: string }) {
           y2="0.169"
           gradientUnits="objectBoundingBox"
         >
-          <stop offset="0" stopColor="#252bd6" />
-          <stop offset="1" stopColor="#86ffff" />
+          <stop offset="0" stopColor="#b70077" />
+          <stop offset="1" stopColor="#ffbae8" />
         </linearGradient>
       </defs>
       <path

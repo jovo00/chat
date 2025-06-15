@@ -1,7 +1,7 @@
 "use client";
 
 import { FC, memo, useCallback, useMemo } from "react";
-import { Check, CheckCheck, CheckCircle2, Copy } from "lucide-react";
+import { CheckCircle2, Copy } from "lucide-react";
 import { useCopyToClipboard } from "@/lib/hooks/use-copy-to-clipboard";
 import { Button } from "@/components/ui/button";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";

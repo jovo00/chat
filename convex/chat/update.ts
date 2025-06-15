@@ -43,6 +43,44 @@ export const updateMessage = internalMutation({
   },
 });
 
+export const messagePromptVisibility = mutation({
+  args: {
+    messageId: v.id("messages"),
+    hide_prompt: v.boolean(),
+  },
+  handler: async (ctx, args) => {
+    const user = await getUser(ctx);
+    if (!user) throw new ConvexError("Not authorized");
+
+    const message = await ctx.db.get(args.messageId);
+    if (!message) throw new ConvexError("Not found");
+    if (message.user !== user._id) throw new ConvexError("Not allowed");
+
+    await ctx.db.patch(message._id, {
+      hide_prompt: args.hide_prompt,
+    });
+  },
+});
+
+export const messageContentVisibility = mutation({
+  args: {
+    messageId: v.id("messages"),
+    hide_content: v.boolean(),
+  },
+  handler: async (ctx, args) => {
+    const user = await getUser(ctx);
+    if (!user) throw new ConvexError("Not authorized");
+
+    const message = await ctx.db.get(args.messageId);
+    if (!message) throw new ConvexError("Not found");
+    if (message.user !== user._id) throw new ConvexError("Not allowed");
+
+    await ctx.db.patch(message._id, {
+      hide_content: args.hide_content,
+    });
+  },
+});
+
 export const cancel = mutation({
   args: {
     messageId: v.id("messages"),

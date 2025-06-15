@@ -63,7 +63,7 @@ export function MetaLogo({ className }: { className?: string }) {
     >
       <defs>
         <linearGradient
-          id="linear-gradient"
+          id="meta-linear-gradient"
           x1="0.139"
           y1="0.613"
           x2="0.891"
@@ -76,7 +76,7 @@ export function MetaLogo({ className }: { className?: string }) {
           <stop offset="1" stopColor="#0082fb" />
         </linearGradient>
         <linearGradient
-          id="linear-gradient-2"
+          id="meta-linear-gradient-2"
           x1="0.543"
           y1="0.828"
           x2="0.543"
@@ -95,12 +95,12 @@ export function MetaLogo({ className }: { className?: string }) {
       <path
         id="Logo1"
         d="M24.49,37.3C38.73,15.35,59.28,0,82.85,0c13.65,0,27.22,4.04,41.39,15.61,15.5,12.65,32.02,33.48,52.63,67.81l7.39,12.32c17.84,29.72,27.99,45.01,33.93,52.22,7.64,9.26,12.99,12.02,19.94,12.02,17.63,0,22.03-16.2,22.03-34.74l27.4-.86c0,19.38-3.82,33.62-10.32,44.87C270.96,180.13,258.72,191,238.13,191c-12.8,0-24.14-2.78-36.68-14.61-9.64-9.08-20.91-25.21-29.58-39.71L146.08,93.6c-12.94-21.62-24.81-37.74-31.68-45.04-7.39-7.85-16.89-17.33-32.05-17.33-12.27,0-22.69,8.61-31.41,21.78Z"
-        fill="url(#linear-gradient)"
+        fill="url(#meta-linear-gradient)"
       />
       <path
         id="Logo2"
         d="M82.35,31.23c-12.27,0-22.69,8.61-31.41,21.78C38.61,71.62,31.06,99.34,31.06,125.96c0,10.98,2.41,19.41,5.56,24.51L10.14,167.91C3.34,156.6,0,141.76,0,124.85,0,94.1,8.44,62.05,24.49,37.3,38.73,15.35,59.28,0,82.85,0Z"
-        fill="url(#linear-gradient-2)"
+        fill="url(#meta-linear-gradient-2)"
       />
     </svg>
   );

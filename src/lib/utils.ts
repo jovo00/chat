@@ -66,22 +66,8 @@ export function roundCost(cost: number) {
 
 export function getProviderName(provider: string) {
   switch (provider) {
-    case "openai":
-      return "OpenAI";
-    case "google":
-      return "Google";
-    case "replicat":
-      return "Replicate";
-    case "xai":
-      return "xAI";
-    case "deepseek":
-      return "DeepSeek";
-    case "anthropic":
-      return "Anthropic";
-    case "meta":
-      return "Meta";
-    case "mistral":
-      return "Mistral";
+    case "openrouter":
+      return "OpenRouter";
     default:
       return "";
   }

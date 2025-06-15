@@ -14,8 +14,6 @@ import { getErrorMessage, getInitials } from "@/lib/utils";
 import { PreloadedUser } from "@/lib/auth/server";
 import { api } from "@gen/api";
 import { toast } from "sonner";
-import { ConvexError } from "convex/values";
-import { useState } from "react";
 import {
   Dialog,
   DialogClose,

@@ -1,7 +1,6 @@
 "use client";
 
 import { api } from "@gen/api";
-
 import { useScrollAnchor } from "@/lib/hooks/use-scroll-anchor";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -29,12 +28,6 @@ export default function Messages({
       >
         <ArrowDown className="h-5 w-5 lg:h-4 lg:w-4" />
       </Button>
-
-      {/* {showEmptyState && (
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 opacity-30 select-none w-full text-center p-2">
-          There are no messages in this chat yet
-        </div>
-      )} */}
 
       <div
         className="relative flex h-fit max-h-full w-full flex-col-reverse gap-1 overflow-x-hidden overflow-y-auto"

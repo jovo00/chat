@@ -20,7 +20,7 @@ export default function Login() {
           alt=""
           objectFit="cover"
           fill
-          className={cn("hue-rotate-[92deg] transition-opacity", imageLoaded ? "opacity-100" : "opacity-0")}
+          className={cn("transition-opacity", imageLoaded ? "opacity-100" : "opacity-0")}
           onLoad={() => setImageLoaded(true)}
         />
       </div>
