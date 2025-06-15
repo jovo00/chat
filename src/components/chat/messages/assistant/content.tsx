@@ -54,7 +54,7 @@ function AssistantComponent({
   }, [currentContent, currentReasoning]);
 
   return (
-    <div className={cn("group relative flex w-full flex-col items-start gap-4", className)}>
+    <div className={cn("group relative flex w-full flex-col items-start gap-2", className)}>
       <AssistantMessageWrapper message={message}>
         {(message?.reasoning || reasoning) && (
           <ReasoningAccordion

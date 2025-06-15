@@ -141,13 +141,13 @@ export default function ChatInput({
 
         <TextareaAutosize
           ref={textInput}
-          className="placeholder:text-secondary-foreground/60 max-h-6 w-full resize-none text-base outline-none"
+          className="placeholder:text-secondary-foreground/60 w-full resize-none text-base outline-none"
           placeholder="Type your message here"
           onKeyDown={onKeyDownHandler}
           cacheMeasurements
-          minRows={1}
+          minRows={2}
           maxRows={10}
-          onFocus={(e) => e.currentTarget.classList.remove("max-h-6")}
+          // onFocus={(e) => e.currentTarget.classList.remove("max-h-6")}
           autoFocus
         ></TextareaAutosize>
 

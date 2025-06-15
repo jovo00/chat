@@ -16,8 +16,8 @@ function AssistantMessageWrapperComponent({
     return (
       <Accordion type="single" collapsible className="group relative flex w-full items-start opacity-60">
         <AccordionItem value="assistant-message" className="w-full border-none px-0">
-          <AccordionTrigger className="bg-card flex max-w-fit items-center justify-start rounded-4xl px-4 pr-6 hover:no-underline">
-            <span className="flex items-center gap-2 text-left">Message removed from context</span>
+          <AccordionTrigger className="bg-card hover:bg-accent flex max-w-fit cursor-pointer items-center justify-start rounded-4xl px-6 hover:no-underline">
+            <span className="flex items-center text-left">Message removed from context</span>
           </AccordionTrigger>
           <AccordionContent className="w-full px-4 pt-4">{children}</AccordionContent>
         </AccordionItem>

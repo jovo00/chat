@@ -12,18 +12,7 @@ export const UserWrapper = memo(function UserMessage({
   message?: Doc<"messages">;
   children: ReactNode;
 }) {
-  const { copyToClipboard } = useCopyToClipboard({ timeout: 0 });
-
   const messageIsHidden = message?.hide_prompt;
-
-  const handleCopy = () => {
-    const partialSelection = window.getSelection()?.toString();
-    if (partialSelection) {
-      copyToClipboard(partialSelection);
-    } else if (message?.prompt) {
-      copyToClipboard(message.prompt);
-    }
-  };
 
   return (
     <>
@@ -35,17 +24,17 @@ export const UserWrapper = memo(function UserMessage({
       >
         <div
           className={cn(
-            "bg-card relative flex w-full max-w-full items-start self-end rounded-4xl px-2",
-            messageIsHidden && "opacity-60",
+            "bg-card relative flex w-full max-w-full items-start self-end overflow-hidden rounded-4xl px-2 transition-colors",
+            messageIsHidden && "px-0",
           )}
         >
           {messageIsHidden ? (
-            <Accordion type="single" collapsible className="w-full">
-              <AccordionItem value="user-message" className="w-full border-none px-4">
-                <AccordionTrigger className="flex items-center justify-between hover:no-underline">
+            <Accordion type="single" collapsible className="w-full px-0">
+              <AccordionItem value="user-message" className="w-full border-none">
+                <AccordionTrigger className="hover:bg-accent flex cursor-pointer items-center justify-between rounded-none px-4 pl-6 hover:no-underline">
                   <span className="flex items-center gap-2 pr-4 text-left">Message removed from context</span>
                 </AccordionTrigger>
-                <AccordionContent className="flex w-full flex-1 flex-col p-4 pt-1 text-base hyphens-auto">
+                <AccordionContent className="flex w-full flex-1 flex-col px-5 py-4 pt-1 text-base hyphens-auto">
                   {children}
                 </AccordionContent>
               </AccordionItem>

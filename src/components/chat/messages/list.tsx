@@ -29,7 +29,7 @@ export const MessageList = memo(function MessageList({ preloadedMessages, scroll
 
   const fetchNextPage = useCallback(async () => {
     if (scrollRef.current) {
-      lastScrollPosition.current = scrollRef.current.scrollTop;
+      lastScrollPosition.current = scrollRef.current.scrollHeight - scrollRef.current.scrollTop;
     }
     messages.status === "CanLoadMore" && messages.loadMore(25);
   }, [messages, scrollRef]);
@@ -40,7 +40,7 @@ export const MessageList = memo(function MessageList({ preloadedMessages, scroll
     const currentPageCount = messages.results.length;
     if (prevPageCount.current < currentPageCount && scrollRef.current) {
       scrollRef.current.scrollTo({
-        top: lastScrollPosition.current,
+        top: scrollRef.current.scrollHeight - lastScrollPosition.current,
         behavior: "instant",
       });
     }
@@ -68,7 +68,7 @@ export const MessageList = memo(function MessageList({ preloadedMessages, scroll
       {!messages.isLoading && messages.status === "CanLoadMore" && (
         <Button
           variant={"secondary"}
-          className="mx-auto mb-6 w-fit"
+          className="absolute top-0 left-1/2 mx-auto h-10 w-fit -translate-x-1/2"
           onClick={fetchNextPage}
           disabled={messages.isLoading}
         >

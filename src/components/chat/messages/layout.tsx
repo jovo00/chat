@@ -7,6 +7,7 @@ import { cn } from "@/lib/utils";
 import { ArrowDown } from "lucide-react";
 import { MessageList } from "./list";
 import { Preloaded } from "@/lib/convex/use-preload";
+import { useLayoutEffect, useState } from "react";
 
 export default function Messages({
   preloadedMessages,
@@ -14,6 +15,12 @@ export default function Messages({
   preloadedMessages: Preloaded<typeof api.chat.get.messages>;
 }) {
   const { messagesRef, scrollRef, visibilityRef, isAtBottom, scrollToBottom } = useScrollAnchor();
+  const [init, setInit] = useState(false);
+
+  useLayoutEffect(() => {
+    scrollToBottom();
+    setInit(true);
+  }, []);
 
   return (
     <>
@@ -30,11 +37,14 @@ export default function Messages({
       </Button>
 
       <div
-        className="relative flex h-fit max-h-full w-full flex-col-reverse gap-1 overflow-x-hidden overflow-y-auto"
+        className={cn(
+          "relative flex h-fit max-h-full w-full gap-1 overflow-x-hidden overflow-y-auto opacity-0 transition-opacity",
+          init && "opacity-100",
+        )}
         ref={scrollRef}
       >
         <div
-          className="relative mx-auto flex h-fit w-full max-w-240 grow-0 flex-col gap-2 px-3 py-8 pt-16 lg:px-4"
+          className="relative mx-auto flex h-fit w-full max-w-240 grow-0 flex-col gap-2 px-3 py-8 pt-20 lg:px-4"
           ref={messagesRef}
         >
           <MessageList preloadedMessages={preloadedMessages} scrollRef={scrollRef} />

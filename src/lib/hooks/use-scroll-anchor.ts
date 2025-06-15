@@ -15,7 +15,7 @@ export const useScrollAnchor = () => {
     if (messagesRef.current) {
       messagesRef.current.scrollIntoView({
         block: "end",
-        behavior: "smooth",
+        behavior: "instant",
       });
     }
   }, []);

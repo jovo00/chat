@@ -7,7 +7,7 @@ import { api } from "@gen/api";
 
 export default async function ChatList({ chatId }: { chatId: Id<"chats"> }) {
   const preloadedModels = await preloadPaginatedQuery(api.models.get.many, {}, { initialNumItems: 50 });
-  const preloadedMessages = await preloadPaginatedQuery(api.chat.get.messages, { chatId }, { initialNumItems: 25 });
+  const preloadedMessages = await preloadPaginatedQuery(api.chat.get.messages, { chatId }, { initialNumItems: 10 });
   const lastModelState = await getLastModelState();
 
   return (
