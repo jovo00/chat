@@ -70,9 +70,7 @@ export const MessageList = memo(function MessageList({ preloadedMessages, scroll
         ) : (
           <ErrorDisplay error={messages?.error} />
         ))}
-      {!messages.isLoading && (
-        <div ref={inViewRef} className="pointer-events-none z-50 -mb-64 flex min-h-[15em] w-full"></div>
-      )}
+      <div ref={inViewRef} className="pointer-events-none z-50 -mb-64 flex min-h-[15em] w-full"></div>
       {!messages.isLoading && messages.status === "CanLoadMore" && (
         <Button
           variant={"secondary"}

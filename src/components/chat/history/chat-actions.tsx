@@ -1,7 +1,7 @@
 "use client";
 
 import { isMobile } from "react-device-detect";
-import { Ellipsis, Pencil, Trash2 } from "lucide-react";
+import { Ellipsis, Pencil, Pin, PinOff, TextCursor, Trash2 } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -11,6 +11,10 @@ import {
 import { Drawer, DrawerClose, DrawerContent, DrawerTrigger } from "@/components/ui/drawer";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { demoItems, Menu, MenuItemType, MenuType } from "@/components/ui/menu";
+import { useMutation } from "@/lib/convex/use-mutation";
+import { api } from "@gen/api";
+import { Id } from "@gen/dataModel";
 
 interface ChatActionsProps {
   onRename: () => void;
@@ -18,9 +22,21 @@ interface ChatActionsProps {
   isActive: boolean;
   menuOpen: boolean;
   onOpenChange: (open: boolean) => void;
+  isPinned: boolean;
+  chatId: Id<"chats">;
 }
 
-export function ChatActions({ onRename, onDelete, isActive, menuOpen, onOpenChange }: ChatActionsProps) {
+export function ChatActions({
+  onRename,
+  onDelete,
+  isActive,
+  menuOpen,
+  onOpenChange,
+  isPinned,
+  chatId,
+}: ChatActionsProps) {
+  const pin = useMutation(api.chat.update.pinChat);
+
   const trigger = (
     <div
       className={cn(
@@ -33,63 +49,47 @@ export function ChatActions({ onRename, onDelete, isActive, menuOpen, onOpenChan
     </div>
   );
 
-  if (isMobile) {
-    return (
-      <Drawer open={menuOpen} onOpenChange={onOpenChange}>
-        <DrawerTrigger asChild>{trigger}</DrawerTrigger>
-        <DrawerContent className="bg-muted border-none p-2">
-          <DrawerClose asChild>
-            <Button
-              onClick={(e) => {
-                e.stopPropagation();
-                onRename();
-              }}
-              className="bg-accent text-accent-foreground focus:bg-accent/80 h-12"
-            >
-              <Pencil className="mr-2 h-3 w-4" /> Rename
-            </Button>
-          </DrawerClose>
-          <DrawerClose asChild>
-            <Button
-              onClick={(e) => {
-                e.stopPropagation();
-                onDelete();
-              }}
-              variant={"destructive"}
-              className="mt-2 h-12"
-            >
-              <Trash2 className="text-destructive mr-2 h-4 w-4" strokeWidth={1.5} /> Delete
-            </Button>
-          </DrawerClose>
-        </DrawerContent>
-      </Drawer>
-    );
-  }
-
   return (
-    <DropdownMenu open={menuOpen} onOpenChange={onOpenChange}>
-      <DropdownMenuTrigger asChild>{trigger}</DropdownMenuTrigger>
-      <DropdownMenuContent className="rounded-[1.15rem] p-1" sideOffset={2} align="start" alignOffset={30}>
-        <DropdownMenuItem
-          className="rounded-full px-2"
-          onClick={(e) => {
-            e.stopPropagation();
-            onRename();
-          }}
-        >
-          <Pencil className="mr-2 h-3 w-4" />
-          Rename
-        </DropdownMenuItem>
-        <DropdownMenuItem
-          className="rounded-full px-2 text-red-500 focus:bg-red-500/10 focus:text-red-500"
-          onClick={(e) => {
-            e.stopPropagation();
-            onDelete();
-          }}
-        >
-          <Trash2 className="mr-2 h-4 w-4 text-red-500" strokeWidth={1.5} /> Delete
-        </DropdownMenuItem>
-      </DropdownMenuContent>
-    </DropdownMenu>
+    <Menu
+      onTrigger={() => {}}
+      items={[
+        {
+          type: MenuItemType.Item,
+          content: isPinned ? (
+            <div className="flex items-center gap-2">
+              <PinOff className="text-primary/80 size-4" strokeWidth={2.5} /> Unpin
+            </div>
+          ) : (
+            <div className="flex items-center gap-2">
+              <Pin className="text-primary/80 size-4" strokeWidth={2.5} /> Pin
+            </div>
+          ),
+          onSelect: () => pin.mutate({ chatId, pin: !isPinned }),
+        },
+        {
+          type: MenuItemType.Item,
+          content: (
+            <div className="flex items-center gap-2">
+              <TextCursor className="text-primary/80 size-4" strokeWidth={2.5} /> Rename
+            </div>
+          ),
+          onSelect: () => onRename(),
+        },
+        {
+          type: MenuItemType.Item,
+          variant: "destructive",
+          content: (
+            <div className="flex items-center gap-2 text-red-500">
+              <Trash2 className="size-4 text-red-500" strokeWidth={2.5} /> Delete
+            </div>
+          ),
+          onSelect: () => onDelete(),
+        },
+      ]}
+      context
+      menuType={isMobile ? MenuType.Drawer : MenuType.Dropdown}
+    >
+      {trigger}
+    </Menu>
   );
 }

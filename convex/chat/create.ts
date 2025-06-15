@@ -28,6 +28,7 @@ export const one = mutation({
         user: user._id,
         prompt_short: args.prompt.slice(0, 100),
         latest_message_status: "pending",
+        pinned: false,
       });
 
       const token = await ctx.db

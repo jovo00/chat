@@ -46,10 +46,11 @@ export function getChatDateDescription(
   current: string | number,
   previous: string | number | undefined | null,
   today: Date,
+  force: boolean,
 ) {
   const c = getDateDescription(current, today);
   if (!previous) return c;
   const p = getDateDescription(previous, today);
-  if (c === p) return null;
+  if (c === p && !force) return null;
   return c;
 }

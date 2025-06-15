@@ -18,7 +18,7 @@ export function MessageStatus({
 
   if (cancelled) {
     return (
-      <div className="bg-secondary inline-flex h-7 w-fit items-center justify-center gap-1 rounded-full px-4 py-[0.15rem] text-sm font-medium text-white/50 select-none">
+      <div className="bg-card inline-flex h-7 w-fit items-center justify-center gap-1 rounded-full px-4 py-[0.15rem] text-sm font-medium text-white/50 select-none">
         Generation Stopped
       </div>
     );

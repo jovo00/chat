@@ -156,10 +156,7 @@ function renderDropdownMenuItems(items: MenuDefinition): React.ReactNode {
             inset={item.inset}
             disabled={item.disabled}
             variant={item.variant}
-            onClick={(e) => {
-              e.stopPropagation();
-              item.onSelect?.();
-            }}
+            onClick={() => item.onSelect?.()}
           >
             {item.content}
             {item.shortcut && <DropdownMenuShortcut>{item.shortcut}</DropdownMenuShortcut>}
@@ -227,8 +224,7 @@ function renderDrawerMenuItems(items: MenuDefinition, setOpen: (open: boolean) =
             disabled={item.disabled}
             variant={item.variant === "destructive" ? "destructive-ghost" : (item.variant ?? "ghost")}
             className={"mx-2 justify-start"}
-            onClick={(e) => {
-              e.stopPropagation();
+            onClick={() => {
               item.onSelect?.();
               setOpen(false);
             }}

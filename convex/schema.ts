@@ -61,7 +61,7 @@ export default defineSchema({
       }),
     ),
   })
-    .index("by_api_id", ["api_id"])
+    .index("by_api", ["api"])
     .index("by_title", ["title"]),
 
   chats: defineTable({
@@ -70,8 +70,9 @@ export default defineSchema({
     prompt_short: v.string(),
     latest_message: v.optional(v.id("messages")),
     latest_message_status: v.optional(messageStatus),
+    pinned: v.boolean(),
   })
-    .index("by_user", ["user"])
+    .index("by_user_and_pinned", ["user", "pinned"])
     .index("by_chat_and_latest_message_status", ["user", "latest_message_status"]),
 
   messages: defineTable({

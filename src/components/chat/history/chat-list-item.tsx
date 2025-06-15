@@ -7,6 +7,8 @@ import { cn } from "@/lib/utils";
 import { DeleteChatDialog, RenameChatDialog } from "./dialogs";
 import { ChatActions } from "./chat-actions";
 import { Doc } from "@gen/dataModel";
+import { LoaderCircle } from "lucide-react";
+import Loader from "@/components/ui/loader";
 
 interface ChatListItemProps {
   chat: Doc<"chats">;
@@ -21,18 +23,29 @@ function ChatListItemComponent({ chat }: ChatListItemProps) {
   const title = chat?.title && chat?.title?.trim()?.length > 0 ? chat?.title?.trim() : chat?.prompt_short;
   const isActive = activeChatId === chat?._id;
 
+  const isGenerating = chat?.latest_message_status === "generating" || chat?.latest_message_status === "pending";
+
+  const [prefetch, setPrefetch] = useState(false);
+
   return (
     <>
       <Link
         href={`/chat/${chat?._id}`}
         className="group relative flex h-10 shrink-0 cursor-pointer items-center overflow-hidden rounded-full pr-2 pl-3 text-sm"
-        prefetch={false}
+        prefetch={prefetch}
+        onPointerOver={() => setPrefetch(true)}
       >
         <div className={cn("w-full overflow-x-hidden whitespace-nowrap select-none", isActive && "font-semibold")}>
           {title}
         </div>
 
         <div className="history-menu-gradient pointer-events-none absolute top-0 right-0 h-full w-20"></div>
+
+        {isGenerating && (
+          <div className="relative z-5 size-8">
+            <Loader small />
+          </div>
+        )}
 
         <div
           className={cn(
@@ -43,7 +56,7 @@ function ChatListItemComponent({ chat }: ChatListItemProps) {
 
         <div
           className={cn(
-            "history-menu-button-gradient pointer-events-none absolute top-0 right-0 h-full w-20 opacity-0 transition-opacity duration-300 group-hover:opacity-100",
+            "history-menu-button-gradient pointer-events-none absolute top-0 right-0 z-10 h-full w-20 opacity-0 transition-opacity duration-300 group-hover:opacity-100",
             (isActive || isMenuOpen) && "opacity-100",
           )}
         ></div>
@@ -52,7 +65,9 @@ function ChatListItemComponent({ chat }: ChatListItemProps) {
           onRename={() => setRenameOpen(true)}
           onDelete={() => setDeleteOpen(true)}
           isActive={isActive}
+          chatId={chat._id}
           menuOpen={isMenuOpen}
+          isPinned={chat?.pinned}
           onOpenChange={setMenuOpen}
         />
       </Link>

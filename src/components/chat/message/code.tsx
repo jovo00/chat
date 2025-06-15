@@ -37,7 +37,7 @@ const HeaderComponent = ({
       <div className="flex items-center space-x-1">
         <Button
           variant="ghost"
-          className="group flex h-8 items-center gap-2 rounded-full text-xs font-medium"
+          className="group dark:hover:bg-primary/10 flex h-8 items-center gap-2 rounded-full px-4 text-xs font-medium"
           onClick={onCopy}
         >
           {!isCopied && (

@@ -19,7 +19,9 @@ triggers.register("users", async (ctx, change) => {
   await asyncMap(await getManyFrom(ctx.db, "tokens", "by_user_and_provider", change.id, "user"), (token) =>
     ctx.db.delete(token._id),
   );
-  await asyncMap(await getManyFrom(ctx.db, "chats", "by_user", change.id, "user"), (chat) => ctx.db.delete(chat._id));
+  await asyncMap(await getManyFrom(ctx.db, "chats", "by_user_and_pinned", change.id, "user"), (chat) =>
+    ctx.db.delete(chat._id),
+  );
   await asyncMap(await getManyFrom(ctx.db, "messages", "by_user_and_chat", change.id, "user"), (message) =>
     ctx.db.delete(message._id),
   );

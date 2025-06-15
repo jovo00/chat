@@ -1,8 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { usePathname, useRouter } from "next/navigation";
-import { Eye, EyeOff, X } from "lucide-react";
+import { useState } from "react";
 import aiBackdrop from "@/assets/images/ai-logo.jpg";
 
 import Image from "next/image";
@@ -26,13 +24,13 @@ export default function Login() {
           onLoad={() => setImageLoaded(true)}
         />
       </div>
-      <main className="bg-background flex h-screen min-h-96 w-full flex-1 items-center justify-center dark:bg-black">
+      <main className="bg-background flex h-screen min-h-80 w-full flex-1 items-center justify-center pb-6 dark:bg-black">
         <div className="flex w-100 flex-col gap-2 overflow-hidden rounded-md">
           <div className="p-4">
             <Logo className="fill-primary-foreground mx-auto h-9 w-9" />
           </div>
           <div className="mb-4">
-            <h1 className="font-special my-1 text-center text-2xl font-bold">Welcome</h1>
+            <h1 className="font-special my-1 text-center text-2xl font-bold">AI Chat</h1>
             <p className="text-foreground/50 text-center text-sm font-medium">Login to start chatting!</p>
           </div>
 

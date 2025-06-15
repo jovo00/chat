@@ -156,16 +156,12 @@
 
 @layer base {
   body {
+    @apply selection:bg-primary/20;
     background: var(--color-background);
     color: var(--color-foreground);
     font-size: var(--text-sm) /* 0.875rem = 14px */;
     line-height: var(--tw-leading, var(--text-sm--line-height) /* calc(1.25 / 0.875) ≈ 1.4286 */);
     letter-spacing: var(--tracking-normal);
-  }
-
-  *::selection {
-    /* background-color: color-mix(in oklab, var(--primary) 20%, transparent); */
-    background-color: #474747;
   }
 
   * {

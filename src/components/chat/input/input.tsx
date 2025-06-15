@@ -3,7 +3,7 @@
 import { Button } from "@/components/ui/button";
 import { cn, getErrorMessage } from "@/lib/utils";
 import { ArrowUp, LoaderCircle, Square } from "lucide-react";
-import { FormEvent, KeyboardEventHandler, useRef, useState } from "react";
+import { FormEvent, KeyboardEventHandler, useEffect, useRef, useState } from "react";
 import TextareaAutosize from "react-textarea-autosize";
 import ModelSelect from "./model-select";
 import { api } from "@gen/api";
@@ -29,16 +29,19 @@ export default function ChatInput({
   const messages = useSendMessage(chatId);
   const { data: chat } = useQuery(api.chat.get.chat, chatId ? { chatId } : "skip");
   const [cancelling, setCancelling] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
 
   const streaming = chatId && streams.has(chatId);
   const isGenerating =
     streaming || chat?.latest_message_status === "generating" || chat?.latest_message_status === "pending";
 
-  function submitHandler(e: FormEvent) {
+  async function submitHandler(e: FormEvent) {
     e.preventDefault();
+    if (submitting) return;
     if (!textInput.current) return;
     if (isGenerating) return;
 
+    setSubmitting(true);
     setCancelling(false);
 
     const prompt = textInput.current?.value;
@@ -46,8 +49,14 @@ export default function ChatInput({
 
     textInput.current.value = "";
 
-    messages.send(prompt);
+    await messages.send(prompt);
   }
+
+  useEffect(() => {
+    if (!isGenerating) {
+      setSubmitting(false);
+    }
+  }, [isGenerating]);
 
   const onKeyDownHandler: KeyboardEventHandler<HTMLTextAreaElement> = (e) => {
     if (e.key === "Enter" && !e?.shiftKey) {
@@ -104,19 +113,17 @@ export default function ChatInput({
         ></TextareaAutosize>
 
         <div className="flex w-full items-center justify-between">
-          <div>
-            <ModelSelect small preloadedModels={preloadedModels} lastModelState={lastModelState} />
-          </div>
+          <ModelSelect small preloadedModels={preloadedModels} lastModelState={lastModelState} />
           <Button
             type={streaming ? "button" : "submit"}
             size="icon"
             variant="secondary"
             className="size-10 rounded-full"
             onClick={stopHandler}
-            disabled={cancelMessage.isPending}
+            disabled={cancelMessage.isPending || submitting || cancelling}
           >
-            {isGenerating ? (
-              cancelMessage.isPending || cancelling ? (
+            {submitting || isGenerating ? (
+              cancelMessage.isPending || cancelling || submitting ? (
                 <LoaderCircle className="repeat-infinite size-4 animate-spin" />
               ) : (
                 <Square className="size-4" />

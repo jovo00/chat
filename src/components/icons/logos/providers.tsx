@@ -242,58 +242,67 @@ export function MistralLogo({ className }: { className?: string }) {
   );
 }
 
-export default function ProviderLogo({ className, title }: { className: string; title: string }) {
-  const providerSwitch = title?.split(":")[0].trim().toLowerCase();
-  switch (providerSwitch) {
-    case "openai":
-      return <OpenAI className={className} />;
-    case "google":
-      return (
-        <div className={cn("flex items-center justify-center rounded-full bg-white", className)}>
-          <GoogleLogo className={"size-[60%]!"} />
-        </div>
-      );
-    case "meta":
-      return (
-        <div className={cn("flex items-center justify-center rounded-full bg-white", className)}>
-          <MetaLogo className={"size-[60%]!"} />
-        </div>
-      );
-    case "replicate":
-      return (
-        <div className={cn("flex items-center justify-center rounded-full bg-white", className)}>
-          <ReplicateLogo className={"size-[60%]!"} />
-        </div>
-      );
-    case "xai":
-      return (
-        <div className={cn("flex items-center justify-center rounded-full bg-black", className)}>
-          <XAILogo className={"size-[50%]!"} />
-        </div>
-      );
-    case "deepseek":
-      return (
-        <div className={cn("flex items-center justify-center rounded-full bg-white", className)}>
-          <DeepseekLogo className={"size-[60%]!"} />
-        </div>
-      );
-    case "anthropic":
-      return (
-        <div className={cn("flex items-center justify-center rounded-full bg-[#d4a27f]", className)}>
-          <AnthropicLogo className={"size-[60%]!"} />
-        </div>
-      );
-    case "mistral":
-      return (
-        <div className={cn("flex items-center justify-center rounded-full bg-white", className)}>
-          <MistralLogo className={"size-[60%]!"} />
-        </div>
-      );
-    default:
-      return (
-        <div className={cn("flex items-center justify-center rounded-full bg-white", className)}>
-          <Logo className="size-[60%]!" />
-        </div>
-      );
+export default function ProviderLogo({ className, apiId, api }: { className: string; apiId: string; api: string }) {
+  if (api === "openrouter") {
+    const apiIdSwitch = apiId?.split("/")[0].trim().toLowerCase();
+    switch (apiIdSwitch) {
+      case "openai":
+        return <OpenAI className={className} />;
+      case "google":
+        return (
+          <div className={cn("flex items-center justify-center rounded-full bg-white", className)}>
+            <GoogleLogo className={"size-[60%]!"} />
+          </div>
+        );
+      case "meta":
+      case "meta-llama":
+        return (
+          <div className={cn("flex items-center justify-center rounded-full bg-white", className)}>
+            <MetaLogo className={"size-[60%]!"} />
+          </div>
+        );
+      case "replicate":
+        return (
+          <div className={cn("flex items-center justify-center rounded-full bg-white", className)}>
+            <ReplicateLogo className={"size-[60%]!"} />
+          </div>
+        );
+      case "x-ai":
+        return (
+          <div className={cn("flex items-center justify-center rounded-full bg-black", className)}>
+            <XAILogo className={"size-[50%]!"} />
+          </div>
+        );
+      case "deepseek":
+        return (
+          <div className={cn("flex items-center justify-center rounded-full bg-white", className)}>
+            <DeepseekLogo className={"size-[60%]!"} />
+          </div>
+        );
+      case "anthropic":
+        return (
+          <div className={cn("flex items-center justify-center rounded-full bg-[#d4a27f]", className)}>
+            <AnthropicLogo className={"size-[60%]!"} />
+          </div>
+        );
+      case "mistralai":
+        return (
+          <div className={cn("flex items-center justify-center rounded-full bg-white", className)}>
+            <MistralLogo className={"size-[60%]!"} />
+          </div>
+        );
+      default:
+        return (
+          <div className={cn("flex items-center justify-center rounded-full bg-white", className)}>
+            <Logo className="size-[60%]!" />
+          </div>
+        );
+    }
+  } else {
+    return (
+      <div className={cn("flex items-center justify-center rounded-full bg-white", className)}>
+        <Logo className="size-[60%]!" />
+      </div>
+    );
   }
 }

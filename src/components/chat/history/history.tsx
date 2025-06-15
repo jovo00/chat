@@ -9,8 +9,12 @@ import { getChatDateDescription } from "@/lib/date";
 import { Doc } from "@gen/dataModel";
 import { api } from "@gen/api";
 import { Preloaded, usePreloadedPaginatedQuery } from "@/lib/convex/use-preload";
+import { Pin } from "lucide-react";
 
-type DisplayListItem = { type: "chat"; id: string; chat: Doc<"chats"> } | { type: "date"; id: string; value: string };
+type DisplayListItem =
+  | { type: "pinned"; id: string }
+  | { type: "chat"; id: string; chat: Doc<"chats"> }
+  | { type: "date"; id: string; value: string };
 
 export default function ChatHistory({
   collapsed,
@@ -28,19 +32,37 @@ export default function ChatHistory({
   const displayList: DisplayListItem[] = useMemo(() => {
     const items: DisplayListItem[] = [];
     const today = new Date();
+    let hasPinned = false;
 
     chatHistory.results.forEach((chat, index) => {
-      const prevChat = index > 0 ? chatHistory.results[index - 1] : null;
-      const dateDescription = getChatDateDescription(chat._creationTime, prevChat?._creationTime, today);
+      if (chat?.pinned) {
+        if (!hasPinned) {
+          items.push({
+            type: "pinned",
+            id: "pinned",
+          });
+          hasPinned = true;
+        }
 
-      if (dateDescription) {
-        items.push({
-          type: "date",
-          id: dateDescription,
-          value: dateDescription,
-        });
+        items.push({ type: "chat", id: chat._id, chat });
+      } else {
+        const prevChat = index > 0 ? chatHistory.results[index - 1] : null;
+        const dateDescription = getChatDateDescription(
+          chat._creationTime,
+          prevChat?._creationTime,
+          today,
+          prevChat?.pinned ?? false,
+        );
+
+        if (dateDescription) {
+          items.push({
+            type: "date",
+            id: dateDescription,
+            value: dateDescription,
+          });
+        }
+        items.push({ type: "chat", id: chat._id, chat });
       }
-      items.push({ type: "chat", id: chat._id, chat });
     });
     return items;
   }, [chatHistory.results]);
@@ -115,6 +137,17 @@ export default function ChatHistory({
                       )}
                     >
                       {item.value}
+                    </div>
+                  ) : item.type === "pinned" ? (
+                    <div
+                      className={cn(
+                        "flex h-12 items-end px-3 pb-2 text-xs font-bold opacity-50 select-none",
+                        isFirstItem && "h-9",
+                      )}
+                    >
+                      <span className="flex items-center gap-1">
+                        <Pin className="size-3.5" /> Pinned
+                      </span>
                     </div>
                   ) : (
                     <ChatListItem chat={item.chat} />

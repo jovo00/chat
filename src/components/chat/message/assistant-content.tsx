@@ -11,6 +11,7 @@ import { ReasoningAccordion } from "./reasoning";
 import MessageContent from "./content";
 import { MessageStatus } from "./status";
 import { useSmoothText } from "@/lib/chat/use-smooth-text";
+import AssistantMessageFooter from "./assistant-footer";
 
 function AssistantComponent({
   message,
@@ -54,11 +55,14 @@ function AssistantComponent({
   }, [currentContent, currentReasoning]);
 
   return (
-    <div className={cn("relative flex items-start", className)}>
+    <div className={cn("group relative flex items-start", className)}>
       <AssistantMessageWrapper message={message}>
         <div ref={messageRef} className="message flex w-full max-w-full flex-1 grow-0 flex-col gap-4">
           {(message?.reasoning || reasoning) && (
-            <ReasoningAccordion reasoning={smoothReasoning[0]} isReasoning={!!currentReasoning} />
+            <ReasoningAccordion
+              reasoning={smoothReasoning[0]}
+              isReasoning={!!currentReasoning && content?.length === 0 && message?.content?.length === 0 && isLoading}
+            />
           )}
 
           {isLoading ? (
@@ -77,6 +81,7 @@ function AssistantComponent({
           )}
 
           {/* {Array.isArray(parsedAnnotations) && <Annotations annotations={parsedAnnotations} />} */}
+          {!isLoading && message.status === "done" && <AssistantMessageFooter message={message} />}
         </div>
       </AssistantMessageWrapper>
     </div>

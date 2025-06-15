@@ -62,6 +62,24 @@ export const cancel = mutation({
   },
 });
 
+export const pinChat = mutation({
+  args: {
+    chatId: v.id("chats"),
+    pin: v.boolean(),
+  },
+  async handler(ctx, args) {
+    const user = await getUser(ctx);
+    if (!user) throw new ConvexError("Not authorized");
+
+    const chat = await ctx.db.get(args.chatId);
+    if (!chat) throw new ConvexError("Not found");
+
+    if (chat.user !== user._id) throw new ConvexError("Not allowed");
+
+    await ctx.db.patch(chat._id, { pinned: args.pin });
+  },
+});
+
 export const renameChat = mutation({
   args: {
     chatId: v.id("chats"),
@@ -70,6 +88,7 @@ export const renameChat = mutation({
   handler: async (ctx, args) => {
     const newTitle = args.newTitle.trim();
     if (newTitle.length === 0) throw new ConvexError("Title cannot be empty");
+    if (newTitle.length > 255) throw new ConvexError("Title can have 255 characters max");
 
     const user = await getUser(ctx);
     if (!user) throw new ConvexError("Not authorized");

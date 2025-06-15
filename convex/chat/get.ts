@@ -1,7 +1,8 @@
 import { ConvexError, v } from "convex/values";
-import { paginationOptsValidator } from "convex/server";
+import { paginationOptsValidator, PaginationResult } from "convex/server";
 import { internalQuery, query } from "../_generated/server";
 import { getUser } from "../users/get";
+import { Doc, Id } from "../_generated/dataModel";
 
 export const internalChat = internalQuery({
   args: {
@@ -74,13 +75,29 @@ export const messages = query({
     if (!chat) throw new ConvexError("Not found");
     if (chat?.user !== user._id) throw new ConvexError("Not allowed");
 
-    const messages = await ctx.db
+    let messages = await ctx.db
       .query("messages")
       .withIndex("by_chat_and_hide", (q) => q.eq("chat", chat._id))
       .order("desc")
       .paginate(args.paginationOpts);
 
-    return messages;
+    const modelIds = new Set(messages.page.map((message) => message.model));
+    const modelPromises = await Promise.allSettled(Array.from(modelIds).map((modelId) => ctx.db.get(modelId)));
+    const models: Map<Id<"models">, Doc<"models">> = new Map();
+    modelPromises.forEach((promise) => {
+      if (promise.status === "fulfilled" && promise.value) {
+        models.set(promise.value._id, promise.value);
+      }
+    });
+
+    messages.page.forEach((message, i) => {
+      const model = models.get(message.model);
+      if (model) {
+        messages.page[i].model = model as any;
+      }
+    });
+
+    return messages as typeof messages & { page: typeof messages.page & { model: Id<"models"> | Doc<"models"> }[] };
   },
 });
 
@@ -112,7 +129,7 @@ export const chats = query({
 
     return await ctx.db
       .query("chats")
-      .withIndex("by_user", (q) => q.eq("user", user._id))
+      .withIndex("by_user_and_pinned", (q) => q.eq("user", user._id))
       .order("desc")
       .paginate(args.paginationOpts);
   },

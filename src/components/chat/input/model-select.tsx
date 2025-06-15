@@ -117,7 +117,7 @@ function ModelButton({
       variant="secondary"
       className={cn(
         "bg-input h-16 w-full cursor-pointer justify-start rounded-full border-none px-4 ring-offset-transparent select-none focus:ring-0 focus:ring-transparent",
-        small && "-ml-2 h-fit w-fit p-2",
+        small && "-ml-2 h-fit w-fit max-w-[50%] p-2",
       )}
       onClick={() => setOpen(true)}
       asChild
@@ -127,7 +127,7 @@ function ModelButton({
         {currentSelectedModel ? (
           <div className={cn("relative flex w-full items-center gap-3", small && "gap-2")}>
             <div className={cn("size-7 shrink-0 md:size-9", small && "size-6 md:size-6")}>
-              <ProviderLogo title={currentSelectedModel.title} className="size-full" />
+              <ProviderLogo apiId={currentSelectedModel.api_id} api={currentSelectedModel.api} className="size-full" />
             </div>
 
             <div className="flex min-w-0 flex-1 flex-col items-start justify-center">
@@ -264,7 +264,8 @@ function ModelList({
                     )}
                   >
                     <ProviderLogo
-                      title={model.title}
+                      apiId={model.api_id}
+                      api={model.api}
                       className={cn(
                         "size-7 min-h-7 min-w-7 shrink-0 md:size-9 md:min-h-9 md:min-w-9",
                         small && "size-7 min-h-7 min-w-7 md:size-7 md:min-h-7 md:min-w-7",
@@ -310,7 +311,7 @@ function ModelList({
                         </Tooltip>
 
                         <p className={cn("text-xs opacity-50 md:text-sm", small && "text-xs md:text-xs")}>
-                          {(model.text_capabilities?.max_input_tokens ?? 0) > 1000000
+                          {(model.text_capabilities?.max_input_tokens ?? 0) >= 1000000
                             ? Math.round((model.text_capabilities?.max_input_tokens ?? 0) / 100000) / 10 + "M"
                             : Math.round((model.text_capabilities?.max_input_tokens ?? 0) / 1000) + "k"}{" "}
                           Context

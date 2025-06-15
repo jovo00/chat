@@ -14,8 +14,7 @@ function ReasoningAccordionComponent({ reasoning, isReasoning }: { reasoning?: s
       <AccordionItem value="user-reasoning" className="w-full border-none">
         <AccordionTrigger
           className={cn(
-            "flex max-w-26 items-center justify-between py-0 hover:no-underline",
-            isReasoning && "max-w-34",
+            "flex flex-none cursor-pointer items-center justify-between gap-2 py-0 text-base hover:no-underline",
           )}
         >
           {isReasoning && (
@@ -25,7 +24,7 @@ function ReasoningAccordionComponent({ reasoning, isReasoning }: { reasoning?: s
           )}
           Reasoning
         </AccordionTrigger>
-        <AccordionContent className="message flex w-full max-w-full flex-1 grow-0 flex-col gap-3 pt-5 pb-0">
+        <AccordionContent className="message bg-card mt-5 flex w-full max-w-full flex-1 grow-0 flex-col gap-3 rounded-md p-5">
           <Content markdown={reasoning} />
         </AccordionContent>
       </AccordionItem>

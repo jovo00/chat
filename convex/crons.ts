@@ -3,10 +3,6 @@ import { internal } from "./_generated/api";
 
 const crons = cronJobs();
 
-// crons.interval(
-//   "clear messages table",
-//   { hours: 24 },
-//   internal.messages.clearAll,
-// );
+crons.interval("updateOpenRouterModels", { hours: 12 }, internal.models.openrouter.updateModelInfo);
 
 export default crons;

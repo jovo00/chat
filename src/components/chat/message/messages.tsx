@@ -41,7 +41,7 @@ export default function Messages({
         ref={scrollRef}
       >
         <div
-          className="relative mx-auto flex h-fit w-full max-w-240 grow-0 flex-col gap-16 px-3 pt-4 pb-4 lg:px-2"
+          className="relative mx-auto flex h-fit w-full max-w-240 grow-0 flex-col gap-2 px-3 py-8 pt-16 lg:px-4"
           ref={messagesRef}
         >
           <MessageList preloadedMessages={preloadedMessages} scrollRef={scrollRef} />

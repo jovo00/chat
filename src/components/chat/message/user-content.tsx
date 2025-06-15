@@ -5,6 +5,7 @@ import { Doc } from "@gen/dataModel";
 import { useEffect, memo, useRef } from "react";
 import MessageContent from "./content";
 import { UserWrapper } from "./user-wrapper";
+import UserMessageFooter from "./user-footer";
 
 function UserComponent({ message, className }: { message: Doc<"messages">; className?: string }) {
   const messageRef = useRef<HTMLDivElement | null>(null);

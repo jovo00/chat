@@ -27,6 +27,7 @@ import type * as models_create from "../models/create.js";
 import type * as models_delete from "../models/delete.js";
 import type * as models_get from "../models/get.js";
 import type * as models_openrouter from "../models/openrouter.js";
+import type * as models_update from "../models/update.js";
 import type * as preflight from "../preflight.js";
 import type * as tokens_actions from "../tokens/actions.js";
 import type * as tokens_get from "../tokens/get.js";
@@ -69,6 +70,7 @@ declare const fullApi: ApiFromModules<{
   "models/delete": typeof models_delete;
   "models/get": typeof models_get;
   "models/openrouter": typeof models_openrouter;
+  "models/update": typeof models_update;
   preflight: typeof preflight;
   "tokens/actions": typeof tokens_actions;
   "tokens/get": typeof tokens_get;

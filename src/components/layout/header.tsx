@@ -39,7 +39,7 @@ export default function Header({
   return (
     <header
       className={cn(
-        "relative z-50 flex h-14 w-full shrink-0 items-center justify-center px-2 transition-[transform,opacity] duration-300 lg:px-4",
+        "relative z-50 flex h-14 w-full shrink-0 items-center justify-center px-2 transition-all duration-300 lg:px-4",
         mobileMenuOpen && "translate-x-72 opacity-60 md:translate-x-80",
       )}
     >
