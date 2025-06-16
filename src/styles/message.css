@@ -13,7 +13,7 @@
 }
 
 .message .code * {
-  @apply leading-tight;
+  @apply leading-tight text-shadow-none;
 }
 
 .message .code .token {
@@ -146,11 +146,31 @@
 }
 
 .history-menu-button-gradient {
-  background: linear-gradient(90deg, hsla(240, 5%, 12%, 0) 0%, hsla(240, 5%, 12%, 1) 50%, hsla(240, 5%, 12%, 1) 100%);
+  background: linear-gradient(90deg, hsla(240, 5%, 92%, 0) 0%, hsla(240, 5%, 92%, 1) 50%, hsla(240, 5%, 92%, 1) 100%);
 }
 
 .history-menu-gradient {
-  background: linear-gradient(90deg, hsla(240, 5%, 12%, 0) 0%, hsla(240, 5%, 12%, 1) 90%, hsla(240, 5%, 12%, 1) 100%);
+  background: linear-gradient(90deg, hsla(240, 5%, 92%, 0) 0%, hsla(240, 5%, 92%, 1) 90%, hsla(240, 5%, 92%, 1) 100%);
+}
+
+.dark {
+  .history-menu-button-gradient {
+    background: linear-gradient(
+      90deg,
+      hsla(222.88, 11%, 12%, 0) 0%,
+      hsla(222.88, 11%, 12%, 1) 50%,
+      hsla(222.88, 11%, 12%, 1) 100%
+    );
+  }
+
+  .history-menu-gradient {
+    background: linear-gradient(
+      90deg,
+      hsla(222.88, 11%, 12%, 0) 0%,
+      hsla(222.88, 11%, 12%, 1) 90%,
+      hsla(222.88, 11%, 12%, 1) 100%
+    );
+  }
 }
 
 .sidebar-hover-bg {

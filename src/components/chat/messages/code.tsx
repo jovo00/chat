@@ -29,7 +29,11 @@ const HeaderComponent = ({
   const icon = useMemo(() => getIcon(language, false), [language]);
 
   return (
-    <div className={cn("bg-accent relative flex w-full items-center justify-between rounded-t-2xl px-4 py-1 pr-1")}>
+    <div
+      className={cn(
+        "dark:bg-accent dark:text-foreground relative flex w-full items-center justify-between rounded-t-2xl bg-black px-4 py-1 pr-1 text-white",
+      )}
+    >
       <span className="pointer-events-none flex items-center gap-2 text-xs font-semibold lowercase opacity-60 select-none">
         <img className="pointer-events-none size-4 brightness-200 grayscale select-none" src={icon} alt="" />
         {language}
@@ -37,7 +41,7 @@ const HeaderComponent = ({
       <div className="flex items-center space-x-1">
         <Button
           variant="ghost"
-          className="group dark:hover:bg-primary/10 flex h-8 items-center gap-2 rounded-full px-4 text-xs font-medium"
+          className="group dark:hover:bg-primary/10 hover:bg-accent/20 dark:hover:text-foreground flex h-8 items-center gap-2 rounded-full px-4 text-xs font-medium hover:text-white"
           onClick={onCopy}
         >
           {!isCopied && (
@@ -76,7 +80,12 @@ const CodeBlock: FC<Props> = memo(({ language, value, isUser }) => {
   }, [value]);
 
   return (
-    <div className={cn("codeblock bg-card relative my-3 rounded-2xl font-sans", isUser && "bg-background/50")}>
+    <div
+      className={cn(
+        "codeblock bg-foreground selection:bg-background/10 dark:bg-card relative my-3 rounded-2xl font-sans",
+        isUser && "bg-background/50",
+      )}
+    >
       <Header isCopied={isCopied} isUser={!!isUser} language={language} onCopy={onCopy} />
       <div className="code">
         <SyntaxHighlighter
