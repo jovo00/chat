@@ -1,14 +1,13 @@
-// From https://github.com/get-convex/agent/blob/main/src/react/useSmoothText.ts
+import { useEffect, useRef, useState, useCallback } from "react";
 
-import { useEffect, useRef, useState } from "react";
-
-const FPS = 40;
+const FPS = 45;
 const MS_PER_FRAME = 1000 / FPS;
 const MAX_TIME_JUMP_MS = 250;
+
 /**
  * A hook that smoothly displays text as it is streamed.
  *
- * @param text The text to display. Pass in the full text each time.
+ * @param fullText The full text to display. Pass in the full text each time.
  * @param charsPerSec The number of characters to display per second.
  * @returns A tuple of the visible text and the state of the smooth text,
  * including the current cursor position and whether it's still streaming.
@@ -16,7 +15,7 @@ const MAX_TIME_JUMP_MS = 250;
  * the charsPerSec or just prefer the full text.
  */
 export function useSmoothText(
-  text: string,
+  fullText: string, // Renamed 'text' to 'fullText' for clarity
   {
     charsPerSec = 1024,
   }: {
@@ -26,45 +25,100 @@ export function useSmoothText(
     charsPerSec?: number;
   } = {},
 ): [string, { cursor: number; isStreaming: boolean }] {
-  const [visibleText, setVisibleText] = useState(text);
+  // We will build the visible text incrementally
+  const [visibleText, setVisibleText] = useState("");
+
+  // Use a ref for mutable state that doesn't trigger re-renders
   const smoothState = useRef({
-    tick: Date.now() + (text.length * 1000) / charsPerSec,
-    cursor: text.length,
-    start: Date.now(),
-    initialLength: text.length,
-    charsPerMs: charsPerSec / 1000,
+    cursor: 0, // Current character index being displayed
+    lastUpdateTime: Date.now(), // Last time the update function ran
+    charsPerMs: charsPerSec / 1000, // Target characters per millisecond
+    // We'll track the previously displayed text to append new characters
+    // This avoids re-slicing the entire string.
+    // This will be updated when `fullText` changes.
+    previousFullTextLength: 0,
   });
 
-  const isStreaming = smoothState.current.cursor < text.length;
-
+  // Effect to initialize/reset state when fullText changes significantly
   useEffect(() => {
-    if (!isStreaming) {
+    // If the new fullText is shorter than the current cursor, reset
+    // Or if it's a completely new text (e.g., first render or new conversation)
+    if (fullText.length < smoothState.current.cursor || smoothState.current.previousFullTextLength === 0) {
+      smoothState.current.cursor = 0;
+      setVisibleText(""); // Reset visible text
+    }
+    smoothState.current.lastUpdateTime = Date.now();
+    smoothState.current.charsPerMs = charsPerSec / 1000; // Reset speed
+    smoothState.current.previousFullTextLength = fullText.length;
+  }, [fullText, charsPerSec]); // Re-run if fullText or charsPerSec changes
+
+  // Use useCallback for the update function to prevent unnecessary re-creations
+  const update = useCallback(() => {
+    const { current: state } = smoothState;
+
+    // If we've already displayed all characters, stop
+    if (state.cursor >= fullText.length) {
       return;
     }
-    const latestCharsPerMs =
-      (text.length - smoothState.current.initialLength) / (Date.now() - smoothState.current.start);
-    // Smooth out the charsPerSec by averaging it with the previous value.
-    smoothState.current.charsPerMs = Math.min(
-      (2 * latestCharsPerMs + smoothState.current.charsPerMs) / 3,
-      smoothState.current.charsPerMs * 2,
-    );
-    smoothState.current.tick = Math.max(smoothState.current.tick, Date.now() - 2 * MS_PER_FRAME);
 
-    function update() {
-      if (smoothState.current.cursor >= text.length) {
-        return;
-      }
-      const now = Date.now();
-      const timeSinceLastUpdate = Math.min(MAX_TIME_JUMP_MS, now - smoothState.current.tick);
-      const chars = Math.floor(timeSinceLastUpdate * smoothState.current.charsPerMs);
-      smoothState.current.cursor = Math.min(smoothState.current.cursor + chars, text.length);
-      smoothState.current.tick = now;
-      setVisibleText(text.slice(0, smoothState.current.cursor));
+    const now = Date.now();
+    // Calculate time elapsed since last update, capped to prevent huge jumps
+    const timeElapsed = Math.min(MAX_TIME_JUMP_MS, now - state.lastUpdateTime);
+
+    // Calculate how many characters to add based on time elapsed and speed
+    const charsToAdd = Math.floor(timeElapsed * state.charsPerMs);
+
+    // Determine the new cursor position, ensuring it doesn't exceed fullText length
+    const newCursor = Math.min(state.cursor + charsToAdd, fullText.length);
+
+    // Only update visibleText if the cursor has actually moved
+    if (newCursor > state.cursor) {
+      // Append the new characters instead of re-slicing the whole string
+      // This is the key optimization.
+      setVisibleText((prevVisibleText) => {
+        // Ensure we don't append beyond the current fullText length
+        const appendEndIndex = Math.min(newCursor, fullText.length);
+        // Start appending from the previous cursor position
+        const appendStartIndex = Math.min(state.cursor, fullText.length);
+
+        // If prevVisibleText is shorter than state.cursor, it means
+        // the fullText might have changed and we reset, so we should
+        // re-slice from the beginning up to newCursor.
+        // This handles the case where `fullText` shrinks or resets.
+        if (prevVisibleText.length > appendStartIndex) {
+          return prevVisibleText + fullText.substring(appendStartIndex, appendEndIndex);
+        } else {
+          // This case should ideally be handled by the initial useEffect,
+          // but as a fallback, if prevVisibleText is out of sync,
+          // we re-slice from the beginning.
+          return fullText.substring(0, appendEndIndex);
+        }
+      });
+      state.cursor = newCursor; // Update cursor in ref
     }
+
+    state.lastUpdateTime = now; // Update last update time
+  }, [fullText, charsPerSec]); // Dependencies for useCallback
+
+  // Effect for setting up and tearing down the interval
+  useEffect(() => {
+    // If we're already at the end, no need for an interval
+    if (smoothState.current.cursor >= fullText.length) {
+      return;
+    }
+
+    // Run update immediately to catch up if needed
     update();
+
+    // Set up the interval
     const interval = setInterval(update, MS_PER_FRAME);
+
+    // Clean up the interval on unmount or dependency change
     return () => clearInterval(interval);
-  }, [text, isStreaming, charsPerSec]);
+  }, [fullText, update]); // `update` is a dependency because it's a useCallback
+
+  // Determine if streaming is still active
+  const isStreaming = smoothState.current.cursor < fullText.length;
 
   return [visibleText, { cursor: smoothState.current.cursor, isStreaming }];
 }

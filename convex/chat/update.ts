@@ -43,6 +43,23 @@ export const updateMessage = internalMutation({
   },
 });
 
+export const updateMessageError = internalMutation({
+  args: {
+    messageId: v.id("messages"),
+    chatId: v.id("chats"),
+    status: messageStatus,
+    status_message: v.optional(v.string()),
+  },
+  handler: async (ctx, args) => {
+    const { messageId, chatId, ...data } = args;
+    await ctx.db.patch(messageId, data);
+    await ctx.db.patch(chatId, {
+      latest_message_status: data.status,
+      latest_message: messageId,
+    });
+  },
+});
+
 export const messagePromptVisibility = mutation({
   args: {
     messageId: v.id("messages"),

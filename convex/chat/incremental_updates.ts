@@ -71,7 +71,7 @@ export class IncrementalUpdater {
 
   async syncUpdater() {
     const updateInterval = 1000;
-    const updateCharCount = 350;
+    const updateCharCount = 250;
 
     if (Date.now() - this.prevUpdaterSubmission.time < updateInterval) return;
     if (this.current.content.length < this.prevUpdaterSubmission.content + updateCharCount) return;
@@ -92,7 +92,7 @@ export class IncrementalUpdater {
 
   async syncCancel() {
     const updateInterval = 500;
-    const updateCharCount = 350;
+    const updateCharCount = 200;
 
     if (Date.now() - this.prevCancelSubmission.time < updateInterval) return;
     if (this.current.content.length < this.prevCancelSubmission.content + updateCharCount) return;

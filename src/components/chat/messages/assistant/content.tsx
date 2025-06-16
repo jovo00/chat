@@ -52,7 +52,10 @@ function AssistantComponent({
   const smoothContent = useSmoothText(currentContent ?? "", { charsPerSec: 1024 });
   const smoothReasoning = useSmoothText(currentReasoning ?? "", { charsPerSec: 1024 });
 
-  const isLoading = message.status === "pending" || (message.status === "generating" && status === "pending");
+  const isLoading =
+    message.status === "pending" ||
+    (message.status === "generating" && status === "pending") ||
+    (currentContent ?? "")?.length === 0;
 
   const messageRef = useRef<HTMLDivElement | null>(null);
 
@@ -62,12 +65,14 @@ function AssistantComponent({
     }
   }, [currentContent, currentReasoning]);
 
+  const showSmooth = isCurrentlyStreaming && message?.status !== "done" && message?.status !== "error";
+
   return (
     <div className={cn("group relative flex w-full flex-col items-start gap-2", className)}>
       <AssistantMessageLayout message={message}>
         {(message?.reasoning || reasoning) && (
           <ReasoningAccordion
-            reasoning={smoothReasoning[0]}
+            reasoning={showSmooth ? smoothReasoning[0] : (currentReasoning ?? "")}
             isReasoning={!!currentReasoning && content?.length === 0 && message?.content?.length === 0 && isLoading}
           />
         )}
@@ -79,7 +84,7 @@ function AssistantComponent({
             </div>
           ) : (
             <>
-              {currentContent && <MessageContent markdown={smoothContent[0]} />}
+              {currentContent && <MessageContent markdown={showSmooth ? smoothContent[0] : (currentContent ?? "")} />}
               <MessageStatus
                 status={message?.status}
                 statusMessage={message?.status_message}

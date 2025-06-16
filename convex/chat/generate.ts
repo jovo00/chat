@@ -40,74 +40,90 @@ export const completeChat = httpAction(async (ctx, request) => {
     messageId: initialMessage._id,
   });
 
-  const decryptedToken = await ctx.runAction(internal.tokens.actions.decryptToken, { encryptedToken: token.token });
-
-  let apiModel: LanguageModel | undefined = undefined;
-
-  if (model.api === "openrouter") {
-    const openrouter = createOpenRouter({
-      apiKey: decryptedToken,
-    });
-    if (message.online) {
-      apiModel = openrouter(model.api_id + ":online");
-    } else {
-      apiModel = openrouter(model.api_id);
-    }
-  }
-
-  if (!apiModel) throw new ConvexError("Could not initialize model");
-
   const abortController = new AbortController();
-  const result = streamText({
-    model: apiModel,
-    messages: context as CoreMessage[],
-    abortSignal: abortController.signal,
-  });
 
-  let content = "";
-  let reasoning: undefined | string = undefined;
-  let incrementalUpdater = new IncrementalUpdater(ctx, message._id);
+  try {
+    const decryptedToken = await ctx.runAction(internal.tokens.actions.decryptToken, { encryptedToken: token.token });
 
-  const encoder = new TextEncoder();
-  const readableStream = new ReadableStream({
-    async start(controller) {
-      for await (const part of result.fullStream) {
-        switch (part.type) {
-          case "text-delta": {
-            content += part.textDelta;
-            controller.enqueue(encoder.encode(encodeData(dataTypes.CONTENT, part.textDelta)));
-            await incrementalUpdater.update(part.textDelta);
-            break;
-          }
-          case "reasoning": {
-            if (!reasoning) {
-              reasoning = part.textDelta;
-            } else {
-              reasoning += part.textDelta;
+    let apiModel: LanguageModel | undefined = undefined;
+
+    if (model.api === "openrouter") {
+      const openrouter = createOpenRouter({
+        apiKey: decryptedToken,
+      });
+      if (message.online) {
+        apiModel = openrouter(model.api_id + ":online");
+      } else {
+        apiModel = openrouter(model.api_id);
+      }
+    }
+
+    if (!apiModel) throw new ConvexError("Could not initialize model");
+
+    const result = streamText({
+      model: apiModel,
+      messages: context as CoreMessage[],
+      abortSignal: abortController.signal,
+    });
+
+    let content = "";
+    let reasoning: undefined | string = undefined;
+    let incrementalUpdater = new IncrementalUpdater(ctx, message._id);
+
+    const encoder = new TextEncoder();
+    const readableStream = new ReadableStream({
+      async start(controller) {
+        for await (const part of result.fullStream) {
+          switch (part.type) {
+            case "text-delta": {
+              content += part.textDelta;
+              controller.enqueue(encoder.encode(encodeData(dataTypes.CONTENT, part.textDelta)));
+              await incrementalUpdater.update(part.textDelta);
+              break;
             }
-            controller.enqueue(encoder.encode(encodeData(dataTypes.REASONING, part.textDelta)));
-            await incrementalUpdater.update(undefined, part.textDelta);
-            break;
+            case "reasoning": {
+              if (!reasoning) {
+                reasoning = part.textDelta;
+              } else {
+                reasoning += part.textDelta;
+              }
+              controller.enqueue(encoder.encode(encodeData(dataTypes.REASONING, part.textDelta)));
+              await incrementalUpdater.update(undefined, part.textDelta);
+              break;
+            }
+            case "error": {
+              controller.error(part.error);
+
+              await ctx.runMutation(internal.chat.update.updateMessage, {
+                messageId,
+                chatId,
+                content,
+                reasoning,
+                status: "error",
+                status_message: (part.error as Error)?.message ?? "Error while generating response",
+              });
+              break;
+            }
+            case "finish": {
+              content = await result.text;
+              reasoning = await result.reasoning;
+
+              await incrementalUpdater.finish();
+
+              await ctx.runMutation(internal.chat.update.updateMessage, {
+                messageId,
+                chatId,
+                content,
+                reasoning,
+                status: "done",
+              });
+
+              controller.close();
+              break;
+            }
           }
-          case "error": {
-            controller.error(part.error);
 
-            await ctx.runMutation(internal.chat.update.updateMessage, {
-              messageId,
-              chatId,
-              content,
-              reasoning,
-              status: "error",
-              status_message: (part.error as Error)?.message ?? "Error while generating response",
-            });
-            break;
-          }
-          case "finish": {
-            content = await result.text;
-            reasoning = await result.reasoning;
-
-            await incrementalUpdater.finish();
-
+          if (incrementalUpdater.cancelled) {
             await ctx.runMutation(internal.chat.update.updateMessage, {
               messageId,
               chatId,
@@ -116,33 +132,38 @@ export const completeChat = httpAction(async (ctx, request) => {
               status: "done",
             });
 
+            abortController.abort();
             controller.close();
-            break;
           }
         }
+      },
+    });
 
-        if (incrementalUpdater.cancelled) {
-          await ctx.runMutation(internal.chat.update.updateMessage, {
-            messageId,
-            chatId,
-            content,
-            reasoning,
-            status: "done",
-          });
+    return new Response(readableStream, {
+      headers: {
+        "Access-Control-Allow-Origin": process.env.SITE_URL!,
+        "Content-Type": "text/plain; charset=utf-8",
+        "Transfer-Encoding": "chunked",
+        Vary: "Origin",
+      },
+    });
+  } catch (err) {
+    console.log(err);
 
-          abortController.abort();
-          controller.close();
-        }
-      }
-    },
-  });
+    abortController.abort();
+    let errorMessage = "Could not generate a response";
 
-  return new Response(readableStream, {
-    headers: {
-      "Access-Control-Allow-Origin": process.env.SITE_URL!,
-      "Content-Type": "text/plain; charset=utf-8",
-      "Transfer-Encoding": "chunked",
-      Vary: "Origin",
-    },
-  });
+    if (err instanceof ConvexError) {
+      errorMessage = err?.data;
+    }
+
+    await ctx.runMutation(internal.chat.update.updateMessageError, {
+      messageId: message._id,
+      chatId: message.chat,
+      status: "error",
+      status_message: errorMessage,
+    });
+
+    throw err;
+  }
 });
