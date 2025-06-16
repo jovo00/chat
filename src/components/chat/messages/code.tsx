@@ -5,7 +5,7 @@ import { CheckCircle2, Copy } from "lucide-react";
 import { useCopyToClipboard } from "@/lib/hooks/use-copy-to-clipboard";
 import { Button } from "@/components/ui/button";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
-import { oneDark } from "react-syntax-highlighter/dist/cjs/styles/prism";
+import { oneDark, oneLight } from "react-syntax-highlighter/dist/cjs/styles/prism";
 import getIcon from "@/lib/file-icons/get-icon";
 import { cn } from "@/lib/utils";
 
@@ -15,7 +15,7 @@ interface Props {
   isUser?: boolean;
 }
 
-const HeaderComponent = ({
+const CodeHeaderComponent = ({
   isUser,
   language,
   onCopy,
@@ -69,7 +69,7 @@ const HeaderComponent = ({
   );
 };
 
-const Header = memo(HeaderComponent);
+const Header = memo(CodeHeaderComponent);
 
 const CodeBlock: FC<Props> = memo(({ language, value, isUser }) => {
   const { isCopied, copyToClipboard } = useCopyToClipboard({ timeout: 1500 });

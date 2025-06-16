@@ -1,11 +1,10 @@
 "use client";
 
 import { memo } from "react";
-import { X } from "lucide-react";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Doc } from "@gen/dataModel";
 
-function AssistantMessageWrapperComponent({
+function AssistantMessageLayoutComponent({
   children,
   message,
 }: {
@@ -28,4 +27,4 @@ function AssistantMessageWrapperComponent({
   return children;
 }
 
-export const AssistantMessageWrapper = memo(AssistantMessageWrapperComponent);
+export const AssistantMessageLayout = memo(AssistantMessageLayoutComponent);

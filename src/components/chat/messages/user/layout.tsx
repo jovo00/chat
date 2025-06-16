@@ -1,17 +1,10 @@
 import UserMessageFooter from "./footer";
 import { memo, ReactNode } from "react";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import { useCopyToClipboard } from "@/lib/hooks/use-copy-to-clipboard";
 import { cn } from "@/lib/utils";
 import { Doc } from "@gen/dataModel";
 
-export const UserWrapper = memo(function UserMessage({
-  message,
-  children,
-}: {
-  message?: Doc<"messages">;
-  children: ReactNode;
-}) {
+function UserMessageLayoutComponent({ message, children }: { message?: Doc<"messages">; children: ReactNode }) {
   const messageIsHidden = message?.hide_prompt;
 
   return (
@@ -47,4 +40,6 @@ export const UserWrapper = memo(function UserMessage({
       </div>
     </>
   );
-});
+}
+
+export const UserMessageLayout = memo(UserMessageLayoutComponent);

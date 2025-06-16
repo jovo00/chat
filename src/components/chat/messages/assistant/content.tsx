@@ -5,7 +5,7 @@ import { useStream } from "@/lib/chat/use-stream";
 import { cn, updateListMargin } from "@/lib/utils";
 import { Doc } from "@gen/dataModel";
 import { useMemo, useEffect, memo, useRef } from "react";
-import { AssistantMessageWrapper } from "./layout";
+import { AssistantMessageLayout } from "./layout";
 import { ReasoningAccordion } from "./reasoning";
 import MessageContent from "../content";
 import { MessageStatus } from "./status";
@@ -64,7 +64,7 @@ function AssistantComponent({
 
   return (
     <div className={cn("group relative flex w-full flex-col items-start gap-2", className)}>
-      <AssistantMessageWrapper message={message}>
+      <AssistantMessageLayout message={message}>
         {(message?.reasoning || reasoning) && (
           <ReasoningAccordion
             reasoning={smoothReasoning[0]}
@@ -88,7 +88,7 @@ function AssistantComponent({
             </>
           )}
         </div>
-      </AssistantMessageWrapper>
+      </AssistantMessageLayout>
 
       {!isLoading && message.status === "done" && <AssistantMessageFooter message={message} />}
     </div>

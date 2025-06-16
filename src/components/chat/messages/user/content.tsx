@@ -4,14 +4,14 @@ import { getErrorMessage, updateListMargin } from "@/lib/utils";
 import { Doc, Id } from "@gen/dataModel";
 import { useEffect, memo, useRef } from "react";
 import MessageContent from "../content";
-import { UserWrapper } from "./layout";
+import { UserMessageLayout } from "./layout";
 import { X } from "lucide-react";
 import getIcon from "@/lib/file-icons/get-icon";
 import { useConvex } from "convex/react";
 import { toast } from "sonner";
 import { api } from "@gen/api";
 
-function UserComponent({
+function UserMessageContentComponent({
   message,
   className,
 }: {
@@ -42,7 +42,7 @@ function UserComponent({
   }
 
   return (
-    <UserWrapper message={message}>
+    <UserMessageLayout message={message}>
       <div ref={messageRef} className="flex w-full max-w-full flex-1 grow-0 flex-col">
         {(message?.files?.length ?? 0) > 0 && (
           <div className="mb-2 flex w-full flex-wrap gap-1">
@@ -83,7 +83,7 @@ function UserComponent({
         )}
         <span className="message">{message?.prompt && <MessageContent markdown={message?.prompt} isUser />}</span>
       </div>
-    </UserWrapper>
+    </UserMessageLayout>
   );
 }
-export const User = memo(UserComponent);
+export const UserMessageContent = memo(UserMessageContentComponent);

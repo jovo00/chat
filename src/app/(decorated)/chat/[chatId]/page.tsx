@@ -2,7 +2,7 @@ import ChatList from "@/components/chat/existing-chat";
 import ShiftMobile from "@/components/layout/shift-mobile";
 import { Id } from "@gen/dataModel";
 import { ErrorBoundary } from "react-error-boundary";
-import { messagesErrorRender } from "@/components/chat/messages/error";
+import { MessageError } from "@/components/chat/messages/error";
 import { Metadata, ResolvingMetadata } from "next";
 import { fetchQuery } from "convex/nextjs";
 import { api } from "@gen/api";
@@ -30,7 +30,7 @@ export default async function Chat({ params }: Props) {
   return (
     <ShiftMobile>
       <div className="relative flex h-full flex-1 flex-col">
-        <ErrorBoundary fallbackRender={messagesErrorRender}>
+        <ErrorBoundary fallbackRender={MessageError}>
           <ChatList chatId={chatId as Id<"chats">} />
         </ErrorBoundary>
       </div>

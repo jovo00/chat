@@ -6,7 +6,7 @@ import { SquarePen } from "lucide-react";
 import Link from "next/link";
 import { FallbackProps } from "react-error-boundary";
 
-export function messagesErrorRender({ error, resetErrorBoundary }: FallbackProps) {
+export function MessageError({ error, resetErrorBoundary }: FallbackProps) {
   return (
     <div role="alert" className="flex h-full w-full flex-col items-center justify-center p-4">
       <h1 className="font-special text-lg">Error</h1>

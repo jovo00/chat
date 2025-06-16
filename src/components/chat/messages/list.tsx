@@ -7,7 +7,7 @@ import { api } from "@gen/api";
 import { Preloaded, usePreloadedPaginatedQuery } from "@/lib/convex/use-preload";
 import useChatState from "@/lib/state/chat";
 import { Assistant } from "./assistant/content";
-import { User } from "./user/content";
+import { UserMessageContent } from "./user/content";
 import ErrorDisplay from "@/components/error";
 import { createOptimisticMessage, getErrorMessage } from "@/lib/utils";
 import useInputState from "@/lib/state/input";
@@ -89,7 +89,7 @@ export const MessageList = memo(function MessageList({ preloadedMessages, scroll
 
       {list.map((message, i) => (
         <Fragment key={message._id}>
-          <User message={message} />
+          <UserMessageContent message={message} />
           <Assistant
             message={message}
             isStreamed={!!drivenIds.get(message.chat)?.has(message._id)}
@@ -101,7 +101,7 @@ export const MessageList = memo(function MessageList({ preloadedMessages, scroll
         </Fragment>
       ))}
 
-      {optimisticMessage && <User message={optimisticMessage} />}
+      {optimisticMessage && <UserMessageContent message={optimisticMessage} />}
       {optimisticMessage && <Assistant message={optimisticMessage} isStreamed={false} />}
     </>
   );
