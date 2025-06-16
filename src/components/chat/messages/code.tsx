@@ -8,6 +8,7 @@ import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { oneDark, oneLight } from "react-syntax-highlighter/dist/cjs/styles/prism";
 import getIcon from "@/lib/file-icons/get-icon";
 import { cn } from "@/lib/utils";
+import { useTheme } from "next-themes";
 
 interface Props {
   language: string;
@@ -31,17 +32,21 @@ const CodeHeaderComponent = ({
   return (
     <div
       className={cn(
-        "dark:bg-accent dark:text-foreground relative flex w-full items-center justify-between rounded-t-2xl bg-black px-4 py-1 pr-1 text-white",
+        "bg-accent text-foreground relative flex w-full items-center justify-between rounded-t-2xl px-4 py-1 pr-1",
       )}
     >
       <span className="pointer-events-none flex items-center gap-2 text-xs font-semibold lowercase opacity-60 select-none">
-        <img className="pointer-events-none size-4 brightness-200 grayscale select-none" src={icon} alt="" />
+        <img
+          className="pointer-events-none size-4 brightness-200 grayscale invert select-none dark:invert-0"
+          src={icon}
+          alt=""
+        />
         {language}
       </span>
       <div className="flex items-center space-x-1">
         <Button
           variant="ghost"
-          className="group dark:hover:bg-primary/10 hover:bg-accent/20 dark:hover:text-foreground flex h-8 items-center gap-2 rounded-full px-4 text-xs font-medium hover:text-white"
+          className="group hover:bg-background/50 dark:hover:bg-primary/10 dark:hover:text-foreground flex h-8 items-center gap-2 rounded-full px-4 text-xs font-medium"
           onClick={onCopy}
         >
           {!isCopied && (
@@ -57,10 +62,12 @@ const CodeHeaderComponent = ({
 
           {isCopied && (
             <>
-              <div className="copy-check text-green-400 transition-opacity duration-500 group-hover:opacity-100">
+              <div className="copy-check text-green-800 transition-opacity duration-500 group-hover:opacity-100 dark:text-green-400">
                 <CheckCircle2 className="size-5 shrink-0" strokeWidth={1.5} />
               </div>
-              <span className={"animate-in fade-in-5 text-left text-green-400 duration-500"}>Copied!</span>
+              <span className={"animate-in fade-in-5 text-left text-green-800 duration-500 dark:text-green-400"}>
+                Copied!
+              </span>
             </>
           )}
         </Button>
@@ -72,6 +79,7 @@ const CodeHeaderComponent = ({
 const Header = memo(CodeHeaderComponent);
 
 const CodeBlock: FC<Props> = memo(({ language, value, isUser }) => {
+  // const { theme } = useTheme();
   const { isCopied, copyToClipboard } = useCopyToClipboard({ timeout: 1500 });
 
   const onCopy = useCallback(() => {
@@ -82,7 +90,7 @@ const CodeBlock: FC<Props> = memo(({ language, value, isUser }) => {
   return (
     <div
       className={cn(
-        "codeblock bg-foreground selection:bg-background/10 dark:bg-card relative my-3 rounded-2xl font-sans",
+        "codeblock bg-card selection:bg-background/10 dark:bg-card relative my-3 rounded-2xl font-sans",
         isUser && "bg-background/50",
       )}
     >

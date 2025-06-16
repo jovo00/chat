@@ -71,7 +71,7 @@ export function RenameChatDialog({ open, onOpenChange, chat }: DialogProps) {
             value={title}
             onInput={(e) => setTitle(e.currentTarget.value)}
             onKeyDown={(e) => e.key === "Enter" && handleRename()}
-            className="bg-accent ring-offset-muted rounded-full px-4 text-white"
+            className="ring-offset-muted bg-background rounded-full px-4"
             placeholder="Enter a new title..."
           />
           <DialogFooter>
@@ -121,7 +121,7 @@ export function DeleteChatDialog({ open, onOpenChange, chat }: DialogProps) {
             <DialogTitle>Delete Chat</DialogTitle>
             <DialogDescription>Are you sure you want to delete this chat?</DialogDescription>
           </DialogHeader>
-          <div className="bg-accent relative my-2 flex h-10 w-full max-w-full items-center gap-2 overflow-hidden rounded-full px-5 font-medium text-white">
+          <div className="bg-accent relative my-2 flex h-10 w-full max-w-full items-center gap-2 overflow-hidden rounded-full px-5 font-medium">
             <MessageSquare className="h-4 w-4 shrink-0" />
             <span className="grow-0 overflow-hidden text-sm text-ellipsis whitespace-nowrap">{title}</span>
             <input type="text" className="pointer-events-none absolute opacity-0" />

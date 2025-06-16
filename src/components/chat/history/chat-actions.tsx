@@ -24,7 +24,7 @@ export function ChatActions({ onRename, onDelete, isActive, menuOpen, isPinned, 
   const trigger = (
     <div
       className={cn(
-        "absolute top-0 right-0 z-30 flex h-full w-11 items-center justify-center text-white/50 opacity-0 transition-[color,opacity] group-hover:opacity-100 hover:text-white", // Added z-30
+        "text-primary/50 hover:text-primary absolute top-0 right-0 z-30 flex h-full w-11 items-center justify-center opacity-0 transition-[color,opacity] group-hover:opacity-100", // Added z-30
         menuOpen && "opacity-100",
         isActive && "opacity-100",
       )}

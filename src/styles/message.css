@@ -1,3 +1,7 @@
+.message-list {
+  scrollbar-gutter: stable both-edges;
+}
+
 .message p,
 .message li,
 .message table {
@@ -88,8 +92,10 @@
 
 .message ol li::marker,
 .message ul li::marker {
-  color: rgba(255, 255, 255, 0.5);
+  /* color: rgba(255, 255, 255, 0.5); */
+  /* @apply text-primary/20; */
   /* font-variant: normal; */
+  color: var(--color-primary);
 }
 
 .message ol li,
@@ -102,7 +108,7 @@
 }
 
 .message a {
-  @apply text-white/50 underline transition-colors hover:text-white/80;
+  @apply text-primary/90 dark:text-primary/50 hover:text-primary/70 dark:hover:text-primary/80 underline transition-colors;
 }
 
 .message table {
@@ -146,11 +152,11 @@
 }
 
 .history-menu-button-gradient {
-  background: linear-gradient(90deg, hsla(240, 5%, 92%, 0) 0%, hsla(240, 5%, 92%, 1) 50%, hsla(240, 5%, 92%, 1) 100%);
+  background: linear-gradient(90deg, #e9ecf100 0%, #e9ecf1ff 50%, #e9ecf1ff 100%);
 }
 
 .history-menu-gradient {
-  background: linear-gradient(90deg, hsla(240, 5%, 92%, 0) 0%, hsla(240, 5%, 92%, 1) 90%, hsla(240, 5%, 92%, 1) 100%);
+  background: linear-gradient(90deg, #e9ecf100 0%, #e9ecf1ff 90%, #e9ecf1ff 100%);
 }
 
 .dark {
@@ -174,7 +180,7 @@
 }
 
 .sidebar-hover-bg {
-  @apply bg-[hsl(230,100%,90%)]/10;
+  @apply bg-[hsl(230,100%,10%)]/10 dark:bg-[hsl(230,100%,90%)]/10;
 }
 
 .copy-check {

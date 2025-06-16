@@ -156,7 +156,7 @@
 
 @layer base {
   body {
-    @apply selection:bg-primary/20;
+    @apply selection:bg-foreground! selection:text-background!;
     background: var(--color-background);
     color: var(--color-foreground);
     font-size: var(--text-sm) /* 0.875rem = 14px */;

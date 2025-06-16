@@ -107,7 +107,7 @@ export default function Account({ preloadedUser }: { preloadedUser: PreloadedUse
                       <Input
                         id="name"
                         placeholder="Name"
-                        className="placeholder:text-foreground/30 rounded-[0.5rem] border-none px-4"
+                        className="placeholder:text-foreground/30 px-4"
                         autoCapitalize="none"
                         autoCorrect="off"
                         autoComplete="off"

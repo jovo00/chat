@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 
-const FPS = 30;
+const FPS = 40;
 const MS_PER_FRAME = 1000 / FPS;
 const MAX_TIME_JUMP_MS = 250;
 /**
@@ -18,7 +18,7 @@ const MAX_TIME_JUMP_MS = 250;
 export function useSmoothText(
   text: string,
   {
-    charsPerSec = 256,
+    charsPerSec = 1024,
   }: {
     /**
      * The number of characters to display per second.

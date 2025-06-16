@@ -20,13 +20,13 @@ interface MessageListProps {
 }
 
 export const MessageList = memo(function MessageList({ preloadedMessages, scrollRef, chatId }: MessageListProps) {
-  const { ref: inViewRef, inView } = useInView({ threshold: 0 });
-  const messages = usePreloadedPaginatedQuery(preloadedMessages);
   const lastScrollPosition = useRef(0);
+  const { ref: inViewRef, inView } = useInView({ threshold: 0 });
+
+  const messages = usePreloadedPaginatedQuery(preloadedMessages);
   const drivenIds = useChatState((state) => state.streaming);
   const removeStreaming = useChatState((state) => state.removeStreaming);
   const optimisticPrompts = useInputState((state) => state.optimisticPrompts);
-  const model = useInputState((state) => state.model);
 
   const list = useMemo(() => {
     return [...messages.results].reverse();

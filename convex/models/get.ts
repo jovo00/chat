@@ -26,7 +26,7 @@ export const many = query({
     const user = await getUser(ctx);
     if (!user) throw new ConvexError("Not authorized");
 
-    const models = await ctx.db.query("models").withIndex("by_title").paginate(args.paginationOpts);
+    const models = await ctx.db.query("models").withIndex("by_title").order("asc").paginate(args.paginationOpts);
 
     return models;
   },

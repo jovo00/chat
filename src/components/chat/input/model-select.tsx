@@ -125,7 +125,7 @@ function ModelButton({
       variant="secondary"
       className={cn(
         "bg-input h-16 w-full cursor-pointer justify-start rounded-full border-none px-4 ring-offset-transparent select-none focus:ring-0 focus:ring-transparent",
-        small && "bg-accent dark:bg-input -ml-2 h-fit w-fit max-w-[50%] p-2",
+        small && "bg-accent dark:bg-input dark:hover:bg-accent -ml-2 h-fit w-fit max-w-[50%] p-2",
       )}
       onClick={() => setOpen(true)}
       asChild

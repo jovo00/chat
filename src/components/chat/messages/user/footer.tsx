@@ -25,7 +25,7 @@ export default function UserMessageFooter({
                 <CopyIcon className="size-4 shrink-0" />
               </div>
             ) : (
-              <div className="copy-check text-green-400 transition-opacity duration-500 group-hover:opacity-100">
+              <div className="copy-check text-green-800 transition-opacity duration-500 group-hover:opacity-100 dark:text-green-400">
                 <CheckCircle2 className="size-5 shrink-0" strokeWidth={1.5} />
               </div>
             )}

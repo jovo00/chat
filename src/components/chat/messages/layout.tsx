@@ -19,7 +19,7 @@ export default function Messages({
   chatId: Id<"chats">;
 }) {
   const { data: chat } = useQuery(api.chat.get.chat, { chatId });
-  const { messagesRef, scrollRef, visibilityRef, isAtBottom, scrollToBottom } = useScrollAnchor();
+  const { messagesRef, scrollRef, visibilityRef, isVisible, scrollToBottom } = useScrollAnchor();
   const [init, setInit] = useState(false);
 
   useEffect(() => {
@@ -40,16 +40,16 @@ export default function Messages({
         variant={"secondary"}
         className={cn(
           "bg-accent hover:bg-popover pointer-events-none absolute bottom-2 left-1/2 z-50 h-12 w-12 shrink-0 -translate-x-1/2 scale-0 opacity-0 transition-all lg:h-10 lg:w-10",
-          !isAtBottom && "pointer-events-auto bottom-3 scale-100 opacity-100 md:bottom-5",
+          !isVisible && init && "pointer-events-auto bottom-3 scale-100 opacity-100 md:bottom-5",
         )}
-        onClick={scrollToBottom}
+        onClick={() => scrollToBottom(true)}
       >
         <ArrowDown className="h-5 w-5 lg:h-4 lg:w-4" />
       </Button>
 
       <div
         className={cn(
-          "relative flex h-fit max-h-full w-full gap-1 overflow-x-hidden overflow-y-auto opacity-0 transition-opacity",
+          "message-list relative flex h-fit max-h-full w-full gap-1 overflow-x-hidden overflow-y-auto opacity-0 transition-opacity",
           init && "opacity-100",
         )}
         ref={scrollRef}
