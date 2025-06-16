@@ -35,7 +35,7 @@ export default function Login() {
           </div>
 
           <SignInWithGoogle />
-          <SignInWithGithub />
+          {/* <SignInWithGithub /> */}
         </div>
       </main>
     </div>
