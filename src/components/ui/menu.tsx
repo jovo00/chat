@@ -301,7 +301,7 @@ export function Menu({
         <ContextMenuTrigger asChild onContextMenu={onTrigger} {...props}>
           {children}
         </ContextMenuTrigger>
-        <ContextMenuContent className="w-52">{renderContextMenuItems(items)}</ContextMenuContent>
+        <ContextMenuContent>{renderContextMenuItems(items)}</ContextMenuContent>
       </ContextMenu>
     );
   } else if (menuType === MenuType.Dropdown) {
@@ -341,9 +341,7 @@ export function RenderDropdown({
       <DropdownMenuTrigger asChild ref={element} {...props}>
         {children}
       </DropdownMenuTrigger>
-      <DropdownMenuContent className="w-52" align={align}>
-        {renderDropdownMenuItems(items)}
-      </DropdownMenuContent>
+      <DropdownMenuContent align={align}>{renderDropdownMenuItems(items)}</DropdownMenuContent>
     </DropdownMenu>
   );
 }
@@ -397,47 +395,3 @@ export function RenderDrawer({
     </Drawer>
   );
 }
-
-export const demoItems: MenuDefinition = [
-  { type: MenuItemType.Item, content: "Kopieren", onSelect: () => console.log("copy") },
-  { type: MenuItemType.Item, content: "Umbenennen", onSelect: () => console.log("rename") },
-  { type: MenuItemType.Separator },
-  {
-    type: MenuItemType.Sub,
-    content: "Mehr",
-    width: 5,
-    items: [
-      { type: MenuItemType.Item, content: "Teilen", onSelect: () => console.log("share") },
-      { type: MenuItemType.Item, content: "Per E-Mail versenden", onSelect: () => console.log("email") },
-    ],
-  },
-  { type: MenuItemType.Separator },
-  { type: MenuItemType.Item, content: "Delete", variant: "destructive", onSelect: () => console.log("delete") },
-  { type: MenuItemType.Separator },
-  {
-    type: MenuItemType.Checkbox,
-    value: "checkbox",
-    content: "Checkbox",
-    checked: true,
-    onCheckedChange: (checked) => console.log(checked),
-  },
-  {
-    type: MenuItemType.Checkbox,
-    value: "something-else",
-    content: "Something Else",
-    checked: false,
-    onCheckedChange: (checked) => console.log(checked),
-  },
-  { type: MenuItemType.Separator },
-  {
-    type: MenuItemType.RadioGroup,
-    content: "Select",
-    value: "pedro",
-    onValueChange: (value) => console.log(value),
-    items: [
-      { type: MenuItemType.Label, content: "Person", inset: true },
-      { type: MenuItemType.RadioItem, value: "pedro", content: "Pedro Duarte" },
-      { type: MenuItemType.RadioItem, value: "colm", content: "Colm Tuite" },
-    ],
-  },
-];

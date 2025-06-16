@@ -2,7 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import { cn, getErrorMessage } from "@/lib/utils";
-import { ArrowUp, Globe, LoaderCircle, Paperclip, Square } from "lucide-react";
+import { ArrowUp, Globe, LoaderCircle, MousePointerClick, Paperclip, Square, Upload } from "lucide-react";
 import { FormEvent, FormEventHandler, KeyboardEventHandler, useEffect, useMemo, useRef, useState } from "react";
 import TextareaAutosize from "react-textarea-autosize";
 import ModelSelect from "./model-select";
@@ -20,6 +20,9 @@ import AttachedFiles from "./attached-files";
 import { Tooltip, TooltipContent } from "@/components/ui/tooltip";
 import { TooltipTrigger } from "@radix-ui/react-tooltip";
 import useInputState from "@/lib/state/input";
+import { SelectFile } from "./select-file";
+import { Menu, MenuItemType, MenuType } from "@/components/ui/menu";
+import { isMobile } from "react-device-detect";
 
 export default function ChatInput({
   preloadedModels,
@@ -40,6 +43,8 @@ export default function ChatInput({
     handleFileDrop,
     handleFileInputChange,
     removeFile,
+    setAttachedFiles,
+    uploadRef,
     MAX_FILE_COUNT,
   } = useFileAttachments();
   const selectedModel = useInputState((state) => state.model);
@@ -47,6 +52,7 @@ export default function ChatInput({
   const { data: currentModel } = useQuery(api.models.get.one, selectedModel ? { model: selectedModel } : "skip");
   const [cancelling, setCancelling] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  const [selectFileOpen, setSelectFileOpen] = useState(false);
 
   const messages = useSendMessage(enableSearchGrounding, attachedFiles, setSubmitting, chatId);
   const { data: chat } = useQuery(api.chat.get.chat, chatId ? { chatId } : "skip");
@@ -60,7 +66,7 @@ export default function ChatInput({
     if (submitting) return;
     if (!textInput.current) return;
     if (isGenerating) return;
-    if (pending > 0) return;
+    if (pending) return;
     if (!currentModel) return;
 
     const prompt = textInput.current?.value;
@@ -136,6 +142,22 @@ export default function ChatInput({
   return (
     <form className="w-full px-2 lg:px-4" onSubmit={submitHandler}>
       {allowedFiletypes?.length > 0 && <Dropzone onDrop={(files) => handleFileDrop(files, allowedFiletypes)} />}
+      <input
+        type="file"
+        ref={uploadRef}
+        className="hidden"
+        accept={allowedFiletypes.join(",")}
+        multiple
+        onInput={handleFileInputChange}
+      />
+      <SelectFile
+        selectFile={selectFileOpen}
+        setSelectFile={setSelectFileOpen}
+        files={attachedFiles}
+        setFiles={setAttachedFiles}
+        maxFileCount={MAX_FILE_COUNT}
+      />
+
       <div
         className={cn(
           "bg-input relative mx-auto flex w-full max-w-240 grow flex-col gap-4 overflow-hidden rounded-t-md p-5 pb-3",
@@ -151,7 +173,6 @@ export default function ChatInput({
           cacheMeasurements
           minRows={2}
           maxRows={10}
-          // onFocus={(e) => e.currentTarget.classList.remove("max-h-6")}
           autoFocus
         ></TextareaAutosize>
 
@@ -176,39 +197,52 @@ export default function ChatInput({
             </Tooltip>
 
             {allowedFiletypes?.length > 0 && (
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button
-                    className="relative"
-                    type="button"
-                    variant={"secondary"}
-                    size={"icon"}
-                    disabled={attachedFiles.length >= MAX_FILE_COUNT}
-                  >
-                    <input
-                      type="file"
-                      className="absolute top-0 left-0 z-50 h-full w-full cursor-pointer opacity-0"
-                      accept={allowedFiletypes.join(",")}
-                      onInput={handleFileInputChange as FormEventHandler}
-                      title=""
-                    />
-                    <span className="sr-only">Attach Files</span>
-                    <Paperclip className="size-4.5" />
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent>
-                  {attachedFiles.length >= MAX_FILE_COUNT ? "You can only add up to 10 files" : "Add an attachment"}
-                </TooltipContent>
-              </Tooltip>
+              <Menu
+                onTrigger={() => {}}
+                items={[
+                  {
+                    type: MenuItemType.Item,
+                    content: (
+                      <div className="text-primary flex items-center gap-2">
+                        <Upload className="text-primary size-4" strokeWidth={2.5} /> Upload
+                      </div>
+                    ),
+                    onSelect: () => uploadRef?.current?.click(),
+                  },
+                  {
+                    type: MenuItemType.Item,
+                    content: (
+                      <div className="text-primary flex items-center gap-2">
+                        <MousePointerClick className="text-primary size-4" strokeWidth={2.5} /> Select
+                      </div>
+                    ),
+                    onSelect: () => setSelectFileOpen(true),
+                  },
+                ]}
+                menuType={isMobile ? MenuType.Drawer : MenuType.Dropdown}
+              >
+                <Button
+                  className="relative"
+                  type="button"
+                  variant={"secondary"}
+                  size={"icon"}
+                  disabled={attachedFiles.length >= MAX_FILE_COUNT}
+                  onClick={() => setSelectFileOpen(true)}
+                >
+                  <span className="sr-only">Add attachment</span>
+                  <Paperclip className="size-4.5" />
+                </Button>
+              </Menu>
             )}
           </div>
+
           <Button
             type={streaming ? "button" : "submit"}
             size="icon"
             variant="secondary"
             className="size-10 rounded-full"
             onClick={stopHandler}
-            disabled={cancelMessage.isPending || submitting || cancelling || pending > 0}
+            disabled={cancelMessage.isPending || submitting || cancelling || pending}
           >
             {submitting || isGenerating ? (
               cancelMessage.isPending || cancelling || submitting ? (

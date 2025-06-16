@@ -1,6 +1,6 @@
 import { useAuthToken } from "@convex-dev/auth/react";
 import { Doc, Id } from "@gen/dataModel";
-import { useState, useRef, useCallback, FormEvent } from "react";
+import { useState, useRef, useCallback, FormEvent, useMemo } from "react";
 import { toast } from "sonner";
 import { useQuery } from "../convex/use-query";
 import { api } from "@gen/api";
@@ -10,8 +10,8 @@ const MAX_FILE_COUNT = 10;
 
 export function useFileAttachments() {
   const [attachedFiles, setAttachedFiles] = useState<Doc<"files">[]>([]);
-  const [pending, setPending] = useState(0);
   const authToken = useAuthToken();
+  const uploadRef = useRef<HTMLInputElement>(null);
   const user = useQuery(api.users.get.current);
 
   async function handleFileInputChange(e: FormEvent<HTMLInputElement>) {
@@ -40,8 +40,6 @@ export function useFileAttachments() {
       toast.error("Too many files", { description: "You can only upload up to " + MAX_FILE_COUNT + "files" });
       return;
     }
-
-    setPending((prev) => prev + 1);
 
     const randomId = Math.random().toString(36).substring(7);
     const optimisticFile: Doc<"files"> = {
@@ -77,7 +75,6 @@ export function useFileAttachments() {
 
     // get the response of the request
     xhr.onreadystatechange = () => {
-      setPending((prev) => prev - 1);
       if (xhr.readyState === 4 && xhr.status === 200) {
         const res = JSON.parse(xhr.responseText);
         setAttachedFiles((prev) => prev.map((f) => (f._id === randomId ? res : f)));
@@ -114,9 +111,12 @@ export function useFileAttachments() {
   }, []);
 
   function resetAttachments() {
-    setPending(0);
     setAttachedFiles([]);
   }
+
+  const pending = useMemo(() => {
+    return attachedFiles.some((f) => f.storage?.startsWith("%"));
+  }, [attachedFiles]);
 
   return {
     attachedFiles,
@@ -127,5 +127,6 @@ export function useFileAttachments() {
     resetAttachments,
     pending,
     MAX_FILE_COUNT,
+    uploadRef,
   };
 }

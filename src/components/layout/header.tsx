@@ -120,7 +120,7 @@ export default function Header({
               </AvatarFallback>
             </Avatar>
           </PopoverTrigger>
-          <PopoverContent className="rounded-3xl border-none px-0 pt-3 pb-0" align="end" sideOffset={10}>
+          <PopoverContent className="bg-card rounded-3xl border-none px-0 pt-3 pb-0" align="end" sideOffset={10}>
             <div className="flex w-full items-center gap-4 border-b px-3 pb-4">
               <Avatar className="ml-auto h-10 w-10 cursor-pointer">
                 <AvatarImage src={user?.image} className="transition-opacity" />
