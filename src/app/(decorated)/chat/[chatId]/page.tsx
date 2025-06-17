@@ -1,5 +1,4 @@
 import ChatList from "@/components/chat/existing-chat";
-import ShiftMobile from "@/components/layout/shift-mobile";
 import { Id } from "@gen/dataModel";
 import { ErrorBoundary } from "react-error-boundary";
 import { MessageError } from "@/components/chat/messages/error";
@@ -28,12 +27,10 @@ export default async function Chat({ params }: Props) {
   const { chatId } = await params;
 
   return (
-    <ShiftMobile>
-      <div className="relative flex h-full flex-1 flex-col">
-        <ErrorBoundary fallbackRender={MessageError}>
-          <ChatList chatId={chatId as Id<"chats">} />
-        </ErrorBoundary>
-      </div>
-    </ShiftMobile>
+    <div className="relative flex h-full max-w-full flex-1 flex-col">
+      <ErrorBoundary fallbackRender={MessageError}>
+        <ChatList chatId={chatId as Id<"chats">} />
+      </ErrorBoundary>
+    </div>
   );
 }

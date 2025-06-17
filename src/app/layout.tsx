@@ -29,6 +29,15 @@ export const metadata: Metadata = {
   description: "AI Chat App",
 };
 
+import type { Viewport } from "next";
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  viewportFit: "cover",
+  interactiveWidget: "resizes-content",
+};
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -39,10 +48,6 @@ export default function RootLayout({
       <html lang="en" className="dark" style={{ colorScheme: "dark" }}>
         <head>
           <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-          <meta
-            name="viewport"
-            content="width=device-width, initial-scale=1, viewport-fit=cover, interactive-widget=resizes-content"
-          />
           <meta name="theme-color" content="#000000" />
           <meta httpEquiv="Pragma" content="cache" />
           <meta name="robots" content="INDEX,FOLLOW" />

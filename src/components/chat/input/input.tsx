@@ -167,7 +167,7 @@ export default function ChatInput({
 
         <TextareaAutosize
           ref={textInput}
-          className="placeholder:text-secondary-foreground/60 w-full resize-none text-sm outline-none lg:text-base"
+          className="placeholder:text-secondary-foreground/60 w-full resize-none text-base outline-none"
           placeholder="Type your message here"
           onKeyDown={onKeyDownHandler}
           cacheMeasurements
@@ -189,11 +189,11 @@ export default function ChatInput({
                   size={"icon"}
                   onClick={() => setEnableSearchGrounding((prev) => !prev)}
                 >
-                  <span className="sr-only">Enable search grounding</span>
+                  <span className="sr-only">Web search</span>
                   <Globe className="size-4.5" />
                 </Button>
               </TooltipTrigger>
-              <TooltipContent>Enable search grounding</TooltipContent>
+              <TooltipContent>Web search</TooltipContent>
             </Tooltip>
 
             {allowedFiletypes?.length > 0 && (

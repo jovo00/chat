@@ -5,6 +5,8 @@ import { CheckCircle2, CopyIcon, Plus, X } from "lucide-react";
 import { useCopyToClipboard } from "@/lib/hooks/use-copy-to-clipboard";
 import { useMutation } from "@/lib/convex/use-mutation";
 import { api } from "@gen/api";
+import { cn } from "@/lib/utils";
+import { isMobile } from "react-device-detect";
 
 export default function UserMessageFooter({
   message,
@@ -16,7 +18,12 @@ export default function UserMessageFooter({
   const { isCopied, copyToClipboard } = useCopyToClipboard({ timeout: 1500 });
 
   return (
-    <div className="flex items-center gap-1 opacity-0 transition-opacity group-hover:opacity-100">
+    <div
+      className={cn(
+        "flex items-center gap-1 opacity-0 transition-opacity group-hover:opacity-100",
+        isMobile && "opacity-100",
+      )}
+    >
       <Tooltip>
         <TooltipTrigger asChild>
           <Button variant={"ghost"} size={"icon"} onClick={() => copyToClipboard(message?.prompt ?? "")}>

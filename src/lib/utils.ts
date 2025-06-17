@@ -27,8 +27,8 @@ export function getInitials(name?: string, username?: string, email?: string): s
 export const fontSize =
   typeof window === "undefined" ? 16 : parseFloat(getComputedStyle(document.documentElement).fontSize);
 
-export function convertRemToPixels(rem: number) {
-  if (typeof window === "undefined") return rem * 16;
+export function convertRemToPixels(rem: number, assumeMobile: boolean) {
+  if (typeof window === "undefined") return rem * 16 * (assumeMobile ? 1 : 0.95);
   return rem * fontSize;
 }
 

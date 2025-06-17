@@ -7,19 +7,25 @@ import ProviderLogo from "@/components/icons/logos/providers";
 import { useMutation } from "@/lib/convex/use-mutation";
 import { api } from "@gen/api";
 import { useState } from "react";
+import { cn } from "@/lib/utils";
+import { isMobile } from "react-device-detect";
 
 export default function AssistantMessageFooter({
   message,
 }: {
   message: Doc<"messages"> & { model: Id<"models"> | Doc<"models"> };
 }) {
-  const [show, setShow] = useState(false);
   const updateMessageVisibility = useMutation(api.chat.update.messageContentVisibility);
   const { isCopied, copyToClipboard } = useCopyToClipboard({ timeout: 1500 });
   const model = message?.model as Doc<"models">;
 
   return (
-    <div className={"flex items-center gap-1 opacity-0 transition-opacity group-hover:opacity-100"}>
+    <div
+      className={cn(
+        "flex items-center gap-1 opacity-0 transition-opacity group-hover:opacity-100",
+        isMobile && "opacity-100",
+      )}
+    >
       <Tooltip>
         <TooltipTrigger asChild>
           <Button

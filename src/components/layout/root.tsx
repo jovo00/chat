@@ -25,7 +25,7 @@ export default async function Root({ children }: { children: React.ReactNode }) 
         <ErrorBoundary fallback={null}>
           <Header preloadedUser={preloadedUser} lastDeviceState={lastDeviceState} />
         </ErrorBoundary>
-        <div className="flex h-[calc(100svh-3.5rem)] w-full flex-1">{children}</div>
+        <div className="flex h-[calc(100%-3.5rem)] w-full flex-1">{children}</div>
       </div>
     </div>
   );

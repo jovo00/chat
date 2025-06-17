@@ -75,9 +75,9 @@ export default function ChatHistory({
     estimateSize: (index) =>
       displayList[index].type === "date"
         ? index === 0
-          ? convertRemToPixels(2.25)
-          : convertRemToPixels(3)
-        : convertRemToPixels(2.5),
+          ? convertRemToPixels(2.25, !isDesktop)
+          : convertRemToPixels(3, !isDesktop)
+        : convertRemToPixels(2.5, !isDesktop),
     overscan: 5,
   });
 

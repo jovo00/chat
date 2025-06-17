@@ -155,8 +155,14 @@
 }
 
 @layer base {
+  @media (width < 64rem) {
+    html {
+      font-size: 95%;
+    }
+  }
+
   body {
-    @apply selection:bg-foreground! selection:text-background!;
+    @apply selection:bg-foreground/80! selection:text-background!;
     background: var(--color-background);
     color: var(--color-foreground);
     font-size: var(--text-sm) /* 0.875rem = 14px */;

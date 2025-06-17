@@ -143,7 +143,7 @@ function ModelButton({
               <h5
                 className={cn(
                   "max-w-full overflow-hidden text-sm font-semibold text-ellipsis whitespace-nowrap md:text-base",
-                  small && "text-xs md:text-sm",
+                  small && "text-sm",
                 )}
               >
                 {currentSelectedModel.title}
@@ -151,12 +151,7 @@ function ModelButton({
 
               {!small && (
                 <div className="flex h-5 items-center gap-2">
-                  <p
-                    className={cn(
-                      "text-foreground/50 flex items-center gap-1 text-xs md:text-sm",
-                      small && "text-xs md:text-xs",
-                    )}
-                  >
+                  <p className={cn("text-foreground/50 flex items-center gap-1 text-sm", small && "text-xs")}>
                     <span className="text-xs font-normal">
                       {maxTokens >= 1000000
                         ? Math.round(maxTokens / 100000) / 10 + "M"

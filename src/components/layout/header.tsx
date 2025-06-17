@@ -39,20 +39,9 @@ export default function Header({
   return (
     <header
       className={cn(
-        "relative z-50 flex h-14 w-full shrink-0 items-center justify-center px-2 transition-all duration-300 lg:px-4",
-        mobileMenuOpen && "translate-x-72 opacity-60 md:translate-x-80",
+        "relative z-30 flex h-14 w-full shrink-0 items-center justify-center px-2 transition-all duration-300 lg:px-4",
       )}
     >
-      {mobileMenuOpen && (
-        <div
-          className="pointer-events-auto absolute top-0 left-0 z-50 h-full w-full"
-          onClick={(e) => {
-            e.stopPropagation();
-            setMobileMenuOpen(false);
-          }}
-        ></div>
-      )}
-
       {!isDesktop && !pathname?.startsWith("/settings") && (
         <Button
           variant={"link"}
