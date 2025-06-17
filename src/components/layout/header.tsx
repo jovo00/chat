@@ -2,9 +2,9 @@
 
 import Logo from "@/components/icons/logos/logo";
 import { useEffect, useState } from "react";
-import { cn, getInitials } from "@/lib/utils";
+import { cn, getErrorMessage, getInitials } from "@/lib/utils";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
-import { ArrowLeft, Key, LogOut, SquarePen, UserRoundCog, FilesIcon, LockIcon } from "lucide-react";
+import { ArrowLeft, Key, LogOut, SquarePen, UserRoundCog, FilesIcon, LockIcon, AlertCircle } from "lucide-react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { usePathname, useRouter } from "next/navigation";
 import { Button } from "../ui/button";
@@ -24,7 +24,7 @@ export default function Header({
   preloadedUser: PreloadedUser;
   lastDeviceState: "mobile" | "desktop";
 }) {
-  const { data: user } = usePreloadedQuery(preloadedUser);
+  const { data: user, error, isError } = usePreloadedQuery(preloadedUser);
   const { signOut } = useAuthActions();
   const router = useRouter();
   const pathname = usePathname();
@@ -115,8 +115,10 @@ export default function Header({
           <PopoverTrigger>
             <Avatar className="ml-auto h-10 w-10 cursor-pointer">
               <AvatarImage src={user?.image} className="transition-opacity" />
-              <AvatarFallback className="text-foreground/60 bg-accent font-medium select-none">
-                {getInitials(user?.name, user?.email)}
+              <AvatarFallback
+                className={cn("text-foreground/60 bg-accent font-medium select-none", isError && "text-red-500")}
+              >
+                {isError ? <AlertCircle className="size-4" /> : getInitials(user?.name, user?.email)}
               </AvatarFallback>
             </Avatar>
           </PopoverTrigger>
@@ -124,16 +126,28 @@ export default function Header({
             <div className="flex w-full items-center gap-4 border-b px-3 pb-4">
               <Avatar className="ml-auto h-10 w-10 cursor-pointer">
                 <AvatarImage src={user?.image} className="transition-opacity" />
-                <AvatarFallback className="text-foreground/60 bg-accent font-medium select-none">
-                  {getInitials(user?.name, user?.email)}
+                <AvatarFallback
+                  className={cn("text-foreground/60 bg-accent font-medium select-none", isError && "text-red-500")}
+                >
+                  {isError ? <AlertCircle className="size-4" /> : getInitials(user?.name, user?.email)}
                 </AvatarFallback>
               </Avatar>
               <div className="flex w-full flex-col">
-                <h5 className="max-w-40 overflow-hidden text-base font-medium text-ellipsis whitespace-nowrap">
-                  {user?.name ?? user?.email?.split("@")[0]}
+                <h5
+                  className={cn(
+                    "max-w-40 overflow-hidden text-base font-medium text-ellipsis whitespace-nowrap",
+                    isError && "text-red-500",
+                  )}
+                >
+                  {isError ? "Error" : (user?.name ?? user?.email?.split("@")[0])}
                 </h5>
-                <p className="text-foreground/50 max-w-40 overflow-hidden text-xs font-medium text-ellipsis whitespace-nowrap">
-                  {user?.email}
+                <p
+                  className={cn(
+                    "text-foreground/50 max-w-40 overflow-hidden text-xs font-medium text-ellipsis whitespace-nowrap",
+                    isError && "text-red-500",
+                  )}
+                >
+                  {isError ? getErrorMessage(error) : user?.email}
                 </p>
               </div>
               <Button

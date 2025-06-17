@@ -55,7 +55,7 @@ function AssistantComponent({
   const isLoading =
     message.status === "pending" ||
     (message.status === "generating" && status === "pending") ||
-    (currentContent ?? "")?.length === 0;
+    ((currentContent ?? "")?.length === 0 && message?.status !== "error" && status !== "error");
 
   const messageRef = useRef<HTMLDivElement | null>(null);
 
@@ -95,7 +95,7 @@ function AssistantComponent({
         </div>
       </AssistantMessageLayout>
 
-      {!isLoading && message.status === "done" && <AssistantMessageFooter message={message} />}
+      {!isLoading && <AssistantMessageFooter message={message} />}
     </div>
   );
 }

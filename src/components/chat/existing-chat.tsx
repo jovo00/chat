@@ -13,7 +13,7 @@ export default async function ChatList({ chatId }: { chatId: Id<"chats"> }) {
 
   return (
     <>
-      <div className="relative h-auto w-full flex-1 overflow-y-auto">
+      <div className="relative h-full w-full flex-1 overflow-y-auto">
         <Messages preloadedMessages={preloadedMessages} chatId={chatId} />
       </div>
       <ChatInput preloadedModels={preloadedModels} chatId={chatId} lastModelState={lastModelState} />

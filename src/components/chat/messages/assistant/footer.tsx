@@ -6,21 +6,31 @@ import { useCopyToClipboard } from "@/lib/hooks/use-copy-to-clipboard";
 import ProviderLogo from "@/components/icons/logos/providers";
 import { useMutation } from "@/lib/convex/use-mutation";
 import { api } from "@gen/api";
+import { useState } from "react";
 
 export default function AssistantMessageFooter({
   message,
 }: {
   message: Doc<"messages"> & { model: Id<"models"> | Doc<"models"> };
 }) {
+  const [show, setShow] = useState(false);
   const updateMessageVisibility = useMutation(api.chat.update.messageContentVisibility);
   const { isCopied, copyToClipboard } = useCopyToClipboard({ timeout: 1500 });
   const model = message?.model as Doc<"models">;
 
   return (
-    <div className="flex items-center gap-1 opacity-0 transition-opacity group-hover:opacity-100">
+    <div className={"flex items-center gap-1 opacity-0 transition-opacity group-hover:opacity-100"}>
       <Tooltip>
         <TooltipTrigger asChild>
-          <Button variant={"ghost"} size={"icon"} onClick={() => copyToClipboard(message?.content ?? "")}>
+          <Button
+            variant={"ghost"}
+            size={"icon"}
+            onClick={() =>
+              copyToClipboard(
+                message?.status === "error" ? "Error: " + (message?.status_message ?? "") : (message?.content ?? ""),
+              )
+            }
+          >
             {!isCopied ? (
               <div className="opacity-60 transition-opacity duration-500 group-hover:opacity-100">
                 <CopyIcon className="size-4 shrink-0" />

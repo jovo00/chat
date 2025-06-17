@@ -39,14 +39,17 @@ export default function RootLayout({
       <html lang="en" className="dark" style={{ colorScheme: "dark" }}>
         <head>
           <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-          <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimum-scale=1" />
+          <meta
+            name="viewport"
+            content="width=device-width, initial-scale=1, viewport-fit=cover, interactive-widget=resizes-content"
+          />
           <meta name="theme-color" content="#000000" />
           <meta httpEquiv="Pragma" content="cache" />
           <meta name="robots" content="INDEX,FOLLOW" />
           <link rel="manifest" href="/manifest.json" />
         </head>
         <body
-          className={`h-dvh min-h-full w-full overflow-x-hidden ${fontSans.variable} ${fontMono.variable} antialiased`}
+          className={`fixed h-dvh min-h-full w-full overflow-x-hidden ${fontSans.variable} ${fontMono.variable} antialiased`}
         >
           <ThemeProvider attribute="class" defaultTheme="dark" disableTransitionOnChange>
             <ErrorBoundary fallbackRender={globalErrorFallback}>

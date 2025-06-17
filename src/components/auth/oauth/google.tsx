@@ -12,9 +12,9 @@ export function SignInWithGoogle() {
 
   return (
     <Button
-      className="flex-1"
+      className="w-fit min-w-48 flex-1"
       type="button"
-      variant={"input"}
+      variant={"secondary"}
       onClick={async () => {
         setSubmitting(true);
         try {

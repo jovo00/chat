@@ -21,21 +21,17 @@ interface ChatActionsProps {
 export function ChatActions({ onRename, onDelete, isActive, menuOpen, isPinned, chatId }: ChatActionsProps) {
   const menuItems = useChatItemActions({ isPinned, onDelete, onRename, chatId });
 
-  const trigger = (
-    <div
-      className={cn(
-        "text-primary/50 hover:text-primary absolute top-0 right-0 z-30 flex h-full w-11 items-center justify-center opacity-0 transition-[color,opacity] group-hover:opacity-100", // Added z-30
-        menuOpen && "opacity-100",
-        isActive && "opacity-100",
-      )}
-    >
-      <Ellipsis className="h-5 w-5" />
-    </div>
-  );
-
   return (
-    <Menu onTrigger={() => {}} items={menuItems} context menuType={isMobile ? MenuType.Drawer : MenuType.Dropdown}>
-      {trigger}
+    <Menu onTrigger={() => {}} items={menuItems} menuType={isMobile ? MenuType.Drawer : MenuType.Dropdown}>
+      <div
+        className={cn(
+          "text-primary/50 hover:text-primary absolute top-0 right-0 z-30 flex h-full w-11 items-center justify-center opacity-0 transition-[color,opacity] group-hover:opacity-100", // Added z-30
+          menuOpen && "opacity-100",
+          isActive && "opacity-100",
+        )}
+      >
+        <Ellipsis className="h-5 w-5" />
+      </div>
     </Menu>
   );
 }

@@ -160,20 +160,20 @@ export default function ChatInput({
 
       <div
         className={cn(
-          "bg-input relative mx-auto flex w-full max-w-240 grow flex-col gap-4 overflow-hidden rounded-t-md p-5 pb-3",
+          "bg-input relative mx-auto flex w-full max-w-240 grow flex-col gap-2 overflow-hidden rounded-t-md p-5 pb-3 lg:gap-4",
         )}
       >
         <AttachedFiles files={attachedFiles} onRemove={removeFile} />
 
         <TextareaAutosize
           ref={textInput}
-          className="placeholder:text-secondary-foreground/60 w-full resize-none text-base outline-none"
+          className="placeholder:text-secondary-foreground/60 w-full resize-none text-sm outline-none lg:text-base"
           placeholder="Type your message here"
           onKeyDown={onKeyDownHandler}
           cacheMeasurements
           minRows={2}
           maxRows={10}
-          autoFocus
+          autoFocus={!isMobile}
         ></TextareaAutosize>
 
         <div className="flex w-full items-center justify-between">
@@ -227,7 +227,6 @@ export default function ChatInput({
                   variant={"secondary"}
                   size={"icon"}
                   disabled={attachedFiles.length >= MAX_FILE_COUNT}
-                  onClick={() => setSelectFileOpen(true)}
                 >
                   <span className="sr-only">Add attachment</span>
                   <Paperclip className="size-4.5" />
@@ -240,7 +239,7 @@ export default function ChatInput({
             type={streaming ? "button" : "submit"}
             size="icon"
             variant="secondary"
-            className="size-10 rounded-full"
+            className="ld:size-10 rounded-full"
             onClick={stopHandler}
             disabled={cancelMessage.isPending || submitting || cancelling || pending}
           >

@@ -11,14 +11,27 @@ export const createContext = internalMutation({
     const message = await ctx.db.get(args.messageId);
     if (!message) throw new ConvexError("Message not found");
 
+    async function saveError(status_message: string) {
+      await ctx.db.patch(message!._id, {
+        status: "error",
+        status_message,
+      });
+    }
+
     const model = await ctx.db.get(message.model);
-    if (!model) throw new ConvexError("No model selected");
+    if (!model) {
+      await saveError("No model selected");
+      throw new ConvexError("No model selected");
+    }
 
     const token = await ctx.db
       .query("tokens")
       .withIndex("by_user_and_provider", (q) => q.eq("user", message.user).eq("provider", model.api))
       .first();
-    if (!token) throw new ConvexError(`No token for ${model.api} found`);
+    if (!token) {
+      await saveError(`No token for ${model.api} found`);
+      throw new ConvexError("No model selected");
+    }
 
     let context = [];
 
@@ -32,62 +45,67 @@ export const createContext = internalMutation({
     let continueCursor = null;
     let isDone = false;
 
-    while (estimatedTokenCount < maxContextTokenCount && !isDone) {
-      if (context.length > 100) break;
+    try {
+      while (estimatedTokenCount < maxContextTokenCount && !isDone) {
+        if (context.length > 100) break;
 
-      ({ continueCursor, isDone, page } = await ctx.runQuery(internal.chat.get.paginateHistoryInternal, {
-        paginationOpts: { numItems: 10, cursor: continueCursor },
-        chatId: message.chat,
-        creationTime: message._creationTime,
-      }));
+        ({ continueCursor, isDone, page } = await ctx.runQuery(internal.chat.get.paginateHistoryInternal, {
+          paginationOpts: { numItems: 10, cursor: continueCursor },
+          chatId: message.chat,
+          creationTime: message._creationTime,
+        }));
 
-      for (const message of page) {
-        estimatedTokenCount += estimateTokenCount(message);
-        if (estimatedTokenCount > maxContextTokenCount) break;
+        for (const message of page) {
+          estimatedTokenCount += estimateTokenCount(message);
+          if (estimatedTokenCount > maxContextTokenCount) break;
 
-        if (message.content && !message.hide_content && message.content?.trim()?.length > 0) {
-          context.push({
-            role: "assistant",
-            content: message.content ?? "",
-          });
-        }
-
-        if ((message.prompt ?? "").length > 0 && !message.hide_prompt) {
-          if ((message.status === "generating" || message.status === "pending") && message.files.length > 0) {
-            const files = (await Promise.allSettled(message.files.map((file) => ctx.db.get(file)))).map(
-              async (file) => {
-                if (file.status === "rejected" || !file.value) return undefined;
-
-                if (file.value?.name?.endsWith(".pdf") && model.text_capabilities?.features.file_input) {
-                  return {
-                    type: "file",
-                    data: await ctx.storage.getUrl(file.value.storage),
-                    mimeType: "application/pdf",
-                  };
-                } else if (model.text_capabilities?.features.image_input) {
-                  return { type: "image", image: await ctx.storage.getUrl(file.value!.storage) };
-                }
-              },
-            );
-
-            const filesContent = (await Promise.allSettled(files))
-              .map((file) => (file.status === "fulfilled" ? file.value : undefined))
-              .filter((f) => f !== undefined);
-
+          if (message.content && !message.hide_content && message.content?.trim()?.length > 0) {
             context.push({
-              role: "user",
-              content: [{ type: "text", text: message.prompt ?? "" }, ...filesContent],
-            });
-          } else {
-            context.push({
-              role: "user",
-              content: message.prompt ?? "",
+              role: "assistant",
+              content: message.content ?? "",
             });
           }
-        }
-      }
 
-      if (estimatedTokenCount > maxContextTokenCount) break;
+          if ((message.prompt ?? "").length > 0 && !message.hide_prompt) {
+            if ((message.status === "generating" || message.status === "pending") && message.files.length > 0) {
+              const files = (await Promise.allSettled(message.files.map((file) => ctx.db.get(file)))).map(
+                async (file) => {
+                  if (file.status === "rejected" || !file.value) return undefined;
+
+                  if (file.value?.name?.endsWith(".pdf") && model.text_capabilities?.features.file_input) {
+                    return {
+                      type: "file",
+                      data: await ctx.storage.getUrl(file.value.storage),
+                      mimeType: "application/pdf",
+                    };
+                  } else if (model.text_capabilities?.features.image_input) {
+                    return { type: "image", image: await ctx.storage.getUrl(file.value!.storage) };
+                  }
+                },
+              );
+
+              const filesContent = (await Promise.allSettled(files))
+                .map((file) => (file.status === "fulfilled" ? file.value : undefined))
+                .filter((f) => f !== undefined);
+
+              context.push({
+                role: "user",
+                content: [{ type: "text", text: message.prompt ?? "" }, ...filesContent],
+              });
+            } else {
+              context.push({
+                role: "user",
+                content: message.prompt ?? "",
+              });
+            }
+          }
+        }
+
+        if (estimatedTokenCount > maxContextTokenCount) break;
+      }
+    } catch (err) {
+      await saveError("Couldn't get message history");
+      throw err;
     }
 
     await ctx.db.patch(message._id, {

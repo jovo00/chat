@@ -13,7 +13,7 @@ export default async function Root({ children }: { children: React.ReactNode }) 
   const lastDeviceState = await getLastDeviceState();
 
   return (
-    <div className="bg-background flex h-full min-h-[20rem] w-full overflow-hidden">
+    <div className="bg-background flex h-svh min-h-[20rem] w-full overflow-hidden">
       <Sidebar
         lastSidebarState={lastSidebarState}
         lastDeviceState={lastDeviceState}

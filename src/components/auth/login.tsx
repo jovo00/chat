@@ -24,8 +24,8 @@ export default function Login() {
           onLoad={() => setImageLoaded(true)}
         />
       </div>
-      <main className="bg-background flex h-screen min-h-80 w-full flex-1 items-center justify-center pb-6 dark:bg-black">
-        <div className="flex w-100 flex-col gap-2 overflow-hidden rounded-md">
+      <main className="bg-background flex h-svh min-h-50 w-full flex-1 items-center justify-center pb-6 dark:bg-black">
+        <div className="flex w-100 flex-col items-center justify-center gap-2 overflow-hidden rounded-md">
           <div className="p-4">
             <Logo className="fill-primary-foreground mx-auto h-9 w-9" />
           </div>

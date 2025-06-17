@@ -90,7 +90,7 @@ export const updateListMargin = (messageRef: React.RefObject<HTMLDivElement | nu
   });
 };
 
-export function getErrorMessage(error: Error) {
+export function getErrorMessage(error?: Error) {
   if (error instanceof ConvexError) {
     return (error as ConvexError<string>).data;
   } else {

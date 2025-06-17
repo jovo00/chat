@@ -10,7 +10,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { Form, FormControl, FormField, FormItem, FormMessage } from "@/components/ui/form";
 import { Label } from "@/components/ui/label";
-import { getErrorMessage, getInitials } from "@/lib/utils";
+import { cn, getErrorMessage, getInitials } from "@/lib/utils";
 import { PreloadedUser } from "@/lib/auth/server";
 import { api } from "@gen/api";
 import { toast } from "sonner";
@@ -24,7 +24,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { LoaderCircle } from "lucide-react";
+import { AlertCircle, LoaderCircle } from "lucide-react";
 import { useAuthActions } from "@convex-dev/auth/react";
 import { usePreloadedQuery } from "@/lib/convex/use-preload";
 import { useMutation } from "@/lib/convex/use-mutation";
@@ -34,7 +34,7 @@ const formSchemaGeneral = z.object({
 });
 
 export default function Account({ preloadedUser }: { preloadedUser: PreloadedUser }) {
-  const { data: user } = usePreloadedQuery(preloadedUser);
+  const { data: user, isError, error } = usePreloadedQuery(preloadedUser);
 
   const { signOut } = useAuthActions();
 
@@ -80,15 +80,25 @@ export default function Account({ preloadedUser }: { preloadedUser: PreloadedUse
             <Avatar className="ml-auto size-12 cursor-pointer">
               <AvatarImage src={user?.image} className="transition-opacity" />
               <AvatarFallback className="text-foreground/60 bg-accent text-xl font-medium select-none">
-                {getInitials(user?.name, user?.email)}
+                {isError ? <AlertCircle className="size-6 text-red-500" /> : getInitials(user?.name, user?.email)}
               </AvatarFallback>
             </Avatar>
             <div className="flex w-full flex-col leading-none">
-              <h5 className="font-special max-w-40 overflow-hidden text-2xl text-ellipsis whitespace-nowrap">
-                {user?.name ?? user?.email?.split("@")[0]}
+              <h5
+                className={cn(
+                  "font-special max-w-40 overflow-hidden text-2xl text-ellipsis whitespace-nowrap",
+                  isError && "text-red-500",
+                )}
+              >
+                {isError ? "Error" : (user?.name ?? user?.email?.split("@")[0])}
               </h5>
-              <p className="text-foreground/50 max-w-40 overflow-hidden text-sm font-medium text-ellipsis whitespace-nowrap">
-                {user?.email}
+              <p
+                className={cn(
+                  "text-foreground/50 max-w-40 overflow-hidden text-sm font-medium text-ellipsis whitespace-nowrap",
+                  isError && "text-red-500",
+                )}
+              >
+                {isError ? getErrorMessage(error) : user?.email}
               </p>
             </div>
           </div>

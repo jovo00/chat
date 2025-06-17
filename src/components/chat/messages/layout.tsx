@@ -49,7 +49,7 @@ export default function Messages({
 
       <div
         className={cn(
-          "message-list relative flex h-fit max-h-full w-full gap-1 overflow-x-hidden overflow-y-auto opacity-0 transition-opacity",
+          "message-list relative flex h-full max-h-full w-full gap-1 overflow-x-hidden overflow-y-auto opacity-0 transition-opacity",
           init && "opacity-100",
         )}
         ref={scrollRef}

@@ -8,7 +8,7 @@ import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 
 import { Button } from "@/components/ui/button";
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
-import { Drawer, DrawerContent, DrawerTrigger } from "@/components/ui/drawer";
+import { Drawer, DrawerContent, DrawerTitle, DrawerTrigger } from "@/components/ui/drawer";
 import { BrainIcon, ChevronDown, EyeIcon, FileText } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { DialogTitle } from "@radix-ui/react-dialog";
@@ -54,7 +54,8 @@ export default function ModelSelect({
             <NoModelSelected setOpen={setOpen} small={small} />
           )}
         </DrawerTrigger>
-        <DrawerContent className="bg-popover">
+        <DrawerContent className="bg-card">
+          <DrawerTitle className="sr-only">Model Select</DrawerTitle>
           <div className="mt-4 border-t">
             <ModelList small={small} setOpen={setOpen} preloadedModels={preloadedModels} />
           </div>
@@ -86,7 +87,7 @@ function NoModelSelected({ small, setOpen }: { small: boolean; setOpen: Dispatch
       variant="secondary"
       type="button"
       className={cn(
-        "bg-input flex h-16 w-full cursor-pointer items-center justify-between rounded-full border-none text-base font-semibold ring-offset-transparent select-none focus:ring-0 focus:ring-transparent has-[>svg]:px-7",
+        "bg-input flex h-16 w-full cursor-pointer items-center justify-between rounded-full border-none text-sm font-semibold ring-offset-transparent select-none focus:ring-0 focus:ring-transparent has-[>svg]:px-7 lg:text-base",
         small && "-ml-2 h-fit w-fit justify-start gap-1 p-2 has-[>svg]:px-2",
         small && "text-sm",
       )}
@@ -142,7 +143,7 @@ function ModelButton({
               <h5
                 className={cn(
                   "max-w-full overflow-hidden text-sm font-semibold text-ellipsis whitespace-nowrap md:text-base",
-                  small && "text-sm md:text-sm",
+                  small && "text-xs md:text-sm",
                 )}
               >
                 {currentSelectedModel.title}
@@ -186,7 +187,7 @@ function ModelButton({
             </div>
           </div>
         ) : (
-          "No models available"
+          "Select model"
         )}
       </div>
     </Button>

@@ -7,15 +7,19 @@ import { CoreMessage, LanguageModel, streamText } from "ai";
 import { IncrementalUpdater } from "./incremental_updates";
 import { dataTypes, encodeData } from "./encoding";
 
-export const completeChat = httpAction(async (ctx, request) => {
-  let user = await ctx.runQuery(api.users.get.current);
-  if (!user) throw new ConvexError("Not authorized");
+function makeError() {
+  throw new ConvexError("Error Test");
+}
 
+export const completeChat = httpAction(async (ctx, request) => {
   const body = (await request.json()) as {
     messageId?: Id<"messages">;
   };
 
   if (!body.messageId) throw new ConvexError("Missing messageId");
+
+  let user = await ctx.runQuery(api.users.get.current);
+  if (!user) throw new ConvexError("Not authorized");
 
   const initialMessage = await ctx.runQuery(internal.chat.get.getMessageInternal, {
     message: body.messageId,
@@ -36,11 +40,11 @@ export const completeChat = httpAction(async (ctx, request) => {
   const messageId = initialMessage._id;
   const chatId = initialMessage.chat;
 
+  const abortController = new AbortController();
+
   const { context, token, model, message } = await ctx.runMutation(internal.chat.context.createContext, {
     messageId: initialMessage._id,
   });
-
-  const abortController = new AbortController();
 
   try {
     const decryptedToken = await ctx.runAction(internal.tokens.actions.decryptToken, { encryptedToken: token.token });
@@ -148,8 +152,6 @@ export const completeChat = httpAction(async (ctx, request) => {
       },
     });
   } catch (err) {
-    console.log(err);
-
     abortController.abort();
     let errorMessage = "Could not generate a response";
 
