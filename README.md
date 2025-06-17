@@ -2,13 +2,10 @@
 
 A simple and modern AI chatbot interface with **Bring Your Own Key (BYOK)** support. Chat with multiple LLMs, attach files and search the web. It's using Convex as its realtime database, and OpenRouter for LLM access.
 
----
 
 ## 🚧 Work in Progress 🚧
 
 **Please note: This project is currently under active development. Features may be incomplete, and breaking changes are possible.**
-
----
 
 
 ## ✨ Features
@@ -20,11 +17,7 @@ A simple and modern AI chatbot interface with **Bring Your Own Key (BYOK)** supp
 - **Web Search**: Enrich your chats with live web search results.
 - **Persistent Conversations**: Messages are generated in the background and persist even after a page refresh.
 
----
-
 Check out the [Demo](https://convex.dev)
-
----
 
 ## 🚀 Getting Started
 
@@ -89,13 +82,11 @@ pnpm dev
 - Select from all available OpenRouter models and add them to the **Selected Models List**.
 - These models will be available to your users.
 
----
 
 ## 💬 Start Chatting!
 
 You’re all set! Start chatting with your favorite LLMs!
 
----
 
 ## 🛠️ Tech Stack
 
@@ -105,7 +96,6 @@ You’re all set! Start chatting with your favorite LLMs!
 - **Google OAuth** (Authentication)
 - **Tailwind & Shadcn** (Styling)
 
----
 
 ## 📝 License
 
