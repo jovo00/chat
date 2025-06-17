@@ -7,6 +7,7 @@ import { useMutation } from "@/lib/convex/use-mutation";
 import { api } from "@gen/api";
 import { cn } from "@/lib/utils";
 import { isMobile } from "react-device-detect";
+import useChatState from "@/lib/state/chat";
 
 export default function UserMessageFooter({
   message,
@@ -14,6 +15,7 @@ export default function UserMessageFooter({
   message: Doc<"messages"> & { model: Id<"models"> | Doc<"models"> };
 }) {
   const updateMessageVisibility = useMutation(api.chat.update.messagePromptVisibility);
+  const selected = useChatState((state) => state.selected);
 
   const { isCopied, copyToClipboard } = useCopyToClipboard({ timeout: 1500 });
 
@@ -21,7 +23,7 @@ export default function UserMessageFooter({
     <div
       className={cn(
         "flex items-center gap-1 opacity-0 transition-opacity group-hover:opacity-100",
-        isMobile && "opacity-100",
+        isMobile && selected?.id === message._id && selected?.prompt && "opacity-100",
       )}
     >
       <Tooltip>

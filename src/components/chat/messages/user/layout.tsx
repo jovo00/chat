@@ -3,9 +3,11 @@ import { memo, ReactNode } from "react";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { cn } from "@/lib/utils";
 import { Doc } from "@gen/dataModel";
+import useChatState from "@/lib/state/chat";
 
 function UserMessageLayoutComponent({ message, children }: { message?: Doc<"messages">; children: ReactNode }) {
   const messageIsHidden = message?.hide_prompt;
+  const select = useChatState((state) => state.select);
 
   return (
     <>
@@ -14,6 +16,7 @@ function UserMessageLayoutComponent({ message, children }: { message?: Doc<"mess
           "group relative flex w-fit max-w-[85%] flex-col items-end justify-center gap-1 self-end rounded-4xl px-2",
           messageIsHidden && "opacity-60",
         )}
+        onPointerEnter={() => message && select(message._id, true)}
       >
         <div
           className={cn(

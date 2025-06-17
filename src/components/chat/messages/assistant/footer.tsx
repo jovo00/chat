@@ -6,9 +6,9 @@ import { useCopyToClipboard } from "@/lib/hooks/use-copy-to-clipboard";
 import ProviderLogo from "@/components/icons/logos/providers";
 import { useMutation } from "@/lib/convex/use-mutation";
 import { api } from "@gen/api";
-import { useState } from "react";
 import { cn } from "@/lib/utils";
 import { isMobile } from "react-device-detect";
+import useChatState from "@/lib/state/chat";
 
 export default function AssistantMessageFooter({
   message,
@@ -18,12 +18,13 @@ export default function AssistantMessageFooter({
   const updateMessageVisibility = useMutation(api.chat.update.messageContentVisibility);
   const { isCopied, copyToClipboard } = useCopyToClipboard({ timeout: 1500 });
   const model = message?.model as Doc<"models">;
+  const selected = useChatState((state) => state.selected);
 
   return (
     <div
       className={cn(
         "flex items-center gap-1 opacity-0 transition-opacity group-hover:opacity-100",
-        isMobile && "opacity-100",
+        isMobile && selected?.id === message._id && !selected.prompt && "opacity-100",
       )}
     >
       <Tooltip>

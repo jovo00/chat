@@ -12,6 +12,7 @@ import { MessageStatus } from "./status";
 import { useSmoothText } from "@/lib/chat/use-smooth-text";
 import AssistantMessageFooter from "./footer";
 import useInputState from "@/lib/state/input";
+import useChatState from "@/lib/state/chat";
 
 function AssistantComponent({
   message,
@@ -28,6 +29,7 @@ function AssistantComponent({
 }) {
   const clearOptimisticPrompt = useInputState((state) => state.clearOptimisticPrompt);
   const { content, reasoning, status } = useStream(message._id, isStreamed);
+  const select = useChatState((state) => state.select);
 
   const isCurrentlyStreaming = useMemo(() => {
     if (!isStreamed) return false;
@@ -68,7 +70,10 @@ function AssistantComponent({
   const showSmooth = isCurrentlyStreaming && message?.status !== "done" && message?.status !== "error";
 
   return (
-    <div className={cn("group relative flex w-full flex-col items-start gap-2", className)}>
+    <div
+      className={cn("group relative flex w-full flex-col items-start gap-2", className)}
+      onPointerEnter={() => message && select(message._id, false)}
+    >
       <AssistantMessageLayout message={message}>
         {(message?.reasoning || reasoning) && (
           <ReasoningAccordion

@@ -5,6 +5,12 @@ export type ChatState = {
   streaming: Map<Id<"chats">, Set<Id<"messages">>>;
   addStreaming: (chat: Id<"chats">, message: Id<"messages">) => void;
   removeStreaming: (chat: Id<"chats">, message: Id<"messages">) => void;
+
+  selected: {
+    id: Id<"messages">;
+    prompt: boolean;
+  } | null;
+  select: (id: Id<"messages">, prompt: boolean) => void;
 };
 
 const useChatState = create<ChatState>((set, get) => ({
@@ -33,6 +39,11 @@ const useChatState = create<ChatState>((set, get) => ({
 
       return { streaming: new Map(prev.streaming) };
     });
+  },
+
+  selected: null,
+  select: (id, prompt) => {
+    set({ selected: { id, prompt } });
   },
 }));
 
