@@ -1,6 +1,6 @@
 # AI Chat App
 
-A simple and modern AI chatbot interface with **Bring Your Own Key (BYOK)** support. Chat with multiple LLMs, attach files and search the web. It's using Convex as its realtime database, and OpenRouter for LLM access.
+A simple and modern AI chatbot interface with **Bring Your Own Key (BYOK)**. Chat with multiple LLMs, attach files and search the web. It's using Convex as its realtime database, and OpenRouter for LLM access.
 
 
 ## 🚧 Work in Progress 🚧
@@ -17,7 +17,7 @@ A simple and modern AI chatbot interface with **Bring Your Own Key (BYOK)** supp
 - **Web Search**: Enrich your chats with live web search results.
 - **Persistent Conversations**: Messages are generated in the background and persist even after a page refresh.
 
-Check out the [Demo](https://convex.dev)
+Check out the [Demo](https://chat.jovo.dev)
 
 ## 🚀 Getting Started
 
